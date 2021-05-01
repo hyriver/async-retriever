@@ -207,7 +207,7 @@ harmonic constituents from CO-OPS:
     amp = pd.concat(amp_list, axis=1)
     phs = pd.concat(phs_list, axis=1)
 
-.. image:: https://raw.githubusercontent.com/cheginit/HyRiver-examples/main/notebooks/_static/ndvi.png
+.. image:: https://raw.githubusercontent.com/cheginit/HyRiver-examples/main/notebooks/_static/tides.png
     :target: https://github.com/cheginit/HyRiver-examples/blob/main/notebooks/async.ipunb
 
 Contributing
