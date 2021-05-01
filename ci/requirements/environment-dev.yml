@@ -1,0 +1,27 @@
+name: dev
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python>=3.8
+
+  # pygeoogc deps
+  - aiodns
+  - aiohttp
+  - aiosqlite
+  - brotlipy
+  - chardet
+  - cytoolz
+  - nest-asyncio
+  - orjson
+  - setuptools
+
+  # dev deps
+  - setuptools_scm
+  - pytest-xdist
+  - pytest-sugar
+  - pre-commit
+
+  - pip
+  - pip:
+    - aiohttp-client-cache
