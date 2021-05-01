@@ -1,4 +1,4 @@
-"""Top-level package for async_retriever."""
+"""Top-level package."""
 import asyncio
 import sys
 

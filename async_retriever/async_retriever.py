@@ -1,4 +1,4 @@
-"""Some utilities for PyGeoOGC."""
+"""Core async functions."""
 import asyncio
 from typing import Any, Callable, Dict, List, MutableMapping, Optional, Tuple, Union
 
