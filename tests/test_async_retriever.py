@@ -1,6 +1,7 @@
 """Tests for ar package."""
 import io
 import sys
+import tempfile
 from datetime import datetime
 
 import pytest
@@ -37,7 +38,8 @@ def test_binary():
             for s, e in dates_itr
         ]
     )
-    r_b = ar.retrieve(url_binary, "binary", request_kwds=req_binary, cache_name="~/.cache/bin.db")
+    with tempfile.NamedTemporaryFile() as cache:
+        r_b = ar.retrieve(url_binary, "binary", request_kwds=req_binary, cache_name=cache.name)
     assert sys.getsizeof(r_b[0]) == 986161
 
 
