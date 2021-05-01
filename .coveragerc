@@ -2,5 +2,5 @@
 omit =
     setup.py
     tests/*
-    pygeoogc/__init__.py
-    pygeoogc/print_versions.py
+    async_retriever/__init__.py
+    async_retriever/print_versions.py
