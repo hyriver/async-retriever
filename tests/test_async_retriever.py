@@ -14,7 +14,7 @@ def test_binary():
     west, south, east, north = (-69.77, 45.07, -69.31, 45.45)
     base_url = "https://thredds.daac.ornl.gov/thredds/ncss/ornldaac/1299"
     dates_itr = [(datetime(y, 1, 1), datetime(y, 1, 31)) for y in range(2000, 2005)]
-    url_binary, req_binary = zip(
+    urls, kwds = zip(
         *[
             (
                 f"{base_url}/MCD13.A{s.year}.unaccum.nc4",
@@ -39,14 +39,14 @@ def test_binary():
         ]
     )
     with tempfile.NamedTemporaryFile() as cache:
-        r_b = ar.retrieve(url_binary, "binary", request_kwds=req_binary, cache_name=cache.name)
+        r_b = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache.name)
     assert sys.getsizeof(r_b[0]) == 986161
 
 
 @pytest.mark.flaky(max_runs=3)
 def test_json():
-    url_json = ["https://labs.waterdata.usgs.gov/api/nldi/linked-data/comid/position"]
-    req_json = [
+    urls = ["https://labs.waterdata.usgs.gov/api/nldi/linked-data/comid/position"]
+    kwds = [
         {
             "params": {
                 "f": "json",
@@ -54,16 +54,16 @@ def test_json():
             }
         }
     ]
-    r_j = ar.retrieve(url_json, "json", request_kwds=req_json)
+    r_j = ar.retrieve(urls, "json", request_kwds=kwds)
     assert r_j[0]["features"][0]["properties"]["identifier"] == "2675320"
 
 
 @pytest.mark.flaky(max_runs=3)
 def test_text():
-    url_text = ["https://waterservices.usgs.gov/nwis/site/"]
-    req_text = [{"params": {"format": "rdb", "sites": "01646500", "siteStatus": "all"}}]
+    base = "https://waterservices.usgs.gov/nwis/site/?"
+    urls = ["&".join([base, "format=rdb", "sites=01646500", "siteStatus=all"])]
 
-    r_t = ar.retrieve(url_text, "text", request_kwds=req_text)
+    r_t = ar.retrieve(urls, "text")
 
     assert r_t[0].split("\n")[-2].split("\t")[1] == "01646500"
 
