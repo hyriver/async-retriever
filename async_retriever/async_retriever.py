@@ -9,8 +9,6 @@ import orjson as json
 
 from .exceptions import InvalidInputValue
 
-nest_asyncio.apply()
-
 
 async def _request_binary(
     url: str,
@@ -188,8 +186,12 @@ def retrieve(
         url_kwds = zip(urls, request_kwds)
     chunked_urls = tlz.partition_all(max_workers, url_kwds)
 
+    loop = asyncio.new_event_loop()
+    nest_asyncio.apply(loop)
+
+    asyncio.set_event_loop(loop)
+
     results = (
-        asyncio.get_event_loop().run_until_complete(_async_session(c, read, request, cache_name))
-        for c in chunked_urls
+        loop.run_until_complete(_async_session(c, read, request, cache_name)) for c in chunked_urls
     )
     return list(tlz.concat(results))
