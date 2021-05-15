@@ -75,6 +75,10 @@ using `Conda <https://docs.conda.io/en/latest/>`__:
 Quick start
 -----------
 
+There are two functions that we can use; ``create_cachefile`` for creating a cache file
+in the system's default cache directory (if dependencies are met) and ``retrieve`` for
+getting the target data. Let's see them in action!
+
 As an example for retrieving a binary response, let's use DAAC server to get
 `NDVI <https://daac.ornl.gov/VEGETATION/guides/US_MODIS_NDVI.html>`_.
 The function can be directly passed to ``xarray.open_mfdataset``
@@ -160,7 +164,8 @@ for a single request, so we have to break the request accordingly.
         ]
     )
 
-    resp = ar.retrieve(urls, read="json", request_kwds=kwds, cache_name="~/.cache/noaa.db")
+    cache_name = ar.create_cachefile("aiohttp_cache")
+    resp = ar.retrieve(urls, read="json", request_kwds=kwds, cache_name=cache_name)
     wl_list = []
     for rjson in resp:
         wl = pd.DataFrame.from_dict(rjson["data"])
@@ -192,7 +197,7 @@ harmonic constituents from CO-OPS:
 
     base_url = "https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations"
     urls = [f"{base_url}/{i}/harcon.json?units=metric" for i in stations]
-    resp = ar.retrieve(urls, "json", cache_name="~/.cache/noaa.db")
+    resp = ar.retrieve(urls, "json", cache_name=cache_name)
 
     amp_list = []
     phs_list = []
