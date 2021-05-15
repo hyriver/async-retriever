@@ -38,8 +38,8 @@ def test_binary():
             for s, e in dates_itr
         ]
     )
-    with tempfile.NamedTemporaryFile() as cache:
-        r_b = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache.name)
+    cache_name = ar.create_cachefile()
+    r_b = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache_name)
     assert sys.getsizeof(r_b[0]) == 986161
 
 

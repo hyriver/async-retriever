@@ -1,5 +1,8 @@
 """Core async functions."""
 import asyncio
+import sys
+import tempfile
+from pathlib import Path
 from typing import Any, Callable, Dict, List, MutableMapping, Optional, Tuple, Union
 
 import aiohttp
@@ -8,6 +11,21 @@ import nest_asyncio
 import orjson as json
 
 from .exceptions import InvalidInputValue
+
+EXPIRE = 24 * 60 * 60
+
+
+def create_cachefile(db_name: str = "aiohttp_cache") -> Optional[Path]:
+    """Create a cache file if dependecies are met."""
+    try:
+        import aiohttp_client_cache  # noqa: F401
+
+        if sys.platform.startswith("win"):
+            return Path(tempfile.gettempdir(), f"{db_name}.sqlite")
+
+        return Path(f"~/.cache/{db_name}.sqlite")
+    except ImportError:
+        return None
 
 
 async def _request_binary(
@@ -123,7 +141,7 @@ async def _async_session(
 
         cache = SQLiteBackend(
             cache_name=cache_name,
-            expire_after=24 * 60 * 60,
+            expire_after=EXPIRE,
             allowed_methods=("GET", "POST"),
             timeout=2.5,
         )
@@ -191,7 +209,21 @@ def retrieve(
 
     asyncio.set_event_loop(loop)
 
+    if cache_name is not None:
+        try:
+            from aiohttp_client_cache import SQLiteBackend
+
+            SQLiteBackend(
+                cache_name=cache_name,
+                expire_after=EXPIRE,
+                allowed_methods=("GET", "POST"),
+                timeout=2.5,
+            ).delete_expired_responses()
+        except ImportError:
+            pass
+
     results = (
         loop.run_until_complete(_async_session(c, read, request, cache_name)) for c in chunked_urls
     )
+
     return list(tlz.concat(results))
