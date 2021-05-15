@@ -145,6 +145,7 @@ async def _async_session(
             allowed_methods=("GET", "POST"),
             timeout=2.5,
         )
+
         kwds = {"json_serialize": json.dumps, "cache": cache}
         client_session = CachedSession
 
@@ -161,13 +162,23 @@ async def _async_session(
         return await asyncio.gather(*tasks, return_exceptions=True)  # type: ignore
 
 
+async def _clean_cache(cache_name: Union[Path, str]) -> None:
+    try:
+        from aiohttp_client_cache import CacheBackend
+
+        cache = CacheBackend(cache_name=cache_name)
+        await cache.delete_expired_responses()
+    except ImportError:
+        pass
+
+
 def retrieve(
     urls: Tuple[str, ...],
     read: str,
     request_kwds: Optional[Tuple[MutableMapping[str, Any], ...]] = None,
     request: str = "GET",
     max_workers: int = 8,
-    cache_name: Optional[str] = None,
+    cache_name: Optional[Union[Path, str]] = None,
 ) -> List[Union[str, MutableMapping[str, Any], bytes]]:
     """Send async requests.
 
@@ -209,21 +220,11 @@ def retrieve(
 
     asyncio.set_event_loop(loop)
 
-    if cache_name is not None:
-        try:
-            from aiohttp_client_cache import SQLiteBackend
-
-            SQLiteBackend(
-                cache_name=cache_name,
-                expire_after=EXPIRE,
-                allowed_methods=("GET", "POST"),
-                timeout=2.5,
-            ).delete_expired_responses()
-        except ImportError:
-            pass
-
     results = (
         loop.run_until_complete(_async_session(c, read, request, cache_name)) for c in chunked_urls
     )
+
+    if cache_name is not None:
+        asyncio.run(_clean_cache(cache_name))
 
     return list(tlz.concat(results))
