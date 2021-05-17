@@ -8,7 +8,7 @@ dependencies:
   - aiohttp-client-cache
   - aiosqlite
   - brotlipy
-  - chardet
+  - cchardet
   - cytoolz
   - nest-asyncio
   - orjson

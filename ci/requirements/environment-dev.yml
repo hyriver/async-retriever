@@ -10,7 +10,7 @@ dependencies:
   - aiohttp
   - aiosqlite
   - brotlipy
-  - chardet
+  - cchardet
   - cytoolz
   - nest-asyncio
   - orjson
