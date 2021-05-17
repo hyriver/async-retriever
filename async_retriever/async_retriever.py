@@ -3,7 +3,7 @@ import asyncio
 import sys
 import tempfile
 from pathlib import Path
-from typing import Any, Callable, Dict, List, MutableMapping, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import aiohttp
 import cytoolz as tlz
@@ -31,7 +31,7 @@ def create_cachefile(db_name: str = "aiohttp_cache") -> Optional[Path]:
 async def _request_binary(
     url: str,
     session_req: aiohttp.ClientSession,
-    **kwds: Dict[str, Optional[MutableMapping[str, Any]]],
+    **kwds: Dict[str, Optional[Dict[str, Any]]],
 ) -> bytes:
     """Create an async request and return the response as binary.
 
@@ -56,8 +56,8 @@ async def _request_binary(
 async def _request_json(
     url: str,
     session_req: aiohttp.ClientSession,
-    **kwds: Dict[str, Optional[MutableMapping[str, Any]]],
-) -> MutableMapping[str, Any]:
+    **kwds: Dict[str, Optional[Dict[str, Any]]],
+) -> Dict[str, Any]:
     """Create an async request and return the response as json.
 
     Parameters
@@ -81,7 +81,7 @@ async def _request_json(
 async def _request_text(
     url: str,
     session_req: aiohttp.ClientSession,
-    **kwds: Dict[str, Optional[MutableMapping[str, Any]]],
+    **kwds: Dict[str, Optional[Dict[str, Any]]],
 ) -> str:
     """Create an async request and return the response as a string.
 
@@ -104,10 +104,10 @@ async def _request_text(
 
 
 async def _async_session(
-    url_kwds: Tuple[Tuple[str, MutableMapping[str, Any]], ...],
+    url_kwds: Tuple[Tuple[str, Dict[str, Any]], ...],
     read: str,
     request: str,
-    cache_name: Optional[str],
+    cache_name: Optional[Union[Path, str]],
 ) -> Callable:
     """Create an async session for sending requests.
 
@@ -175,11 +175,11 @@ async def _clean_cache(cache_name: Union[Path, str]) -> None:
 def retrieve(
     urls: Tuple[str, ...],
     read: str,
-    request_kwds: Optional[Tuple[MutableMapping[str, Any], ...]] = None,
+    request_kwds: Optional[Iterable[Dict[str, Any]]] = None,
     request: str = "GET",
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
-) -> List[Union[str, MutableMapping[str, Any], bytes]]:
+) -> List[Union[str, Dict[str, Any], bytes]]:
     """Send async requests.
 
     This function is based on
