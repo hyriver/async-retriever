@@ -16,7 +16,7 @@ EXPIRE = 24 * 60 * 60
 
 
 def create_cachefile(db_name: str = "aiohttp_cache") -> Optional[Path]:
-    """Create a cache file if dependecies are met."""
+    """Create a cache file if dependencies are met."""
     try:
         import aiohttp_client_cache  # noqa: F401
 
