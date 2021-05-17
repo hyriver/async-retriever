@@ -47,7 +47,7 @@ Features
 AsyncRetriever has only one purpose; asynchronously sending requests and retrieving
 responses as text, binary, or json objects. At the expense of two additional dependencies,
 ``aiohttp_client_cache`` and ``aiosqlite``, it uses persistent caching to speedup the
-retrieval even further.
+retrieval even further which we highly recommend.
 
 Please note that since this project is in early development stages, while the provided
 functionalities should be stable, changes in APIs are possible in new releases. But we
@@ -63,7 +63,7 @@ You can install ``async_retriever`` using ``pip``:
 
 .. code-block:: console
 
-    $ pip install async_retriever
+    $ pip install async_retriever[cache]
 
 Alternatively, ``async_retriever`` can be installed from the ``conda-forge`` repository
 using `Conda <https://docs.conda.io/en/latest/>`__:
@@ -86,6 +86,7 @@ to get the data as an xarray Dataset.
 
 .. code-block:: python
 
+    import io
     import xarray as xr
     import async_retriever as ar
     from datetime import datetime
@@ -117,7 +118,8 @@ to get the data as an xarray Dataset.
             for s, e in dates_itr
         ]
     )
-    data = xr.open_mfdataset(ar.retrieve(urls, "binary", request_kwds=kwds, max_workers=8))
+    resp = ar.retrieve(urls, "binary", request_kwds=kwds, max_workers=8)
+    data = xr.open_mfdataset(io.BytesIO(r) for r in resp)
 
 .. image:: https://raw.githubusercontent.com/cheginit/HyRiver-examples/main/notebooks/_static/ndvi.png
     :target: https://github.com/cheginit/HyRiver-examples/blob/main/notebooks/async.ipunb
