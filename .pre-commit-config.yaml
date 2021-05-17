@@ -1,6 +1,6 @@
 repos:
   - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.0.1
     hooks:
     - id: trailing-whitespace
     - id: requirements-txt-fixer
@@ -27,7 +27,7 @@ repos:
       name: Sort imports with isort
 
   - repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 21.5b1
     hooks:
     - id: black
       name: Autoformat with black
@@ -62,15 +62,21 @@ repos:
     - id: darglint
       name: Lint docstrings with Darglint
 
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.0.0
+    hooks:
+    - id: codespell
+      name: Checks for common misspellings in text files.
+
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.11.0
+    rev: v2.16.0
     hooks:
     - id: pyupgrade
       name: Upgrade synax to python 3.6+ with pyupgrade
       args: [--py36-plus]
 
   - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.0
+    rev: 3.9.2
     hooks:
     - id: flake8
       name: Linting with flake8
@@ -82,12 +88,12 @@ repos:
     - id: mypy
       name: Static type checking with mypy
       exclude: tests
-      files: pynhd
+      files: async_retriever
 
   - repo: https://github.com/PyCQA/bandit
     rev: 1.7.0
     hooks:
     - id: bandit
       name: Check for security issues with bandit
-      args: [-lll, --recursive, pynhd]
+      args: [-lll, --recursive, async_retriever]
       files: .py$
