@@ -9,6 +9,7 @@ import aiohttp
 import cytoolz as tlz
 import nest_asyncio
 import orjson as json
+from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
 
 from .exceptions import InvalidInputValue
 
@@ -17,15 +18,10 @@ EXPIRE = 24 * 60 * 60
 
 def create_cachefile(db_name: str = "aiohttp_cache") -> Optional[Path]:
     """Create a cache file if dependencies are met."""
-    try:
-        import aiohttp_client_cache  # noqa: F401
+    if sys.platform.startswith("win"):
+        return Path(tempfile.gettempdir(), f"{db_name}.sqlite")
 
-        if sys.platform.startswith("win"):
-            return Path(tempfile.gettempdir(), f"{db_name}.sqlite")
-
-        return Path(f"~/.cache/{db_name}.sqlite")
-    except ImportError:
-        return None
+    return Path(f"~/.cache/{db_name}.sqlite")
 
 
 async def _request_binary(
@@ -129,27 +125,14 @@ async def _async_session(
     asyncio.gather
         An async gather function
     """
-    if cache_name is None:
-        client_session = aiohttp.ClientSession
-        kwds = {"json_serialize": json.dumps}
-    else:
-        try:
-            from aiohttp_client_cache import CachedSession, SQLiteBackend
-        except ImportError:
-            msg = "For using cache you need to install aiohttp_client_cache and aiosqlite."
-            raise ImportError(msg)
+    cache = SQLiteBackend(
+        cache_name=cache_name,
+        expire_after=EXPIRE,
+        allowed_methods=("GET", "POST"),
+        timeout=2.5,
+    )
 
-        cache = SQLiteBackend(
-            cache_name=cache_name,
-            expire_after=EXPIRE,
-            allowed_methods=("GET", "POST"),
-            timeout=2.5,
-        )
-
-        kwds = {"json_serialize": json.dumps, "cache": cache}
-        client_session = CachedSession
-
-    async with client_session(**kwds) as session:
+    async with CachedSession(json_serialize=json.dumps, cache=cache) as session:
         read_method = {"binary": _request_binary, "json": _request_json, "text": _request_text}
         if read not in read_method:
             raise InvalidInputValue("read", list(read_method.keys()))
@@ -163,13 +146,9 @@ async def _async_session(
 
 
 async def _clean_cache(cache_name: Union[Path, str]) -> None:
-    try:
-        from aiohttp_client_cache import CacheBackend
-
-        cache = CacheBackend(cache_name=cache_name)
-        await cache.delete_expired_responses()
-    except ImportError:
-        pass
+    """Remove expired responses from the cache file."""
+    cache = CacheBackend(cache_name=cache_name)
+    await cache.delete_expired_responses()
 
 
 def retrieve(
@@ -213,6 +192,8 @@ def retrieve(
         url_kwds = zip(urls, len(urls) * [{"headers": None}])
     else:
         url_kwds = zip(urls, request_kwds)
+
+    cache_name = create_cachefile() if cache_name is None else cache_name
     chunked_urls = tlz.partition_all(max_workers, url_kwds)
 
     loop = asyncio.new_event_loop()
