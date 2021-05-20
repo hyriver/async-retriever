@@ -1,11 +1,11 @@
 """Core async functions."""
 import asyncio
+import inspect
 import sys
 import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
-import aiohttp
 import cytoolz as tlz
 import nest_asyncio
 import orjson as json
@@ -16,7 +16,7 @@ from .exceptions import InvalidInputType, InvalidInputValue
 EXPIRE = 24 * 60 * 60
 
 
-def create_cachefile(db_name: str = "aiohttp_cache") -> Optional[Path]:
+def _create_cachefile(db_name: str = "aiohttp_cache") -> Optional[Path]:
     """Create a cache file if dependencies are met."""
     if sys.platform.startswith("win"):
         return Path(tempfile.gettempdir(), f"{db_name}.sqlite")
@@ -26,7 +26,7 @@ def create_cachefile(db_name: str = "aiohttp_cache") -> Optional[Path]:
 
 async def _request_binary(
     url: str,
-    session_req: aiohttp.ClientSession,
+    session_req: CachedSession,
     **kwds: Dict[str, Optional[Dict[str, Any]]],
 ) -> bytes:
     """Create an async request and return the response as binary.
@@ -51,7 +51,7 @@ async def _request_binary(
 
 async def _request_json(
     url: str,
-    session_req: aiohttp.ClientSession,
+    session_req: CachedSession,
     **kwds: Dict[str, Optional[Dict[str, Any]]],
 ) -> Dict[str, Any]:
     """Create an async request and return the response as json.
@@ -76,7 +76,7 @@ async def _request_json(
 
 async def _request_text(
     url: str,
-    session_req: aiohttp.ClientSession,
+    session_req: CachedSession,
     **kwds: Dict[str, Optional[Dict[str, Any]]],
 ) -> str:
     """Create an async request and return the response as a string.
@@ -141,7 +141,7 @@ async def _async_session(
         if request not in request_method:
             raise InvalidInputValue("method", list(request_method.keys()))
 
-        tasks = (read_method[read](u, request_method[request], **args) for u, args in url_kwds)
+        tasks = (read_method[read](u, request_method[request], **kwds) for u, kwds in url_kwds)
         return await asyncio.gather(*tasks, return_exceptions=True)  # type: ignore
 
 
@@ -179,9 +179,9 @@ def retrieve(
     max_workers : int, optional
         The maximum number of async processes, defaults to 8.
     cache_name : str, optional
-        Path to a file for caching the session, default to None (no caching).
-        Using caching can significantly speed up the function at the expense of
-        two additional dependencies: ``aiohttp_client_cache`` and ``aiosqlite``.
+        Path to a file for caching the session, default to None which uses a file
+        called aiohttp_cache.sqlite under the systems' cache directory: ~/.cache
+        for Linux and MacOS, and %Temp% for Windows.
 
     Returns
     -------
@@ -209,9 +209,14 @@ def retrieve(
         if len(urls) != len(request_kwds):
             raise ValueError("``urls`` and ``request_kwds`` must have the same size.")
 
+        session_kwds = inspect.signature(CachedSession._request).parameters.keys()
+        not_found = [p for kwds in request_kwds for p in kwds if p not in session_kwds]
+        if len(not_found) > 0:
+            raise InvalidInputValue("request_kwds", list(session_kwds))
+
         url_kwds = zip(urls, request_kwds)
 
-    cache_name = create_cachefile() if cache_name is None else cache_name
+    cache_name = _create_cachefile() if cache_name is None else cache_name
     chunked_urls = tlz.partition_all(max_workers, url_kwds)
 
     loop = asyncio.new_event_loop()
