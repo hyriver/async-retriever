@@ -1,7 +1,7 @@
 """Tests for exceptions and requests"""
 import pytest
 
-from async_retriever import InvalidInputValue
+from async_retriever import InvalidInputValue, InvalidInputType
 
 
 def invalid_value():
@@ -11,3 +11,12 @@ def invalid_value():
 def test_invalid_value():
     with pytest.raises(InvalidInputValue):
         invalid_value()
+
+
+def invalid_type():
+    raise InvalidInputType("``urls``", "iterable of str")
+
+
+def test_invalid_type():
+    with pytest.raises(InvalidInputType):
+        invalid_type()

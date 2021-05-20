@@ -2,6 +2,7 @@
 import io
 import sys
 import tempfile
+from pathlib import Path
 from datetime import datetime
 
 import pytest
@@ -38,7 +39,11 @@ def test_binary():
             for s, e in dates_itr
         ]
     )
-    cache_name = ar.create_cachefile()
+
+    if sys.platform.startswith("win"):
+        return Path(tempfile.gettempdir(), "aiohttp_cache.sqlite")
+
+    cache_name = Path("~/.cache/aiohttp_cache.sqlite")
     r_b = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache_name)
     assert sys.getsizeof(r_b[0]) == 986161
 
