@@ -190,6 +190,7 @@ def retrieve(
 
     Examples
     --------
+    >>> import async_retriever as ar
     >>> stations = ["01646500", "08072300", "11073495"]
     >>> base = "https://waterservices.usgs.gov/nwis/site"
     >>> urls, kwds = zip(
@@ -197,8 +198,10 @@ def retrieve(
     ...         (base, {"params": {"format": "rdb", "sites": s, "siteStatus": "all"}})
     ...         for s in stations
     ...     ]
-    )
+    ... )
     >>> resp = ar.retrieve(urls, "text", request_kwds=kwds)
+    >>> resp[0].split('\\n')[-2].split('\\t')[1]
+    '01646500'
     """
     if not isinstance(urls, Iterable):
         raise InvalidInputType("``urls``", "iterable of str")
