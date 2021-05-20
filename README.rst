@@ -45,8 +45,9 @@ Features
 --------
 
 AsyncRetriever has only one purpose; asynchronously sending requests and retrieving
-responses as text, binary, or json objects. It uses persistent caching to speedup the
-retrieval even further.
+responses as ``text``, ``binary``, or ``json`` objects. It uses persistent caching to speedup the
+retrieval even further. Moreover, thanks to [``nest_asyncio``](https://github.com/erdewit/nest_asyncio)
+you can use this function in Jupyter notebooks as well.
 
 Please note that since this project is in early development stages, while the provided
 functionalities should be stable, changes in APIs are possible in new releases. But we
@@ -74,14 +75,15 @@ using `Conda <https://docs.conda.io/en/latest/>`__:
 Quick start
 -----------
 
-There are two functions that we can use; ``create_cachefile`` for creating a cache file
-in the system's default cache directory (if dependencies are met) and ``retrieve`` for
-getting the target data. Let's see them in action!
+AsyncRetriever has one public function: ``retrieve``. By default, this function uses
+``~/.cache/aiohttp_cache.sqlite`` (Linux and MacOS) or ``%Temp%\aiohttp_cache.sqlite``
+(Windows) as the cache file. You can use ``cache_name`` to customize it.
+Now, let's see it in action!
 
-As an example for retrieving a binary response, let's use DAAC server to get
+As an example for retrieving a ``binary`` response, let's use the DAAC server to get
 `NDVI <https://daac.ornl.gov/VEGETATION/guides/US_MODIS_NDVI.html>`_.
-The function can be directly passed to ``xarray.open_mfdataset``
-to get the data as an xarray Dataset.
+The function can be directly passed to ``xarray.open_mfdataset`` to get the data as
+an xarray Dataset.
 
 .. code-block:: python
 
@@ -123,9 +125,9 @@ to get the data as an xarray Dataset.
 .. image:: https://raw.githubusercontent.com/cheginit/HyRiver-examples/main/notebooks/_static/ndvi.png
     :target: https://github.com/cheginit/HyRiver-examples/blob/main/notebooks/async.ipunb
 
-For a json response example, let's get water level recordings of a NOAA's water level station,
+For a ``json`` response example, let's get water level recordings of a NOAA's water level station,
 8534720 (Atlantic City, NJ), during 2012, using CO-OPS API. Note that this CO-OPS product has a 31-day
-for a single request, so we have to break the request accordingly.
+limit for a single request, so we have to break down the request accordingly.
 
 .. code-block:: python
 
@@ -165,8 +167,7 @@ for a single request, so we have to break the request accordingly.
         ]
     )
 
-    cache_name = ar.create_cachefile("aiohttp_cache")
-    resp = ar.retrieve(urls, read="json", request_kwds=kwds, cache_name=cache_name)
+    resp = ar.retrieve(urls, read="json", request_kwds=kwds, cache_name="~/.cache/asyn.sqlite")
     wl_list = []
     for rjson in resp:
         wl = pd.DataFrame.from_dict(rjson["data"])
@@ -198,7 +199,7 @@ harmonic constituents from CO-OPS:
 
     base_url = "https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations"
     urls = [f"{base_url}/{i}/harcon.json?units=metric" for i in stations]
-    resp = ar.retrieve(urls, "json", cache_name=cache_name)
+    resp = ar.retrieve(urls, "json")
 
     amp_list = []
     phs_list = []
