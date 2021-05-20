@@ -86,19 +86,14 @@ def show_versions(file: IO = sys.stdout) -> None:
         ("aiohttp", lambda mod: mod.__version__),
         ("cytoolz", lambda mod: mod.__version__),
         ("nest-asyncio", lambda mod: mod.__version__),
-        # optionals
         ("aiohttp-client-cache", lambda mod: mod.__version__),
         ("aiosqlite", lambda mod: mod.__version__),
-        ("requests_cache", lambda mod: mod.__version__),
         # setup/test
         ("setuptools", lambda mod: mod.__version__),
         ("pip", lambda mod: mod.__version__),
         ("conda", lambda mod: mod.__version__),
         ("mamba", lambda mod: mod.__version__),
         ("pytest", lambda mod: mod.__version__),
-        # Misc.
-        ("IPython", lambda mod: mod.__version__),
-        ("sphinx", lambda mod: mod.__version__),
     ]
 
     deps_blob: List[Tuple[str, Optional[str]]] = []
