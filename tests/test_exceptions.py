@@ -1,7 +1,7 @@
 """Tests for exceptions and requests"""
 import pytest
 
-from async_retriever import InvalidInputValue, InvalidInputType
+from async_retriever import InvalidInputType, InvalidInputValue
 
 
 def invalid_value():
