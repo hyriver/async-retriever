@@ -167,7 +167,7 @@ limit for a single request, so we have to break down the request accordingly.
         ]
     )
 
-    resp = ar.retrieve(urls, read="json", request_kwds=kwds, cache_name="~/.cache/asyn.sqlite")
+    resp = ar.retrieve(urls, read="json", request_kwds=kwds, cache_name="~/.cache/async.sqlite")
     wl_list = []
     for rjson in resp:
         wl = pd.DataFrame.from_dict(rjson["data"])
