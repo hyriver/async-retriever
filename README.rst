@@ -1,5 +1,5 @@
-AsyncRetriever: Asynchronous send/receive requests with caching
----------------------------------------------------------------
+AsyncRetriever: Asynchronous send/receive requests with persistent caching
+--------------------------------------------------------------------------
 
 .. image:: https://img.shields.io/pypi/v/async_retriever.svg
     :target: https://pypi.python.org/pypi/async_retriever
@@ -45,9 +45,8 @@ Features
 --------
 
 AsyncRetriever has only one purpose; asynchronously sending requests and retrieving
-responses as text, binary, or json objects. At the expense of two additional dependencies,
-``aiohttp_client_cache`` and ``aiosqlite``, it uses persistent caching to speedup the
-retrieval even further which we highly recommend.
+responses as text, binary, or json objects. It uses persistent caching to speedup the
+retrieval even further.
 
 Please note that since this project is in early development stages, while the provided
 functionalities should be stable, changes in APIs are possible in new releases. But we
@@ -63,7 +62,7 @@ You can install ``async_retriever`` using ``pip``:
 
 .. code-block:: console
 
-    $ pip install async_retriever[cache]
+    $ pip install async_retriever
 
 Alternatively, ``async_retriever`` can be installed from the ``conda-forge`` repository
 using `Conda <https://docs.conda.io/en/latest/>`__:
