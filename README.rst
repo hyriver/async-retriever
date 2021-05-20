@@ -46,7 +46,7 @@ Features
 
 AsyncRetriever has only one purpose; asynchronously sending requests and retrieving
 responses as ``text``, ``binary``, or ``json`` objects. It uses persistent caching to speedup the
-retrieval even further. Moreover, thanks to [``nest_asyncio``](https://github.com/erdewit/nest_asyncio)
+retrieval even further. Moreover, thanks to `nest_asyncio <https://github.com/erdewit/nest_asyncio>`__.
 you can use this function in Jupyter notebooks as well.
 
 Please note that since this project is in early development stages, while the provided
