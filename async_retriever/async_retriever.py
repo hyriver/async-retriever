@@ -11,7 +11,7 @@ import nest_asyncio
 import orjson as json
 from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
 
-from .exceptions import InvalidInputValue
+from .exceptions import InvalidInputType, InvalidInputValue
 
 EXPIRE = 24 * 60 * 60
 
@@ -152,9 +152,9 @@ async def _clean_cache(cache_name: Union[Path, str]) -> None:
 
 
 def retrieve(
-    urls: Tuple[str, ...],
+    urls: List[str],
     read: str,
-    request_kwds: Optional[Iterable[Dict[str, Any]]] = None,
+    request_kwds: Optional[List[Dict[str, Any]]] = None,
     request: str = "GET",
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
@@ -187,10 +187,28 @@ def retrieve(
     -------
     list
         A list of responses which are not in the order of input requests.
+
+    Examples
+    --------
+    >>> stations = ["01646500", "08072300", "11073495"]
+    >>> base = "https://waterservices.usgs.gov/nwis/site"
+    >>> urls, kwds = zip(
+    ...     *[
+    ...         (base, {"params": {"format": "rdb", "sites": s, "siteStatus": "all"}})
+    ...         for s in stations
+    ...     ]
+    )
+    >>> resp = ar.retrieve(urls, "text", request_kwds=kwds)
     """
+    if not isinstance(urls, Iterable):
+        raise InvalidInputType("``urls``", "iterable of str")
+
     if request_kwds is None:
         url_kwds = zip(urls, len(urls) * [{"headers": None}])
     else:
+        if len(urls) != len(request_kwds):
+            raise ValueError("``urls`` and ``request_kwds`` must have the same size.")
+
         url_kwds = zip(urls, request_kwds)
 
     cache_name = create_cachefile() if cache_name is None else cache_name

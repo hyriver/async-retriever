@@ -5,7 +5,7 @@ import sys
 from pkg_resources import DistributionNotFound, get_distribution
 
 from .async_retriever import create_cachefile, retrieve
-from .exceptions import InvalidInputValue
+from .exceptions import InvalidInputType, InvalidInputValue
 from .print_versions import show_versions
 
 try:
