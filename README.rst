@@ -1,5 +1,5 @@
-AsyncRetriever: Asynchronous send/receive requests with persistent caching
---------------------------------------------------------------------------
+AsyncRetriever: Asynchronous requests with persistent caching
+-------------------------------------------------------------
 
 .. image:: https://img.shields.io/pypi/v/async_retriever.svg
     :target: https://pypi.python.org/pypi/async_retriever
