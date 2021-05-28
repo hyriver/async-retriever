@@ -159,7 +159,7 @@ def retrieve(
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
 ) -> List[Union[str, Dict[str, Any], bytes]]:
-    """Send async requests.
+    r"""Send async requests.
 
     This function is based on
     `this <https://github.com/HydrologicEngineeringCenter/data-retrieval-scripts/blob/master/qpe_async_download.py>`__
