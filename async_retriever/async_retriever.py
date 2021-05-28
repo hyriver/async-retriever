@@ -200,7 +200,7 @@ def retrieve(
     ...     ]
     ... )
     >>> resp = ar.retrieve(urls, "text", request_kwds=kwds)
-    >>> resp[0].split('\\n')[-2].split('\\t')[1]
+    >>> resp[0].split('\n')[-2].split('\t')[1]
     '01646500'
     """
     if not isinstance(urls, Iterable):
