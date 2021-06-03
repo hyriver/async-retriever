@@ -39,8 +39,8 @@ and "help wanted" is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-async_retriever could always use more documentation, whether as part of the
-official async_retriever docs, in docstrings, or even on the web in blog posts,
+AsyncRetriever could always use more documentation, whether as part of the
+official AsyncRetriever docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
@@ -58,10 +58,10 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up async_retriever for local development.
+Ready to contribute? Here's how to set up AsyncRetriever for local development.
 
-1. Fork the async_retriever repo through the GitHub website.
-2. Clone your fork locally and add the main async_retriever as the upstream remote:
+1. Fork the AsyncRetriever repo through the GitHub website.
+2. Clone your fork locally and add the main AsyncRetriever as the upstream remote:
 
 .. code-block:: console
 
@@ -78,11 +78,10 @@ Ready to contribute? Here's how to set up async_retriever for local development.
     $ conda activate async_retriever-dev
     $ python -m pip install . --no-deps
 
-4. Check out the ``develop`` branch and create a branch for local development:
+4. Create a branch for local development:
 
 .. code-block:: console
 
-    $ git checkout develop
     $ git checkout -b bugfix-or-feature/name-of-your-bugfix-or-feature
     $ git push
 
@@ -103,17 +102,16 @@ Ready to contribute? Here's how to set up async_retriever for local development.
 .. code-block:: console
 
     $ git fetch upstream
-    $ git merge upstream/develop
+    $ git merge upstream/name-of-your-branch
 
 7. Then lint and test the code:
 
 .. code-block:: console
 
     $ make lint
-    $ make coverage
 
 8. If you are making breaking changes make sure to reflect them in
-   ``docs/usage.ipynb`` and ``docs/quickguide.ipynb`` notebooks if necessary.
+   the documentation, ``README.rst``, and tests if necessary.
 
 9. Commit your changes and push your branch to GitHub:
 
@@ -121,7 +119,7 @@ Ready to contribute? Here's how to set up async_retriever for local development.
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
-    $ git push origin name-of-your-bugfix-or-feature
+    $ git push origin name-of-your-branch
 
 10. Submit a pull request through the GitHub website.
 

@@ -76,14 +76,13 @@ Quick start
 -----------
 
 AsyncRetriever has one public function: ``retrieve``. By default, this function uses
-``~/.cache/aiohttp_cache.sqlite`` (Linux and MacOS) or ``%Temp%\aiohttp_cache.sqlite``
-(Windows) as the cache file. You can use ``cache_name`` to customize it.
-Now, let's see it in action!
+``./cache/aiohttp_cache.sqlite`` as the cache file. You can use ``cache_name`` argument
+to customize it. Now, let's see it in action!
 
 As an example for retrieving a ``binary`` response, let's use the DAAC server to get
 `NDVI <https://daac.ornl.gov/VEGETATION/guides/US_MODIS_NDVI.html>`_.
 The function can be directly passed to ``xarray.open_mfdataset`` to get the data as
-an xarray Dataset.
+an ``xarray`` Dataset.
 
 .. code-block:: python
 
@@ -127,7 +126,7 @@ an xarray Dataset.
 
 For a ``json`` response example, let's get water level recordings of a NOAA's water level station,
 8534720 (Atlantic City, NJ), during 2012, using CO-OPS API. Note that this CO-OPS product has a 31-day
-limit for a single request, so we have to break down the request accordingly.
+limit for a single request, so we have to break the request down accordingly.
 
 .. code-block:: python
 
@@ -182,7 +181,7 @@ limit for a single request, so we have to break down the request accordingly.
     :target: https://github.com/cheginit/HyRiver-examples/blob/main/notebooks/async.ipunb
 
 Now, let's see an example without any payload or headers. Here's how we can retrieve
-harmonic constituents from CO-OPS:
+harmonic constituents of several NOAA stations from CO-OPS:
 
 .. code-block:: python
 
