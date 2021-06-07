@@ -50,7 +50,7 @@ jobs:
       - name: Version info
         run: |-
           python -c "import async_retriever; async_retriever.show_versions()"
-      - name: Run pytest
+      - name: Run ward and coverage
         run: |-
           coverage run -m ward
           pytest
@@ -63,4 +63,3 @@ jobs:
           env_vars: OS,PYTHON
           name: codecov-umbrella
           fail_ci_if_error: false
-          verbose: true
