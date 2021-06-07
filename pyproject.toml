@@ -9,3 +9,12 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
 fallback_version = "999"
+
+[tool.ward]
+path = ["tests"]
+exclude = ["tests/.ipynb_checkpoints"]
+capture-output = true
+order = "random"
+output-mode = "test-per-line"  # or 'dots-global', 'dot-module'
+fail-limit = 20
+progress-style = ["bar"]

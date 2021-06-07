@@ -14,7 +14,26 @@ dependencies:
   - orjson
   - setuptools
 
+  - coverage
+  - toml
   - pytest
-  - pytest-cov
+  - pytest-clarity
+  - pytest-sugar
   - pytest-xdist
-  - flaky
+  - psutil
+  - markupsafe
+  - click>=8
+  - click-completion
+  - click-default-group
+  - colorama
+  - commonmark
+  - cucumber-tag-expressions=2
+  - jinja2
+  - pprintpp
+  - pygments
+  - rich
+  - shellingham
+
+  - pip
+  - pip:
+    - ward

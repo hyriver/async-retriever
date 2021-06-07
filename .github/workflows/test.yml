@@ -52,7 +52,9 @@ jobs:
           python -c "import async_retriever; async_retriever.show_versions()"
       - name: Run pytest
         run: |-
-          python -m pytest -n=auto --cov=async_retriever --cov-report xml
+          coverage run -m ward
+          pytest
+          coverage xml -i
       - name: Run codecov and upload the report
         uses: codecov/codecov-action@v1.5.0
         with:
