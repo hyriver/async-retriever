@@ -3,7 +3,7 @@ import asyncio
 import inspect
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 
 import cytoolz as tlz
 import nest_asyncio
@@ -163,8 +163,8 @@ def retrieve(
     >>> resp[0].split('\n')[-2].split('\t')[1]
     '01646500'
     """
-    if not isinstance(urls, Iterable):
-        raise InvalidInputType("``urls``", "iterable of str")
+    if not isinstance(urls, (list, tuple)):
+        raise InvalidInputType("``urls``", "list of str", "[url1, ...]")
 
     valid_methods = ["GET", "POST"]
     if request_method not in valid_methods:
@@ -183,7 +183,8 @@ def retrieve(
         session_kwds = inspect.signature(CachedSession._request).parameters.keys()
         not_found = [p for kwds in request_kwds for p in kwds if p not in session_kwds]
         if len(not_found) > 0:
-            raise InvalidInputValue("request_kwds", list(session_kwds))
+            invalids = ", ".join(not_found)
+            raise InvalidInputValue(f"request_kwds ({invalids})", list(session_kwds))
 
         url_kwds = zip(urls, request_kwds)
 
