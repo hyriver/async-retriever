@@ -1,16 +1,15 @@
 """Tests for ar package."""
 import io
 import sys
-import tempfile
 from datetime import datetime
 from pathlib import Path
 
-import pytest
+import ward
 
 import async_retriever as ar
 
 
-@pytest.mark.flaky(max_runs=3)
+@ward.test("Binary response")
 def test_binary():
     west, south, east, north = (-69.77, 45.07, -69.31, 45.45)
     base_url = "https://thredds.daac.ornl.gov/thredds/ncss/ornldaac/1299"
@@ -46,7 +45,7 @@ def test_binary():
     assert sys.getsizeof(r_b[0]) == 986161
 
 
-@pytest.mark.flaky(max_runs=3)
+@ward.test("JSON response")
 def test_json():
     urls = ["https://labs.waterdata.usgs.gov/api/nldi/linked-data/comid/position"]
     kwds = [
@@ -61,7 +60,7 @@ def test_json():
     assert r_j[0]["features"][0]["properties"]["identifier"] == "2675320"
 
 
-@pytest.mark.flaky(max_runs=3)
+@ward.test("Text response")
 def test_text():
     base = "https://waterservices.usgs.gov/nwis/site/?"
     urls = ["&".join([base, "format=rdb", "sites=01646500", "siteStatus=all"])]
@@ -71,6 +70,7 @@ def test_text():
     assert r_t[0].split("\n")[-2].split("\t")[1] == "01646500"
 
 
+@ward.test("Show versions")
 def test_show_versions():
     f = io.StringIO()
     ar.show_versions(file=f)
