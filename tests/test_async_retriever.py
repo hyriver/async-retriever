@@ -70,6 +70,14 @@ def test_text():
     assert r_t[0].split("\n")[-2].split("\t")[1] == "01646500"
 
 
+@ward.test("Invalid response")
+def test_invalid_response():
+    urls = ["https://waterservices.usgs.gov/nwis/site"]
+    kwds = [{"params": {"format": "rdb", "sites": "xxx", "siteStatus": "all"}}]
+    r_t = ar.retrieve(urls, "text", request_kwds=kwds)
+    assert "syntactically incorrect" in r_t[0]
+
+
 @ward.test("Show versions")
 def test_show_versions():
     f = io.StringIO()
