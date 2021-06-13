@@ -137,7 +137,7 @@ def retrieve(
         List of requests keywords corresponding to input URLs (1 on 1 mapping), defaults to None.
         For example, ``[{"params": {...}, "headers": {...}}, ...]``.
     request_method : str, optional
-        Request type; ``GET`` or ``POST``. Defaults to ``GET``.
+        Request type; ``GET`` (``get``) or ``POST`` (``post``). Defaults to ``GET``.
     max_workers : int, optional
         Maximum number of async processes, defaults to 8.
     cache_name : str, optional
@@ -167,7 +167,7 @@ def retrieve(
         raise InvalidInputType("``urls``", "list of str", "[url1, ...]")
 
     valid_methods = ["GET", "POST"]
-    if request_method not in valid_methods:
+    if request_method.upper() not in valid_methods:
         raise InvalidInputValue("method", valid_methods)
 
     valid_reads = ["binary", "json", "text"]
@@ -195,7 +195,7 @@ def retrieve(
     cache_name = _create_cachefile() if cache_name is None else cache_name
     chunked_reqs = tlz.partition_all(max_workers, url_kwds)
     results = (
-        loop.run_until_complete(_async_session(c, read, request_method, cache_name))
+        loop.run_until_complete(_async_session(c, read, request_method.upper(), cache_name))
         for c in chunked_reqs
     )
 

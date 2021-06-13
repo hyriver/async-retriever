@@ -18,7 +18,7 @@ def url_kwds():
 def test_invalid_method(url_kwds=url_kwds):
     urls, kwds = url_kwds
     with raises(InvalidInputValue) as ex:
-        _ = ar.retrieve(urls, "text", request_kwds=kwds, request_method="get")
+        _ = ar.retrieve(urls, "text", request_kwds=kwds, request_method="getter")
     assert "GET" in str(ex.raised)
 
 
