@@ -9,8 +9,3 @@ def tests(session):
     session.run("pytest")
     session.run("coverage", "report")
     session.run("coverage", "html")
-
-
-@nox.session
-def lint(session):
-    session.run("pre-commit", "run", "--all-files", external=True)
