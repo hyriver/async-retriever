@@ -18,3 +18,9 @@ order = "random"
 output-mode = "test-per-line"  # or 'dots-global', 'dot-module'
 fail-limit = 20
 progress-style = ["bar"]
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules -n=auto -v --durations=5"
+testpaths = [
+    "async_retriever",
+]
