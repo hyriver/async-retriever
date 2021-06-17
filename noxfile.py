@@ -7,5 +7,6 @@ def tests(session):
     session.run("coverage", "erase")
     session.run("coverage", "run", "-m", "ward")
     session.run("pytest")
+    session.run("coverage", "xml", "-i")
     session.run("coverage", "report")
     session.run("coverage", "html")
