@@ -74,9 +74,8 @@ Ready to contribute? Here's how to set up AsyncRetriever for local development.
 .. code-block:: console
 
     $ cd async_retriever/
-    $ conda env create -f ci/requirements/environment.yml
+    $ conda env create -f ci/requirements/environment-dev.yml
     $ conda activate async_retriever-dev
-    $ python -m pip install . --no-deps
 
 4. Create a branch for local development:
 
@@ -104,11 +103,11 @@ Ready to contribute? Here's how to set up AsyncRetriever for local development.
     $ git fetch upstream
     $ git merge upstream/name-of-your-branch
 
-7. Then lint and test the code:
+7. Run the tests using ``nox``:
 
 .. code-block:: console
 
-    $ make lint
+    $ nox
 
 8. If you are making breaking changes make sure to reflect them in
    the documentation, ``README.rst``, and tests if necessary.
@@ -118,7 +117,7 @@ Ready to contribute? Here's how to set up AsyncRetriever for local development.
 .. code-block:: console
 
     $ git add .
-    $ git commit -m "Your detailed description of your changes."
+    $ git commit -m "Detailed description of your changes."
     $ git push origin name-of-your-branch
 
 10. Submit a pull request through the GitHub website.
@@ -136,7 +135,7 @@ Deploying
 ---------
 
 A reminder for the maintainers on how to deploy.
-Make sure all your changes are committed (including an entry in HISTORY.rst).
+Make sure all your changes are committed (including an entry in ``HISTORY.rst``).
 Then run:
 
 .. code-block:: console
