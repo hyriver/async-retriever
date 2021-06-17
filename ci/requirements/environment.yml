@@ -22,7 +22,7 @@ dependencies:
   - pytest-xdist
   - psutil
   - markupsafe
-  - click>=8
+  - click
   - click-completion
   - click-default-group
   - colorama
