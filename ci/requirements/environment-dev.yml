@@ -29,8 +29,8 @@ dependencies:
   - pytest-xdist
   - setuptools-scm
   - toml
-  - ward
 
   - pip
   - pip:
+    - ward
     - git+https://github.com/cheginit/async_retriever.git
