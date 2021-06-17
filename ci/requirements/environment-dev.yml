@@ -19,6 +19,7 @@ dependencies:
 
   # dev deps
   - codespell
+  - coverage
   - nox
   - pre-commit
   - psutil
@@ -27,6 +28,7 @@ dependencies:
   - pytest-sugar
   - pytest-xdist
   - setuptools-scm
+  - toml
   - ward
 
   - pip
