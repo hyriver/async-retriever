@@ -56,11 +56,10 @@ jobs:
           pytest
           coverage xml -i
       - name: Run codecov and upload the report
-        uses: codecov/codecov-action@master
+        uses: codecov/codecov-action@1.5.2
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           flags: unittests
-          env_vars: OS,PYTHON
+          env_vars: RUNNER_OS,PYTHON_VERSION
           name: codecov-umbrella
           fail_ci_if_error: false
