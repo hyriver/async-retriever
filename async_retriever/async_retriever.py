@@ -29,6 +29,8 @@ class AsyncRequest:
 
     Parameters
     ----------
+    url_id : int
+        ID of the URL for sorting after returning the results
     url : str
         URL to be retrieved
     session_req : ClientSession
@@ -37,11 +39,12 @@ class AsyncRequest:
         Arguments to be passed to requests
     """
 
+    url_id: int
     url: StrOrURL
     session_req: CachedSession
     kwds: Dict[str, Optional[Dict[str, Any]]]
 
-    async def binary(self) -> bytes:
+    async def binary(self) -> Tuple[int, Awaitable[bytes]]:
         """Create an async request and return the response as binary.
 
         Returns
@@ -50,9 +53,9 @@ class AsyncRequest:
             The retrieved response as binary.
         """
         async with self.session_req(self.url, **self.kwds) as response:
-            return await response.read()
+            return self.url_id, await response.read()
 
-    async def json(self) -> Dict[str, Any]:
+    async def json(self) -> Tuple[int, Awaitable[Dict[str, Any]]]:
         """Create an async request and return the response as json.
 
         Returns
@@ -61,9 +64,9 @@ class AsyncRequest:
             The retrieved response as json.
         """
         async with self.session_req(self.url, **self.kwds) as response:
-            return await response.json()
+            return self.url_id, await response.json()
 
-    async def text(self) -> str:
+    async def text(self) -> Tuple[int, Awaitable[str]]:
         """Create an async request and return the response as a string.
 
         Returns
@@ -72,11 +75,11 @@ class AsyncRequest:
             The retrieved response as string.
         """
         async with self.session_req(self.url, **self.kwds) as response:
-            return await response.text()
+            return self.url_id, await response.text()
 
 
 async def async_session(
-    url_kwds: Tuple[Tuple[StrOrURL, Dict[StrOrURL, Any]], ...],
+    url_kwds: Tuple[Tuple[int, StrOrURL, Dict[StrOrURL, Any]], ...],
     read: str,
     request_method: str,
     cache_name: Union[Path, str],
@@ -109,7 +112,9 @@ async def async_session(
 
     async with CachedSession(json_serialize=json.dumps, cache=cache) as session:
         request_func = getattr(session, request_method.lower())
-        tasks = (getattr(AsyncRequest(u, request_func, kwds), read)() for u, kwds in url_kwds)
+        tasks = (
+            getattr(AsyncRequest(uid, u, request_func, kwds), read)() for uid, u, kwds in url_kwds
+        )
         return await asyncio.gather(*tasks, return_exceptions=True)
 
 
@@ -148,7 +153,7 @@ def retrieve(
     Returns
     -------
     list
-        List of responses which are not necessarily in the order of input requests.
+        List of responses in the order of input URLs.
 
     Examples
     --------
@@ -177,7 +182,7 @@ def retrieve(
         raise InvalidInputValue("read", valid_reads)
 
     if request_kwds is None:
-        url_kwds = zip(urls, len(urls) * [{"headers": None}])
+        url_kwds = zip(range(len(urls)), urls, len(urls) * [{"headers": None}])
     else:
         if len(urls) != len(request_kwds):
             raise ValueError("``urls`` and ``request_kwds`` must have the same size.")
@@ -188,7 +193,7 @@ def retrieve(
             invalids = ", ".join(not_found)
             raise InvalidInputValue(f"request_kwds ({invalids})", list(session_kwds))
 
-        url_kwds = zip(urls, request_kwds)
+        url_kwds = zip(range(len(urls)), urls, request_kwds)
 
     loop = asyncio.new_event_loop()
     nest_asyncio.apply(loop)
@@ -203,4 +208,4 @@ def retrieve(
 
     asyncio.run(clean_cache(cache_name))
 
-    return list(tlz.concat(results))
+    return [r for _, r in sorted(tlz.concat(results))]
