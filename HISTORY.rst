@@ -2,6 +2,13 @@
 History
 =======
 
+0.2.1 (unreleased)
+------------------
+
+New Features
+~~~~~~~~~~~~
+- The responses now are returned in the same order as the input URLs.
+
 0.2.0 (2021-06-17)
 ------------------
 
