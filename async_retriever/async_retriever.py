@@ -8,14 +8,16 @@ from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 import cytoolz as tlz
 import nest_asyncio
 import orjson as json
+from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
 
 from .exceptions import InvalidInputType, InvalidInputValue
 
-EXPIRE = 24 * 60 * 60
+_EXPIRE = 24 * 60 * 60
+__all__ = ["retrieve"]
 
 
-def _create_cachefile(db_name: str = "aiohttp_cache") -> Path:
+def create_cachefile(db_name: str = "aiohttp_cache") -> Path:
     """Create a cache folder in the current working directory."""
     Path("cache").mkdir(exist_ok=True)
     return Path("cache", f"{db_name}.sqlite")
@@ -35,7 +37,7 @@ class AsyncRequest:
         Arguments to be passed to requests
     """
 
-    url: str
+    url: StrOrURL
     session_req: CachedSession
     kwds: Dict[str, Optional[Dict[str, Any]]]
 
@@ -73,8 +75,8 @@ class AsyncRequest:
             return await response.text()
 
 
-async def _async_session(
-    url_kwds: Tuple[Tuple[str, Dict[str, Any]], ...],
+async def async_session(
+    url_kwds: Tuple[Tuple[StrOrURL, Dict[StrOrURL, Any]], ...],
     read: str,
     request_method: str,
     cache_name: Union[Path, str],
@@ -100,7 +102,7 @@ async def _async_session(
     """
     cache = SQLiteBackend(
         cache_name=cache_name,
-        expire_after=EXPIRE,
+        expire_after=_EXPIRE,
         allowed_methods=("GET", "POST"),
         timeout=2.5,
     )
@@ -111,14 +113,14 @@ async def _async_session(
         return await asyncio.gather(*tasks, return_exceptions=True)
 
 
-async def _clean_cache(cache_name: Union[Path, str]) -> None:
+async def clean_cache(cache_name: Union[Path, str]) -> None:
     """Remove expired responses from the cache file."""
     cache = CacheBackend(cache_name=cache_name)
     await cache.delete_expired_responses()
 
 
 def retrieve(
-    urls: List[str],
+    urls: Union[StrOrURL, List[StrOrURL], Tuple[StrOrURL, ...]],
     read: str,
     request_kwds: Optional[List[Dict[str, Any]]] = None,
     request_method: str = "GET",
@@ -192,13 +194,13 @@ def retrieve(
     nest_asyncio.apply(loop)
     asyncio.set_event_loop(loop)
 
-    cache_name = _create_cachefile() if cache_name is None else cache_name
+    cache_name = create_cachefile() if cache_name is None else cache_name
     chunked_reqs = tlz.partition_all(max_workers, url_kwds)
     results = (
-        loop.run_until_complete(_async_session(c, read, request_method.upper(), cache_name))
+        loop.run_until_complete(async_session(c, read, request_method.upper(), cache_name))
         for c in chunked_reqs
     )
 
-    asyncio.run(_clean_cache(cache_name))
+    asyncio.run(clean_cache(cache_name))
 
     return list(tlz.concat(results))
