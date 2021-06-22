@@ -103,7 +103,9 @@ Ready to contribute? Here's how to set up AsyncRetriever for local development.
     $ git fetch upstream
     $ git merge upstream/name-of-your-branch
 
-7. Run the tests using ``nox``:
+7. Run the tests using ``nox``. Before running ``nox``, make sure that Python 3.9
+   is installed on your system. For example, on Ubuntu-based systems you can
+   install them using ``sudo apt install python3.9 python3.9-dev``:
 
 .. code-block:: console
 
