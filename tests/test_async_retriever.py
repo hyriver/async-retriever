@@ -70,6 +70,20 @@ def test_text():
     assert r_t[0].split("\n")[-2].split("\t")[1] == "01646500"
 
 
+@ward.test("Ordered return")
+def test_iordered_return():
+    stations = ["11073495", "08072300", "01646500"]
+    url = "https://waterservices.usgs.gov/nwis/site"
+    urls, kwds = zip(
+        *[
+            (url, {"params": {"format": "rdb", "sites": s, "siteStatus": "all"}})
+            for s in stations
+        ]
+    )
+    resp = ar.retrieve(urls, "text", request_kwds=kwds)
+    assert [r.split('\n')[-2].split('\t')[1] for r in resp] == stations
+
+
 @ward.test("Invalid response")
 def test_invalid_response():
     urls = ["https://waterservices.usgs.gov/nwis/site"]
