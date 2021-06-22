@@ -75,13 +75,10 @@ def test_iordered_return():
     stations = ["11073495", "08072300", "01646500"]
     url = "https://waterservices.usgs.gov/nwis/site"
     urls, kwds = zip(
-        *[
-            (url, {"params": {"format": "rdb", "sites": s, "siteStatus": "all"}})
-            for s in stations
-        ]
+        *((url, {"params": {"format": "rdb", "sites": s, "siteStatus": "all"}}) for s in stations)
     )
     resp = ar.retrieve(urls, "text", request_kwds=kwds)
-    assert [r.split('\n')[-2].split('\t')[1] for r in resp] == stations
+    assert [r.split("\n")[-2].split("\t")[1] for r in resp] == stations
 
 
 @ward.test("Invalid response")
