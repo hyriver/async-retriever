@@ -1,6 +1,7 @@
 """Core async functions."""
 import asyncio
 import inspect
+import socket
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
@@ -8,6 +9,8 @@ from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 import cytoolz as tlz
 import nest_asyncio
 import orjson as json
+from aiohttp import TCPConnector
+from aiohttp.client_exceptions import ContentTypeError
 from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
 
@@ -53,7 +56,10 @@ class AsyncRequest:
             The retrieved response as binary.
         """
         async with self.session_req(self.url, **self.kwds) as response:
-            return self.url_id, await response.read()
+            try:
+                return self.url_id, await response.read()
+            except ContentTypeError:
+                return self.url_id, await response.text()
 
     async def json(self) -> Tuple[int, Awaitable[Dict[str, Any]]]:
         """Create an async request and return the response as json.
@@ -64,7 +70,10 @@ class AsyncRequest:
             The retrieved response as json.
         """
         async with self.session_req(self.url, **self.kwds) as response:
-            return self.url_id, await response.json()
+            try:
+                return self.url_id, await response.json()
+            except ContentTypeError:
+                return self.url_id, await response.text()
 
     async def text(self) -> Tuple[int, Awaitable[str]]:
         """Create an async request and return the response as a string.
@@ -83,6 +92,7 @@ async def async_session(
     read: str,
     request_method: str,
     cache_name: Union[Path, str],
+    family: str = "both",
 ) -> Callable[..., Awaitable[Any]]:
     """Create an async session for sending requests.
 
@@ -97,6 +107,9 @@ async def async_session(
     cache_name : str, optional
         Path to a folder for caching the session, defaults to
         ``cache/aiohttp_cache.sqlite``.
+    family : str, optional
+        TCP socket family, defaults to both, i.e., IPv4 and IPv6. For IPv4
+        or IPv6 only pass ``ipv4`` or ``ipv6``, respectively.
 
     Returns
     -------
@@ -109,8 +122,15 @@ async def async_session(
         allowed_methods=("GET", "POST"),
         timeout=2.5,
     )
+    valid_family = {"both": 0, "ipv4": socket.AF_INET, "ipv6": socket.AF_INET6}
+    if family not in valid_family:
+        raise InvalidInputValue("family", list(valid_family.keys()))
 
-    async with CachedSession(json_serialize=json.dumps, cache=cache) as session:
+    connector = TCPConnector(family=valid_family[family])
+
+    async with CachedSession(
+        json_serialize=json.dumps, cache=cache, connector=connector
+    ) as session:
         request_func = getattr(session, request_method.lower())
         tasks = (
             getattr(AsyncRequest(uid, u, request_func, kwds), read)() for uid, u, kwds in url_kwds
@@ -131,6 +151,7 @@ def retrieve(
     request_method: str = "GET",
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
+    family: str = "both",
 ) -> List[Union[str, Dict[str, Any], bytes]]:
     r"""Send async requests.
 
@@ -149,6 +170,9 @@ def retrieve(
         Maximum number of async processes, defaults to 8.
     cache_name : str, optional
         Path to a folder for caching the session, defaults to ``cache/aiohttp_cache.sqlite``.
+    family : str, optional
+        TCP socket family, defaults to both, i.e., IPv4 and IPv6. For IPv4
+        or IPv6 only pass ``ipv4`` or ``ipv6``, respectively.
 
     Returns
     -------
@@ -202,7 +226,7 @@ def retrieve(
     cache_name = create_cachefile() if cache_name is None else cache_name
     chunked_reqs = tlz.partition_all(max_workers, url_kwds)
     results = (
-        loop.run_until_complete(async_session(c, read, request_method.upper(), cache_name))
+        loop.run_until_complete(async_session(c, read, request_method.upper(), cache_name, family))
         for c in chunked_reqs
     )
 
