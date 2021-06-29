@@ -8,6 +8,8 @@ History
 New Features
 ~~~~~~~~~~~~
 - The responses now are returned in the same order as the input URLs.
+- Add support for passing connection type, i.e., IPv4 only, IPv6, only
+  or both via ``family`` argument. Defaults to ``both``.
 
 0.2.0 (2021-06-17)
 ------------------
