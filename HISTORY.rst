@@ -11,6 +11,11 @@ New Features
 - Add support for passing connection type, i.e., IPv4 only, IPv6, only
   or both via ``family`` argument. Defaults to ``both``.
 
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Replace ``AsyncRequest`` class with ``_retrieve`` function to increase
+  readability and reduce overhead.
+
 0.2.0 (2021-06-17)
 ------------------
 
