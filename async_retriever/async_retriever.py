@@ -2,7 +2,6 @@
 import asyncio
 import inspect
 import socket
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 
@@ -26,65 +25,38 @@ def create_cachefile(db_name: str = "aiohttp_cache") -> Path:
     return Path("cache", f"{db_name}.sqlite")
 
 
-@dataclass
-class AsyncRequest:
-    """Async send/request.
+async def _retrieve(
+    uid: int,
+    url: StrOrURL,
+    session: CachedSession,
+    read_type: str,
+    kwds: Dict[str, Optional[Dict[str, Any]]],
+) -> Tuple[int, Awaitable[Union[str, bytes, Dict[str, Any]]]]:
+    """Create an async request and return the response as binary.
 
     Parameters
     ----------
-    url_id : int
+    uid : int
         ID of the URL for sorting after returning the results
     url : str
         URL to be retrieved
-    session_req : ClientSession
+    session : ClientSession
         A ClientSession for sending the request
+    read_type : str
+        Return response as text, bytes, or json.
     kwds: dict
         Arguments to be passed to requests
+
+    Returns
+    -------
+    bytes
+        The retrieved response as binary.
     """
-
-    url_id: int
-    url: StrOrURL
-    session_req: CachedSession
-    kwds: Dict[str, Optional[Dict[str, Any]]]
-
-    async def binary(self) -> Tuple[int, Awaitable[bytes]]:
-        """Create an async request and return the response as binary.
-
-        Returns
-        -------
-        bytes
-            The retrieved response as binary.
-        """
-        async with self.session_req(self.url, **self.kwds) as response:
-            try:
-                return self.url_id, await response.read()
-            except ContentTypeError:
-                return self.url_id, await response.text()
-
-    async def json(self) -> Tuple[int, Awaitable[Dict[str, Any]]]:
-        """Create an async request and return the response as json.
-
-        Returns
-        -------
-        dict
-            The retrieved response as json.
-        """
-        async with self.session_req(self.url, **self.kwds) as response:
-            try:
-                return self.url_id, await response.json()
-            except ContentTypeError:
-                return self.url_id, await response.text()
-
-    async def text(self) -> Tuple[int, Awaitable[str]]:
-        """Create an async request and return the response as a string.
-
-        Returns
-        -------
-        str
-            The retrieved response as string.
-        """
-        async with self.session_req(self.url, **self.kwds) as response:
-            return self.url_id, await response.text()
+    async with session(url, **kwds) as response:
+        try:
+            return uid, await getattr(response, read_type)()
+        except ContentTypeError:
+            return uid, await response.text()
 
 
 async def async_session(
@@ -101,7 +73,7 @@ async def async_session(
     url_kwds : list of tuples of urls and payloads
         A list of URLs or URLs with their payloads to be retrieved.
     read : str
-        The method for returning the request; binary, json, and text.
+        The method for returning the request; ``binary`` (bytes), ``json``, and ``text``.
     request_method : str
         The request type; GET or POST.
     cache_name : str, optional
@@ -128,13 +100,14 @@ async def async_session(
 
     connector = TCPConnector(family=valid_family[family])
 
+    if read == "binary":
+        read = "read"
+
     async with CachedSession(
         json_serialize=json.dumps, cache=cache, connector=connector
     ) as session:
         request_func = getattr(session, request_method.lower())
-        tasks = (
-            getattr(AsyncRequest(uid, u, request_func, kwds), read)() for uid, u, kwds in url_kwds
-        )
+        tasks = (_retrieve(uid, u, request_func, read, kwds) for uid, u, kwds in url_kwds)
         return await asyncio.gather(*tasks, return_exceptions=True)
 
 
