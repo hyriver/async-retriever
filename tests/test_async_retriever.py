@@ -71,7 +71,7 @@ def test_text():
 
 
 @ward.test("Ordered return")
-def test_iordered_return():
+def test_ordered_return():
     stations = ["11073495", "08072300", "01646500"]
     url = "https://waterservices.usgs.gov/nwis/site"
     urls, kwds = zip(
@@ -81,16 +81,28 @@ def test_iordered_return():
     assert [r.split("\n")[-2].split("\t")[1] for r in resp] == stations
 
 
-@ward.test("Invalid response")
-def test_invalid_response():
-    urls = ["https://waterservices.usgs.gov/nwis/site"]
-    kwds = [{"params": {"format": "rdb", "sites": "xxx", "siteStatus": "all"}}]
-    r_t = ar.retrieve(urls, "text", request_kwds=kwds)
-    assert "syntactically incorrect" in r_t[0]
-
-
 @ward.test("Show versions")
 def test_show_versions():
     f = io.StringIO()
     ar.show_versions(file=f)
     assert "INSTALLED VERSIONS" in f.getvalue()
+
+
+@ward.test("Server response error")
+def test_invalid_kwds():
+    urls = ["https://labs.waterdata.usgs.gov/geoserver/wmadata/ows"]
+    kwds = [
+        {
+            "params": {
+                "bbox": "-96.1,28.7,-95.9,28.5,epsg:4326",
+                "outputFormat": "application/json",
+                "request": "GetFeature",
+                "service": "wfs",
+                "srsName": "epsg:4269",
+                "typeName": "wmadata:nhdflowline_network",
+                "version": "2.0.0",
+            }
+        }
+    ]
+    r = ar.retrieve(urls, "json", request_kwds=kwds)
+    assert "illegal bbox" in r[0]

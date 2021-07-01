@@ -30,6 +30,14 @@ def test_invalid_read(url_kwds=url_kwds):
     assert "read" in str(ex.raised)
 
 
+@test("Invalid family")
+def test_invalid_family(url_kwds=url_kwds):
+    urls, kwds = url_kwds
+    with raises(InvalidInputValue) as ex:
+        _ = ar.retrieve(urls, "text", request_kwds=kwds, family="none")
+    assert "ipv4" in str(ex.raised)
+
+
 @test("Invalid url")
 def test_invalid_url(url_kwds=url_kwds):
     urls, kwds = url_kwds
