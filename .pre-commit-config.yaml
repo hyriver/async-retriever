@@ -75,6 +75,12 @@ repos:
       name: Upgrade synax to python 3.7+ with pyupgrade
       args: [--py37-plus]
 
+  # - repo: https://github.com/dizballanze/gray
+  #   rev: v0.10.0
+  #   hooks:
+  #     - id: gray
+  #       args: ["-f", "add-trailing-comma,autoflake,fixit,isort,pyupgrade,trim,unify,black", "--black-line-length", "100"]
+
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.2
     hooks:
