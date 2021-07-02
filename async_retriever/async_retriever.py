@@ -6,14 +6,14 @@ from pathlib import Path
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 
 import cytoolz as tlz
+import defusedxml.ElementTree as etree
 import nest_asyncio
 import orjson as json
-from aiohttp import TCPConnector
-from aiohttp.client_exceptions import ContentTypeError
+from aiohttp import ClientResponseError, ContentTypeError, TCPConnector
 from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
 
-from .exceptions import InvalidInputType, InvalidInputValue
+from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 
 _EXPIRE = 24 * 60 * 60
 __all__ = ["retrieve"]
@@ -31,7 +31,7 @@ async def _retrieve(
     session: CachedSession,
     read_type: str,
     kwds: Dict[str, Optional[Dict[str, Any]]],
-) -> Tuple[int, Awaitable[Union[str, bytes, Dict[str, Any]]]]:
+) -> Tuple[int, Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
     """Create an async request and return the response as binary.
 
     Parameters
@@ -54,9 +54,17 @@ async def _retrieve(
     """
     async with session(url, **kwds) as response:
         try:
+            response.raise_for_status()
             return uid, await getattr(response, read_type)()
-        except ContentTypeError:
-            return uid, await response.text()
+        except (ContentTypeError, ClientResponseError):
+            text = await response.text()
+            try:
+                root = etree.fromstring(text)
+                raise ServiceError(root[-1][0].text.strip())
+            except IndexError:
+                raise ServiceError(root[-1].text.strip())
+            except etree.ParseError:
+                raise ServiceError(text)
 
 
 async def async_session(
@@ -65,7 +73,7 @@ async def async_session(
     request_method: str,
     cache_name: Union[Path, str],
     family: str = "both",
-) -> Callable[..., Awaitable[Any]]:
+) -> Callable[[int], Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
     """Create an async session for sending requests.
 
     Parameters
@@ -108,7 +116,7 @@ async def async_session(
     ) as session:
         request_func = getattr(session, request_method.lower())
         tasks = (_retrieve(uid, u, request_func, read, kwds) for uid, u, kwds in url_kwds)
-        return await asyncio.gather(*tasks, return_exceptions=True)
+        return await asyncio.gather(*tasks)
 
 
 async def clean_cache(cache_name: Union[Path, str]) -> None:

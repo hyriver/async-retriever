@@ -2,6 +2,23 @@
 from typing import Generator, List, Optional, Union
 
 
+class ServiceError(Exception):
+    """Exception raised when the requested data is not available on the server.
+
+    Parameters
+    ----------
+    err : str
+        Service error message.
+    """
+
+    def __init__(self, err: str) -> None:
+        self.message = f"Service returned the following error message:\n{err}"
+        super().__init__(self.message)
+
+    def __str__(self) -> str:
+        return self.message
+
+
 class InvalidInputValue(Exception):
     """Exception raised for invalid input.
 
