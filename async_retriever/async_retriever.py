@@ -112,7 +112,9 @@ async def async_session(
         read = "read"
 
     async with CachedSession(
-        json_serialize=json.dumps, cache=cache, connector=connector
+        json_serialize=json.dumps,
+        cache=cache,
+        connector=connector,
     ) as session:
         request_func = getattr(session, request_method.lower())
         tasks = (_retrieve(uid, u, request_func, read, kwds) for uid, u, kwds in url_kwds)
@@ -207,7 +209,9 @@ def retrieve(
     cache_name = create_cachefile() if cache_name is None else cache_name
     chunked_reqs = tlz.partition_all(max_workers, url_kwds)
     results = (
-        loop.run_until_complete(async_session(c, read, request_method.upper(), cache_name, family))
+        loop.run_until_complete(
+            async_session(c, read, request_method.upper(), cache_name, family),
+        )
         for c in chunked_reqs
     )
 

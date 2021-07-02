@@ -61,7 +61,7 @@ def get_sys_info() -> List[Tuple[str, Optional[str]]]:
             ("LC_ALL", f'{os.environ.get("LC_ALL", "None")}'),
             ("LANG", f'{os.environ.get("LANG", "None")}'),
             ("LOCALE", ".".join(str(i) for i in locale.getlocale())),
-        ]
+        ],
     )
 
     return blob

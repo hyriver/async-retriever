@@ -12,7 +12,10 @@ class ServiceError(Exception):
     """
 
     def __init__(self, err: str) -> None:
-        self.message = f"Service returned the following error message:\n{err}"
+        if len(err) == 0:
+            self.message = "Service encountered an error but didn't return any error message."
+        else:
+            self.message = f"Service returned the following error message:\n{err}"
         super().__init__(self.message)
 
     def __str__(self) -> str:
@@ -31,7 +34,9 @@ class InvalidInputValue(Exception):
     """
 
     def __init__(
-        self, inp: str, valid_inputs: Union[List[str], Generator[str, None, None]]
+        self,
+        inp: str,
+        valid_inputs: Union[List[str], Generator[str, None, None]],
     ) -> None:
         self.message = f"Given {inp} is invalid. Valid options are:\n" + "\n".join(
             str(i) for i in valid_inputs
@@ -55,7 +60,12 @@ class InvalidInputType(Exception):
         An example of a valid form of the argument, defaults to None.
     """
 
-    def __init__(self, arg: str, valid_type: str, example: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        arg: str,
+        valid_type: str,
+        example: Optional[str] = None,
+    ) -> None:
         self.message = f"The {arg} argument should be of type {valid_type}"
         if example is not None:
             self.message += f":\n{example}"
