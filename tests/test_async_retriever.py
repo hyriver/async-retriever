@@ -32,11 +32,11 @@ def test_binary():
                         "timeStride": "1",
                         "addLatLon": "true",
                         "accept": "netcdf",
-                    }
+                    },
                 },
             )
             for s, e in dates_itr
-        )
+        ),
     )
 
     Path("cache").mkdir(exist_ok=True)
@@ -53,8 +53,8 @@ def test_json():
             "params": {
                 "f": "json",
                 "coords": "POINT(-68.325 45.0369)",
-            }
-        }
+            },
+        },
     ]
     r_j = ar.retrieve(urls, "json", request_kwds=kwds)
     assert r_j[0]["features"][0]["properties"]["identifier"] == "2675320"
@@ -75,7 +75,7 @@ def test_ordered_return():
     stations = ["11073495", "08072300", "01646500"]
     url = "https://waterservices.usgs.gov/nwis/site"
     urls, kwds = zip(
-        *((url, {"params": {"format": "rdb", "sites": s, "siteStatus": "all"}}) for s in stations)
+        *((url, {"params": {"format": "rdb", "sites": s, "siteStatus": "all"}}) for s in stations),
     )
     resp = ar.retrieve(urls, "text", request_kwds=kwds)
     assert [r.split("\n")[-2].split("\t")[1] for r in resp] == stations

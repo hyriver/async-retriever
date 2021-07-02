@@ -11,7 +11,7 @@ def url_kwds():
     stations = ["01646500", "08072300", "11073495"]
     url = "https://waterservices.usgs.gov/nwis/site"
     return zip(
-        *((url, {"params": {"format": "rdb", "sites": s, "siteStatus": "all"}}) for s in stations)
+        *((url, {"params": {"format": "rdb", "sites": s, "siteStatus": "all"}}) for s in stations),
     )
 
 
@@ -85,8 +85,8 @@ def test_service_error_1():
                 "srsName": "epsg:4269",
                 "typeName": "wmadata:nhdflowline_network",
                 "version": "2.0.0",
-            }
-        }
+            },
+        },
     ]
     with raises(ServiceError) as ex:
         _ = ar.retrieve(urls, "json", request_kwds=kwds)
@@ -99,4 +99,4 @@ def test_service_error_3():
     kwds = [{"params": {"f": "json"}}]
     with raises(ServiceError) as ex:
         _ = ar.retrieve(urls, "json", request_kwds=kwds)
-    assert "Service returned" in str(ex.raised)
+    assert "didn't return any error" in str(ex.raised)
