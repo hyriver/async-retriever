@@ -1,4 +1,4 @@
-"""Tests for ar package."""
+"""Tests for the package."""
 import io
 import sys
 from datetime import datetime
@@ -86,23 +86,3 @@ def test_show_versions():
     f = io.StringIO()
     ar.show_versions(file=f)
     assert "INSTALLED VERSIONS" in f.getvalue()
-
-
-@ward.test("Server response error")
-def test_invalid_kwds():
-    urls = ["https://labs.waterdata.usgs.gov/geoserver/wmadata/ows"]
-    kwds = [
-        {
-            "params": {
-                "bbox": "-96.1,28.7,-95.9,28.5,epsg:4326",
-                "outputFormat": "application/json",
-                "request": "GetFeature",
-                "service": "wfs",
-                "srsName": "epsg:4269",
-                "typeName": "wmadata:nhdflowline_network",
-                "version": "2.0.0",
-            }
-        }
-    ]
-    r = ar.retrieve(urls, "json", request_kwds=kwds)
-    assert "illegal bbox" in r[0]

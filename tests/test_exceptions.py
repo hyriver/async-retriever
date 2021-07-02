@@ -1,8 +1,9 @@
 """Tests for exceptions and requests"""
+from aiohttp import InvalidURL
 from ward import fixture, raises, test
 
 import async_retriever as ar
-from async_retriever import InvalidInputType, InvalidInputValue
+from async_retriever import InvalidInputType, InvalidInputValue, ServiceError
 
 
 @fixture
@@ -38,12 +39,20 @@ def test_invalid_family(url_kwds=url_kwds):
     assert "ipv4" in str(ex.raised)
 
 
-@test("Invalid url")
+@test("Invalid url type")
 def test_invalid_url(url_kwds=url_kwds):
     urls, kwds = url_kwds
     with raises(InvalidInputType) as ex:
         _ = ar.retrieve(urls[0], "text", request_kwds=kwds)
     assert "list of str" in str(ex.raised)
+
+
+@test("Invalid link")
+def test_invalid_link():
+    urls = ["dead.link.com"]
+    with raises(InvalidURL) as ex:
+        _ = ar.retrieve(urls, "text")
+    assert "dead.link.com" in str(ex.raised)
 
 
 @test("Invalid url kwds length")
@@ -61,3 +70,33 @@ def test_invalid_kwds(url_kwds=url_kwds):
     with raises(InvalidInputValue) as ex:
         _ = ar.retrieve(urls, "text", request_kwds=kwds)
     assert "paramss" in str(ex.raised)
+
+
+@test("Server response error")
+def test_service_error_1():
+    urls = ["https://labs.waterdata.usgs.gov/geoserver/wmadata/ows"]
+    kwds = [
+        {
+            "params": {
+                "bbox": "-96.1,28.7,-95.9,28.5,epsg:4326",
+                "outputFormat": "application/json",
+                "request": "GetFeature",
+                "service": "wfs",
+                "srsName": "epsg:4269",
+                "typeName": "wmadata:nhdflowline_network",
+                "version": "2.0.0",
+            }
+        }
+    ]
+    with raises(ServiceError) as ex:
+        _ = ar.retrieve(urls, "json", request_kwds=kwds)
+    assert "illegal bbox" in str(ex.raised)
+
+
+@test("Invalid keywrod")
+def test_service_error_3():
+    urls = ["https://labs.waterdata.usgs.gov/api/nldi/linked-data/nwissite/USGS-x1031500/basin"]
+    kwds = [{"params": {"f": "json"}}]
+    with raises(ServiceError) as ex:
+        _ = ar.retrieve(urls, "json", request_kwds=kwds)
+    assert "Service returned" in str(ex.raised)
