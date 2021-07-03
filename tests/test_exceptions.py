@@ -63,7 +63,7 @@ def test_invalid_length(url_kwds=url_kwds):
     assert "the same size" in str(ex.raised)
 
 
-@test("Invalid keywrod")
+@test("Invalid keyword")
 def test_invalid_kwds(url_kwds=url_kwds):
     urls, kwds = url_kwds
     kwds = [{"paramss": v} for kw in kwds for _, v in kw.items()]
@@ -93,7 +93,7 @@ def test_service_error_1():
     assert "illegal bbox" in str(ex.raised)
 
 
-@test("Invalid keywrod")
+@test("Server response error")
 def test_service_error_3():
     urls = ["https://labs.waterdata.usgs.gov/api/nldi/linked-data/nwissite/USGS-x1031500/basin"]
     kwds = [{"params": {"f": "json"}}]
