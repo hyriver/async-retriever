@@ -31,9 +31,9 @@ Bug reports that follow these guidelines are easier to diagnose, and so are ofte
 
 **Environment**:
 
-<details><summary>Output of <tt>pygeoogc.show_versions()</tt></summary>
+<details><summary>Output of <tt>async_retriever.show_versions()</tt></summary>
 
-<!-- Paste the output here pygeoogc.show_versions() here -->
+<!-- Paste the output below -->
 
 
 </details>
