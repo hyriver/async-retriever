@@ -3,13 +3,16 @@
 The original script is from
 `xarray <https://github.com/pydata/xarray/blob/master/xarray/util/print_versions.py>`__
 """
+import configparser
 import importlib
+import re
 import locale
 import os
 import platform
 import struct
 import subprocess
 import sys
+from pathlib import Path
 from typing import IO, List, Optional, Tuple
 
 
@@ -68,7 +71,7 @@ def get_sys_info() -> List[Tuple[str, Optional[str]]]:
 
 
 def show_versions(file: IO = sys.stdout) -> None:
-    """Print the versions of pygeohydro stack and its dependencies.
+    """Print versions of all the dependencies.
 
     Parameters
     ----------
@@ -76,25 +79,22 @@ def show_versions(file: IO = sys.stdout) -> None:
         print to the given file-like object. Defaults to sys.stdout.
     """
     sys_info = get_sys_info()
-
+    config = configparser.ConfigParser()
+    config.read(Path(Path(__file__).parent,"..", "setup.cfg"))
+    req_list = re.sub("\[(.*?)\]", "", config.get("options", "install_requires").strip()).split("\n")
     deps = [
-        # (MODULE_NAME, f(mod) -> mod version)
-        ("async_retriever", lambda mod: mod.__version__),
+        # package version
+        (config.get("metadata", "name"), lambda mod: mod.__version__),
         # dependencies
-        ("orjson", lambda mod: mod.__version__),
-        ("requests", lambda mod: mod.__version__),
-        ("aiohttp", lambda mod: mod.__version__),
-        ("cytoolz", lambda mod: mod.__version__),
-        ("nest-asyncio", lambda mod: mod.__version__),
-        ("aiohttp-client-cache", lambda mod: mod.__version__),
-        ("aiosqlite", lambda mod: mod.__version__),
+        *[(r, lambda mod: mod.__version__) for r in req_list],
         # setup/test
         ("setuptools", lambda mod: mod.__version__),
         ("pip", lambda mod: mod.__version__),
         ("conda", lambda mod: mod.__version__),
         ("mamba", lambda mod: mod.__version__),
         ("pytest", lambda mod: mod.__version__),
-    ]
+        ("ward", lambda mod: mod.__version__),
+    ]            
 
     deps_blob: List[Tuple[str, Optional[str]]] = []
     for (modname, ver_f) in deps:
@@ -102,14 +102,17 @@ def show_versions(file: IO = sys.stdout) -> None:
             if modname in sys.modules:
                 mod = sys.modules[modname]
             else:
-                mod = importlib.import_module(modname)
+                try:
+                    mod = importlib.import_module(modname)
+                except ModuleNotFoundError:
+                    mod = importlib.import_module(modname.replace("-", "_"))
         except ModuleNotFoundError:
             deps_blob.append((modname, None))
         else:
             try:
                 ver = ver_f(mod)
                 deps_blob.append((modname, ver))
-            except NotImplementedError:
+            except (NotImplementedError, AttributeError):
                 deps_blob.append((modname, "installed"))
 
     print("\nINSTALLED VERSIONS", file=file)
