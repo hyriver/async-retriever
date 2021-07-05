@@ -5,10 +5,10 @@ The original script is from
 """
 import configparser
 import importlib
-import re
 import locale
 import os
 import platform
+import re
 import struct
 import subprocess
 import sys
@@ -80,13 +80,15 @@ def show_versions(file: IO = sys.stdout) -> None:
     """
     sys_info = get_sys_info()
     config = configparser.ConfigParser()
-    config.read(Path(Path(__file__).parent,"..", "setup.cfg"))
-    req_list = re.sub("\[(.*?)\]", "", config.get("options", "install_requires").strip()).split("\n")
+    config.read(Path(Path(__file__).parent, "..", "setup.cfg"))
+    req_list = re.sub(r"\[(.*?)\]", "", config.get("options", "install_requires").strip()).split(
+        "\n"
+    )
     deps = [
         # package version
         (config.get("metadata", "name"), lambda mod: mod.__version__),
         # dependencies
-        *[(r, lambda mod: mod.__version__) for r in req_list],
+        *((r, lambda mod: mod.__version__) for r in req_list),
         # setup/test
         ("setuptools", lambda mod: mod.__version__),
         ("pip", lambda mod: mod.__version__),
@@ -94,7 +96,7 @@ def show_versions(file: IO = sys.stdout) -> None:
         ("mamba", lambda mod: mod.__version__),
         ("pytest", lambda mod: mod.__version__),
         ("ward", lambda mod: mod.__version__),
-    ]            
+    ]
 
     deps_blob: List[Tuple[str, Optional[str]]] = []
     for (modname, ver_f) in deps:
