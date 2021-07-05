@@ -19,16 +19,29 @@ dependencies:
 
   # dev deps
   - codespell
-  - coverage
   - nox
   - pre-commit
   - psutil
   - pytest
   - pytest-clarity
+  - pytest-cov
   - pytest-sugar
   - pytest-xdist
   - setuptools-scm
-  - toml
+
+  # ward deps
+  - tomli
+  - markupsafe
+  - click-completion
+  - click-default-group
+  - colorama
+  - commonmark
+  - cucumber-tag-expressions
+  - jinja2
+  - pprintpp
+  - pygments
+  - rich
+  - shellingham
 
   - pip
   - pip:
