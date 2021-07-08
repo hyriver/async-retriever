@@ -55,6 +55,8 @@ async def _retrieve(
     async with session(url, **kwds) as response:
         try:
             response.raise_for_status()
+            if read_type == "json":
+                return uid, await getattr(response, read_type)(content_type=None)
             return uid, await getattr(response, read_type)()
         except (ContentTypeError, ClientResponseError):
             text = await response.text()
