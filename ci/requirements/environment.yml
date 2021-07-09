@@ -10,7 +10,6 @@ dependencies:
   - brotlipy
   - cchardet
   - cytoolz
-  - defusedxml
   - nest-asyncio
   - orjson
   - setuptools
