@@ -13,7 +13,6 @@ import subprocess
 import sys
 from typing import IO, List, Optional, Tuple
 
-import cytoolz as tlz
 import pkg_resources
 
 __all__ = ["show_versions"]
