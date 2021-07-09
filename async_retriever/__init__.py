@@ -11,8 +11,9 @@ from .print_versions import show_versions
 try:
     __version__ = get_distribution(__name__).version
 except DistributionNotFound:
-    # package is not installed
-    pass
+    __version__ = "999"
 
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+__all__ = ["retrieve", "InvalidInputType", "InvalidInputValue", "ServiceError", "show_versions"]
