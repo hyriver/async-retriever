@@ -7,15 +7,12 @@ class ServiceError(Exception):
 
     Parameters
     ----------
-    err : str
+    message : str
         Service error message.
     """
 
-    def __init__(self, err: str) -> None:
-        if len(err) == 0:
-            self.message = "Service encountered an error but didn't return any error message."
-        else:
-            self.message = f"Service returned the following error message:\n{err}"
+    def __init__(self, message: str) -> None:
+        self.message = message
         super().__init__(self.message)
 
     def __str__(self) -> str:

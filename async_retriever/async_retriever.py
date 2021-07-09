@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 
 import cytoolz as tlz
-import defusedxml.ElementTree as etree
 import nest_asyncio
 import orjson as json
 from aiohttp import ClientResponseError, ContentTypeError, TCPConnector
@@ -56,17 +55,13 @@ async def _retrieve(
         try:
             response.raise_for_status()
             if read_type == "json":
-                return uid, await getattr(response, read_type)(content_type=None)
-            return uid, await getattr(response, read_type)()
-        except (ContentTypeError, ClientResponseError):
-            text = await response.text()
-            try:
-                root = etree.fromstring(text)
-                raise ServiceError(root[-1][0].text.strip())
-            except IndexError:
-                raise ServiceError(root[-1].text.strip())
-            except etree.ParseError:
-                raise ServiceError(text)
+                resp = await getattr(response, read_type)(content_type=None)
+            else:
+                resp = await getattr(response, read_type)()
+        except (ClientResponseError, ContentTypeError) as ex:
+            raise ServiceError(await response.text()) from ex
+        else:
+            return uid, resp
 
 
 async def async_session(
@@ -194,7 +189,8 @@ def retrieve(
         url_kwds = zip(range(len(urls)), urls, len(urls) * [{"headers": None}])
     else:
         if len(urls) != len(request_kwds):
-            raise ValueError("``urls`` and ``request_kwds`` must have the same size.")
+            msg = "``urls`` and ``request_kwds`` must have the same size."
+            raise ValueError(msg)
 
         session_kwds = inspect.signature(CachedSession._request).parameters.keys()
         not_found = [p for kwds in request_kwds for p in kwds if p not in session_kwds]

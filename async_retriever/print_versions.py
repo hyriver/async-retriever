@@ -16,6 +16,8 @@ from typing import IO, List, Optional, Tuple
 import cytoolz as tlz
 import pkg_resources
 
+__all__ = ["show_versions"]
+
 
 def get_sys_info() -> List[Tuple[str, Optional[str]]]:
     """Return system information as a dict.
@@ -112,24 +114,16 @@ def show_versions(file: IO = sys.stdout) -> None:
     deps_blob: List[Tuple[str, Optional[str]]] = []
     for (modname, ver_f) in deps:
         try:
-            if modname in sys.modules:
-                mod = sys.modules[modname]
-            else:
-                try:
-                    mod = importlib.import_module(modname)
-                except ModuleNotFoundError:
-                    mod = importlib.import_module(modname.replace("-", "_"))
+            mod = _get_mod(modname)
         except ModuleNotFoundError:
             deps_blob.append((modname, None))
         else:
             try:
-                ver = ver_f(mod)
-                deps_blob.append((modname, ver))
+                ver = mod.version.VERSION if modname == "pydantic" else ver_f(mod)
             except (NotImplementedError, AttributeError):
-                if modname == "pydantic":
-                    deps_blob.append((modname, mod.version.VERSION))  # type: ignore
-                else:
-                    deps_blob.append((modname, "installed"))
+                ver = "installed"
+            deps_blob.append((modname, ver))
+
     print("\nINSTALLED VERSIONS", file=file)
     print("------------------", file=file)
 
@@ -139,3 +133,13 @@ def show_versions(file: IO = sys.stdout) -> None:
     print("", file=file)
     for k, stat in sorted(deps_blob):
         print(f"{k}: {stat}", file=file)
+
+
+def _get_mod(modname: str):
+    try:
+        if modname in sys.modules:
+            return sys.modules[modname]
+        else:
+            return importlib.import_module(modname)
+    except ModuleNotFoundError:
+        return importlib.import_module(modname.replace("-", "_"))
