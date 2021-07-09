@@ -91,16 +91,12 @@ def show_versions(file: IO = sys.stdout) -> None:
         "pygeohydro",
         "pydaymet",
     ]
-    _req_list = [hyriver]
-    for pname in hyriver:
-        try:
-            reqs = pkg_resources.working_set.by_key[pname].requires()  # type: ignore
-            _req_list.append([re.sub(r"\[(.*?)\]", "", str(r)) for r in reqs])
-        except KeyError:
-            continue
+    reg = re.compile(r"\[(.*?)\]")
+    ws = pkg_resources.working_set.by_key  # type: ignore
+    _req_list = [reg.sub("", str(r)) for p in hyriver for r in ws[p].requires() if p in ws]
 
     fix = {"netcdf4": "netCDF4", "pyyaml": "yaml"}
-    req_list = [fix[r] if r in fix else r for r in set(tlz.concat(_req_list))]
+    req_list = [fix[r] if r in fix else r for r in set(_req_list + hyriver)]
     deps = [
         # hyriver packages' deps
         *((r, lambda mod: mod.__version__) for r in req_list),
@@ -139,7 +135,6 @@ def _get_mod(modname: str):
     try:
         if modname in sys.modules:
             return sys.modules[modname]
-        else:
-            return importlib.import_module(modname)
+        return importlib.import_module(modname)  # notc: TC300
     except ModuleNotFoundError:
         return importlib.import_module(modname.replace("-", "_"))
