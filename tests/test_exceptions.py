@@ -73,7 +73,7 @@ def test_invalid_kwds(url_kwds=url_kwds):
 
 
 @test("Server response error")
-def test_service_error_1():
+def test_service_error():
     urls = ["https://labs.waterdata.usgs.gov/geoserver/wmadata/ows"]
     kwds = [
         {
@@ -91,12 +91,3 @@ def test_service_error_1():
     with raises(ServiceError) as ex:
         _ = ar.retrieve(urls, "json", request_kwds=kwds)
     assert "illegal bbox" in str(ex.raised)
-
-
-@test("Server response error")
-def test_service_error_3():
-    urls = ["https://labs.waterdata.usgs.gov/api/nldi/linked-data/nwissite/USGS-x1031500/basin"]
-    kwds = [{"params": {"f": "json"}}]
-    with raises(ServiceError) as ex:
-        _ = ar.retrieve(urls, "json", request_kwds=kwds)
-    assert "didn't return any error" in str(ex.raised)
