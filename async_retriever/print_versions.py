@@ -92,7 +92,7 @@ def show_versions(file: IO = sys.stdout) -> None:
     ]
     reg = re.compile(r"\[(.*?)\]")
     ws = pkg_resources.working_set.by_key  # type: ignore
-    _req_list = [reg.sub("", str(r)) for p in hyriver for r in ws[p].requires() if p in ws]
+    _req_list = [reg.sub("", str(r)) for p in hyriver if p in ws for r in ws[p].requires()]
 
     fix = {"netcdf4": "netCDF4", "pyyaml": "yaml"}
     req_list = [fix[r] if r in fix else r for r in set(_req_list + hyriver)]
