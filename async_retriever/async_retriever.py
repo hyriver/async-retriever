@@ -97,7 +97,7 @@ async def async_session(
         cache_name=cache_name,
         expire_after=_EXPIRE,
         allowed_methods=("GET", "POST"),
-        timeout=2.5,
+        timeout=5.0,
     )
     valid_family = {"both": 0, "ipv4": socket.AF_INET, "ipv6": socket.AF_INET6}
     if family not in valid_family:
@@ -120,7 +120,12 @@ async def async_session(
 
 async def clean_cache(cache_name: Union[Path, str]) -> None:
     """Remove expired responses from the cache file."""
-    cache = CacheBackend(cache_name=cache_name)
+    cache = SQLiteBackend(
+        cache_name=cache_name,
+        expire_after=_EXPIRE,
+        allowed_methods=("GET", "POST"),
+        timeout=5.0,
+    )
     await cache.delete_expired_responses()
 
 
@@ -205,6 +210,8 @@ def retrieve(
     asyncio.set_event_loop(loop)
 
     cache_name = create_cachefile() if cache_name is None else cache_name
+    asyncio.run(clean_cache(cache_name))
+
     chunked_reqs = tlz.partition_all(max_workers, url_kwds)
     results = (
         loop.run_until_complete(
@@ -212,7 +219,5 @@ def retrieve(
         )
         for c in chunked_reqs
     )
-
-    asyncio.run(clean_cache(cache_name))
 
     return [r for _, r in sorted(tlz.concat(results))]
