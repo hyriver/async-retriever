@@ -69,7 +69,7 @@ async def async_session(
     read: str,
     request_method: str,
     cache_name: Union[Path, str],
-    family: str = "both",
+    family: int,
 ) -> Callable[[int], Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
     """Create an async session for sending requests.
 
@@ -81,12 +81,11 @@ async def async_session(
         The method for returning the request; ``binary`` (bytes), ``json``, and ``text``.
     request_method : str
         The request type; GET or POST.
-    cache_name : str, optional
-        Path to a folder for caching the session, defaults to
-        ``cache/aiohttp_cache.sqlite``.
-    family : str, optional
-        TCP socket family, defaults to both, i.e., IPv4 and IPv6. For IPv4
-        or IPv6 only pass ``ipv4`` or ``ipv6``, respectively.
+    cache_name : str
+        Path to a file for caching the session, defaults to
+        ``./cache/aiohttp_cache.sqlite``.
+    family : int
+        TCP socket family
 
     Returns
     -------
@@ -99,19 +98,14 @@ async def async_session(
         allowed_methods=("GET", "POST"),
         timeout=5.0,
     )
-    valid_family = {"both": 0, "ipv4": socket.AF_INET, "ipv6": socket.AF_INET6}
-    if family not in valid_family:
-        raise InvalidInputValue("family", list(valid_family.keys()))
 
-    connector = TCPConnector(family=valid_family[family])
-
-    if read == "binary":
-        read = "read"
+    connector = TCPConnector(family=family)
 
     async with CachedSession(
         json_serialize=json.dumps,
         cache=cache,
         connector=connector,
+        trust_env=True,
     ) as session:
         request_func = getattr(session, request_method.lower())
         tasks = (_retrieve(uid, u, request_func, read, kwds) for uid, u, kwds in url_kwds)
@@ -149,7 +143,7 @@ def retrieve(
     max_workers : int, optional
         Maximum number of async processes, defaults to 8.
     cache_name : str, optional
-        Path to a folder for caching the session, defaults to ``cache/aiohttp_cache.sqlite``.
+        Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
     family : str, optional
         TCP socket family, defaults to both, i.e., IPv4 and IPv6. For IPv4
         or IPv6 only pass ``ipv4`` or ``ipv6``, respectively.
@@ -200,6 +194,13 @@ def retrieve(
 
         url_kwds = zip(range(len(urls)), urls, request_kwds)
 
+    valid_family = {"both": 0, "ipv4": socket.AF_INET, "ipv6": socket.AF_INET6}
+    if family not in valid_family:
+        raise InvalidInputValue("family", list(valid_family.keys()))
+
+    if read == "binary":
+        read = "read"
+
     loop = asyncio.new_event_loop()
     nest_asyncio.apply(loop)
     asyncio.set_event_loop(loop)
@@ -210,7 +211,7 @@ def retrieve(
     chunked_reqs = tlz.partition_all(max_workers, url_kwds)
     results = (
         loop.run_until_complete(
-            async_session(c, read, request_method.upper(), cache_name, family),
+            async_session(c, read, request_method.upper(), cache_name, valid_family[family]),
         )
         for c in chunked_reqs
     )
