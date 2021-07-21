@@ -29,7 +29,8 @@ async def _retrieve(
     url: StrOrURL,
     session: CachedSession,
     read_type: str,
-    kwds: Dict[str, Optional[Dict[str, Any]]],
+    s_kwds: Dict[str, Optional[Dict[str, Any]]],
+    r_kwds: Dict[str, None],
 ) -> Tuple[int, Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
     """Create an async request and return the response as binary.
 
@@ -43,21 +44,21 @@ async def _retrieve(
         A ClientSession for sending the request
     read_type : str
         Return response as text, bytes, or json.
-    kwds: dict
+    s_kwds: dict
         Arguments to be passed to requests
+    r_kwds : dict
+        Keywords to pass to the response read function. ``{"content_type": None}`` if read
+        is ``json`` else it's empty.
 
     Returns
     -------
     bytes
         The retrieved response as binary.
     """
-    async with session(url, **kwds) as response:
+    async with session(url, **s_kwds) as response:
         try:
             response.raise_for_status()
-            if read_type == "json":
-                resp = await getattr(response, read_type)(content_type=None)
-            else:
-                resp = await getattr(response, read_type)()
+            resp = await getattr(response, read_type)(**r_kwds)
         except (ClientResponseError, ContentTypeError) as ex:
             raise ServiceError(await response.text()) from ex
         else:
@@ -67,6 +68,7 @@ async def _retrieve(
 async def async_session(
     url_kwds: Tuple[Tuple[int, StrOrURL, Dict[StrOrURL, Any]], ...],
     read: str,
+    r_kwds: Dict[str, None],
     request_method: str,
     cache_name: Union[Path, str],
     family: int,
@@ -79,6 +81,9 @@ async def async_session(
         A list of URLs or URLs with their payloads to be retrieved.
     read : str
         The method for returning the request; ``binary`` (bytes), ``json``, and ``text``.
+    r_kwds : dict
+        Keywords to pass to the response read function. ``{"content_type": None}`` if read
+        is ``json`` else it's empty.
     request_method : str
         The request type; GET or POST.
     cache_name : str
@@ -108,7 +113,7 @@ async def async_session(
         trust_env=True,
     ) as session:
         request_func = getattr(session, request_method.lower())
-        tasks = (_retrieve(uid, u, request_func, read, kwds) for uid, u, kwds in url_kwds)
+        tasks = (_retrieve(uid, u, request_func, read, kwds, r_kwds) for uid, u, kwds in url_kwds)
         return await asyncio.gather(*tasks)
 
 
@@ -200,6 +205,7 @@ def retrieve(
 
     if read == "binary":
         read = "read"
+    r_kwds = {"content_type": None} if read == "json" else {}
 
     loop = asyncio.new_event_loop()
     nest_asyncio.apply(loop)
@@ -211,7 +217,9 @@ def retrieve(
     chunked_reqs = tlz.partition_all(max_workers, url_kwds)
     results = (
         loop.run_until_complete(
-            async_session(c, read, request_method.upper(), cache_name, valid_family[family]),
+            async_session(
+                c, read, r_kwds, request_method.upper(), cache_name, valid_family[family]
+            ),
         )
         for c in chunked_reqs
     )
