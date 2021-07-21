@@ -173,20 +173,68 @@ def retrieve(
     >>> resp[0].split('\n')[-2].split('\t')[1]
     '01646500'
     """
-    if not isinstance(urls, (list, tuple)):
-        raise InvalidInputType("``urls``", "list of str", "[url1, ...]")
+    inp = ValidateInputs(urls, read, request_kwds, request_method, cache_name, family)
 
-    valid_methods = ["GET", "POST"]
-    if request_method.upper() not in valid_methods:
-        raise InvalidInputValue("method", valid_methods)
+    loop = asyncio.new_event_loop()
+    nest_asyncio.apply(loop)
+    asyncio.set_event_loop(loop)
 
-    valid_reads = ["binary", "json", "text"]
-    if read not in valid_reads:
-        raise InvalidInputValue("read", valid_reads)
+    asyncio.run(clean_cache(inp.cache_name))
 
-    if request_kwds is None:
-        url_kwds = zip(range(len(urls)), urls, len(urls) * [{"headers": None}])
-    else:
+    chunked_reqs = tlz.partition_all(max_workers, inp.url_kwds)
+    results = (
+        loop.run_until_complete(
+            async_session(c, inp.read, inp.r_kwds, inp.request_method, inp.cache_name, inp.family),
+        )
+        for c in chunked_reqs
+    )
+
+    return [r for _, r in sorted(tlz.concat(results))]
+
+
+class ValidateInputs:
+    def __init__(
+        self,
+        urls: Union[StrOrURL, List[StrOrURL], Tuple[StrOrURL, ...]],
+        read: str,
+        request_kwds: Optional[List[Dict[str, Any]]] = None,
+        request_method: str = "GET",
+        cache_name: Optional[Union[Path, str]] = None,
+        family: str = "both",
+    ) -> None:
+        """Validate inputs to retrieve function."""
+        self.request_method = request_method.upper()
+        valid_methods = ["GET", "POST"]
+        if self.request_method not in valid_methods:
+            raise InvalidInputValue("method", valid_methods)
+
+        valid_reads = ["binary", "json", "text"]
+        if read not in valid_reads:
+            raise InvalidInputValue("read", valid_reads)
+        self.read = "read" if read == "binary" else read
+        self.r_kwds = {"content_type": None} if read == "json" else {}
+
+        self.url_kwds = self.generate_requests(urls, request_kwds)
+
+        valid_family = {"both": 0, "ipv4": socket.AF_INET, "ipv6": socket.AF_INET6}
+        if family not in valid_family:
+            raise InvalidInputValue("family", list(valid_family.keys()))
+        self.family = valid_family[family]
+
+        self.cache_name = create_cachefile() if cache_name is None else cache_name
+
+    @staticmethod
+    def generate_requests(
+        urls: Union[StrOrURL, List[StrOrURL], Tuple[StrOrURL, ...]],
+        request_kwds: Optional[List[Dict[str, Any]]],
+    ):
+        """Generate urls and keywords."""
+        if not isinstance(urls, (list, tuple)):
+            raise InvalidInputType("``urls``", "list of str", "[url1, ...]")
+
+        if request_kwds is None:
+            return zip(range(len(urls)), urls, len(urls) * [{"headers": None}])
+
         if len(urls) != len(request_kwds):
             msg = "``urls`` and ``request_kwds`` must have the same size."
             raise ValueError(msg)
@@ -197,31 +245,4 @@ def retrieve(
             invalids = ", ".join(not_found)
             raise InvalidInputValue(f"request_kwds ({invalids})", list(session_kwds))
 
-        url_kwds = zip(range(len(urls)), urls, request_kwds)
-
-    valid_family = {"both": 0, "ipv4": socket.AF_INET, "ipv6": socket.AF_INET6}
-    if family not in valid_family:
-        raise InvalidInputValue("family", list(valid_family.keys()))
-
-    if read == "binary":
-        read = "read"
-    r_kwds = {"content_type": None} if read == "json" else {}
-
-    loop = asyncio.new_event_loop()
-    nest_asyncio.apply(loop)
-    asyncio.set_event_loop(loop)
-
-    cache_name = create_cachefile() if cache_name is None else cache_name
-    asyncio.run(clean_cache(cache_name))
-
-    chunked_reqs = tlz.partition_all(max_workers, url_kwds)
-    results = (
-        loop.run_until_complete(
-            async_session(
-                c, read, r_kwds, request_method.upper(), cache_name, valid_family[family]
-            ),
-        )
-        for c in chunked_reqs
-    )
-
-    return [r for _, r in sorted(tlz.concat(results))]
+        return zip(range(len(urls)), urls, request_kwds)
