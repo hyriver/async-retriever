@@ -98,7 +98,7 @@ async def async_session(
         An async gather function
     """
     cache = SQLiteBackend(
-        cache_name=cache_name,
+        cache_name=str(cache_name),
         expire_after=_EXPIRE,
         allowed_methods=("GET", "POST"),
         timeout=5.0,
@@ -119,7 +119,7 @@ async def async_session(
 
 async def clean_cache(cache_name: Union[Path, str]) -> None:
     """Remove expired responses from the cache file."""
-    cache = CacheBackend(cache_name=cache_name)
+    cache = CacheBackend(cache_name=str(cache_name))
     await cache.delete_expired_responses()
 
 
