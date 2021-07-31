@@ -1,3 +1,61 @@
+.. image:: https://raw.githubusercontent.com/cheginit/HyRiver-examples/main/notebooks/_static/async_logo.png
+    :target: https://github.com/cheginit/HyRiver
+
+|
+
+.. image:: https://joss.theoj.org/papers/b0df2f6192f0a18b9e622a3edff52e77/status.svg
+    :target: https://joss.theoj.org/papers/b0df2f6192f0a18b9e622a3edff52e77
+    :alt: JOSS
+
+|
+.. |pygeohydro| image:: https://github.com/cheginit/pygeohydro/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/cheginit/pygeohydro/actions/workflows/test.yml
+    :alt: Github Actions
+
+.. |pygeoogc| image:: https://github.com/cheginit/pygeoogc/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/cheginit/pygeoogc/actions/workflows/test.yml
+    :alt: Github Actions
+
+.. |pygeoutils| image:: https://github.com/cheginit/pygeoutils/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/cheginit/pygeoutils/actions/workflows/test.yml
+    :alt: Github Actions
+
+.. |pynhd| image:: https://github.com/cheginit/pynhd/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/cheginit/pynhd/actions/workflows/test.yml
+    :alt: Github Actions
+
+.. |py3dep| image:: https://github.com/cheginit/py3dep/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/cheginit/py3dep/actions/workflows/test.yml
+    :alt: Github Actions
+
+.. |pydaymet| image:: https://github.com/cheginit/pydaymet/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/cheginit/pydaymet/actions/workflows/test.yml
+    :alt: Github Actions
+
+.. |async| image:: https://github.com/cheginit/async_retriever/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/cheginit/async_retriever/actions/workflows/test.yml
+    :alt: Github Actions
+
+=============== ==================================================================== ============
+Package         Description                                                          Status
+=============== ==================================================================== ============
+PyNHD_          Navigate and subset NHDPlus (MR and HR) using web services           |pynhd|
+Py3DEP_         Access topographic data through National Map's 3DEP web service      |py3dep|
+PyGeoHydro_     Access NWIS, NID, HCDN 2009, NLCD, and SSEBop databases              |pygeohydro|
+PyDaymet_       Access Daymet for daily climate data both single pixel and gridded   |pydaymet|
+AsyncRetriever_ High-level API for asynchronous requests with persistent caching     |async|
+PyGeoOGC_       Send queries to any ArcGIS RESTful-, WMS-, and WFS-based services    |pygeoogc|
+PyGeoUtils_     Convert responses from PyGeoOGC's supported web services to datasets |pygeoutils|
+=============== ==================================================================== ============
+
+.. _PyGeoHydro: https://github.com/cheginit/pygeohydro
+.. _AsyncRetriever: https://github.com/cheginit/async_retriever
+.. _PyGeoOGC: https://github.com/cheginit/pygeoogc
+.. _PyGeoUtils: https://github.com/cheginit/pygeoutils
+.. _PyNHD: https://github.com/cheginit/pynhd
+.. _Py3DEP: https://github.com/cheginit/py3dep
+.. _PyDaymet: https://github.com/cheginit/pydaymet
+
 AsyncRetriever: Asynchronous requests with persistent caching
 -------------------------------------------------------------
 
@@ -44,10 +102,13 @@ AsyncRetriever: Asynchronous requests with persistent caching
 Features
 --------
 
-AsyncRetriever has only one purpose; asynchronously sending requests and retrieving
-responses as ``text``, ``binary``, or ``json`` objects. It uses persistent caching to speedup the
-retrieval even further. Moreover, thanks to `nest_asyncio <https://github.com/erdewit/nest_asyncio>`__
-you can use this function in Jupyter notebooks as well.
+AsyncRetriever is a part of `HyRiver <https://github.com/cheginit/HyRiver>`__ software stack that
+is designed to aid in watershed analysis through web services. This package has only one purpose;
+asynchronously sending requests and retrieving responses as ``text``, ``binary``, or ``json``
+objects. It uses persistent caching to speedup the retrieval even further. Moreover, thanks
+to `nest_asyncio <https://github.com/erdewit/nest_asyncio>`__ you can use this function in
+Jupyter notebooks as well. Although this package is in the HyRiver software stack, it's
+applicable to any HTTP requests.
 
 Please note that since this project is in early development stages, while the provided
 functionalities should be stable, changes in APIs are possible in new releases. But we
