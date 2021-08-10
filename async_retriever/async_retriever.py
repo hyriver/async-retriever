@@ -15,13 +15,15 @@ from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
 from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 
 _EXPIRE = 24 * 60 * 60
-__all__ = ["retrieve"]
+__all__ = ["retrieve", "clean_cache"]
 
 
-def create_cachefile(db_name: str = "aiohttp_cache") -> Path:
+def create_cachefile(db_name: Union[str, Path, None] = None) -> Path:
     """Create a cache folder in the current working directory."""
-    Path("cache").mkdir(exist_ok=True)
-    return Path("cache", f"{db_name}.sqlite")
+    fname = Path("cache", "aiohttp_cache.sqlite") if db_name is None else Path(db_name)
+    if not fname.parent.exists():
+        fname.parent.mkdir()
+    return fname
 
 
 async def _retrieve(
@@ -98,7 +100,7 @@ async def async_session(
         An async gather function
     """
     cache = SQLiteBackend(
-        cache_name=str(cache_name),
+        cache_name=cache_name,
         expire_after=_EXPIRE,
         allowed_methods=("GET", "POST"),
         timeout=5.0,
@@ -117,10 +119,16 @@ async def async_session(
         return await asyncio.gather(*tasks)
 
 
-async def clean_cache(cache_name: Union[Path, str]) -> None:
+async def _clean_cache(cache_name: Union[Path, str]) -> None:
     """Remove expired responses from the cache file."""
-    cache = CacheBackend(cache_name=str(cache_name))
+    cache = CacheBackend(cache_name=cache_name)
     await cache.delete_expired_responses()
+
+
+def clean_cache(cache_name: Union[Path, str]) -> None:
+    """Remove expired responses from the cache file."""
+    cache_name = create_cachefile(cache_name)
+    asyncio.run(_clean_cache(cache_name))
 
 
 def retrieve(
@@ -179,8 +187,6 @@ def retrieve(
     nest_asyncio.apply(loop)
     asyncio.set_event_loop(loop)
 
-    asyncio.run(clean_cache(inp.cache_name))
-
     chunked_reqs = tlz.partition_all(max_workers, inp.url_kwds)
     results = (
         loop.run_until_complete(
@@ -221,7 +227,7 @@ class ValidateInputs:
             raise InvalidInputValue("family", list(valid_family.keys()))
         self.family = valid_family[family]
 
-        self.cache_name = create_cachefile() if cache_name is None else cache_name
+        self.cache_name = create_cachefile(cache_name)
 
     @staticmethod
     def generate_requests(

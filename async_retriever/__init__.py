@@ -4,7 +4,7 @@ import sys
 
 from pkg_resources import DistributionNotFound, get_distribution
 
-from .async_retriever import retrieve
+from .async_retriever import clean_cache, retrieve
 from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 from .print_versions import show_versions
 
@@ -16,4 +16,11 @@ except DistributionNotFound:
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-__all__ = ["retrieve", "InvalidInputType", "InvalidInputValue", "ServiceError", "show_versions"]
+__all__ = [
+    "retrieve",
+    "clean_cache",
+    "InvalidInputType",
+    "InvalidInputValue",
+    "ServiceError",
+    "show_versions",
+]
