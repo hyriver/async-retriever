@@ -2,6 +2,18 @@
 History
 =======
 
+0.2.2 (unreleased)
+------------------
+
+New Features
+~~~~~~~~~~~~
+- Add a new function, ``clean_cache``, for removing the expired responses from the cache.
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Handle all cache file relted operations in the ``create_cachefile`` function.
+
+
 0.2.1 (31-07-21)
 ------------------
 
