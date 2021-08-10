@@ -1,5 +1,6 @@
 """Tests for the package."""
 import io
+import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -39,9 +40,10 @@ def test_binary():
         ),
     )
 
-    Path("cache").mkdir(exist_ok=True)
-    cache_name = Path("cache", "aiohttp_cache.sqlite")
+    cache_name = "cache_tmp/aiohttp_cache.sqlite"
     r_b = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache_name)
+    ar.clean_cache(cache_name)
+    shutil.rmtree("cache_tmp")
     assert sys.getsizeof(r_b[0]) == 986161
 
 
