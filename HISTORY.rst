@@ -7,11 +7,12 @@ History
 
 New Features
 ~~~~~~~~~~~~
-- Add a new function, ``clean_cache``, for removing the expired responses from the cache.
+- Add a new function, ``clean_cache``, for manually removing the expired responses
+  from the cache database.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
-- Handle all cache file relted operations in the ``create_cachefile`` function.
+- Handle all cache file related operations in the ``create_cachefile`` function.
 
 
 0.2.1 (31-07-21)
