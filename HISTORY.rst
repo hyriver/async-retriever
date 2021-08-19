@@ -2,7 +2,7 @@
 History
 =======
 
-0.2.2 (unreleased)
+0.2.2 (2021-08-19)
 ------------------
 
 New Features
@@ -15,7 +15,7 @@ Internal Changes
 - Handle all cache file related operations in the ``create_cachefile`` function.
 
 
-0.2.1 (31-07-21)
+0.2.1 (2021-07-31)
 ------------------
 
 New Features
