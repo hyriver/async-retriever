@@ -21,8 +21,7 @@ __all__ = ["retrieve", "clean_cache"]
 def create_cachefile(db_name: Union[str, Path, None] = None) -> Path:
     """Create a cache folder in the current working directory."""
     fname = Path("cache", "aiohttp_cache.sqlite") if db_name is None else Path(db_name)
-    if not fname.parent.exists():
-        fname.parent.mkdir()
+    fname.parent.mkdir(parents=True, exist_ok=True)
     return fname
 
 
