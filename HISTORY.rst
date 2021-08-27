@@ -2,6 +2,14 @@
 History
 =======
 
+0.2.3 (2021-08-26)
+------------------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Use ``ujson`` for JSON parsing instead of ``orjson`` since ``orjson`` only serializes to
+  ``bytes`` which is not compatible with ``aiohttp``.
+
 0.2.2 (2021-08-19)
 ------------------
 
