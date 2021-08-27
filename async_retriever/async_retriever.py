@@ -7,7 +7,7 @@ from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 
 import cytoolz as tlz
 import nest_asyncio
-import orjson as json
+import ujson as json
 from aiohttp import ClientResponseError, ContentTypeError, TCPConnector
 from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
