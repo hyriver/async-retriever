@@ -21,6 +21,7 @@ progress-style = ["bar"]
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules --ignore=noxfile.py -n=auto -v --durations=5"
+doctest_optionflags = 'NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL NUMBER'
 testpaths = [
     "async_retriever",
 ]
