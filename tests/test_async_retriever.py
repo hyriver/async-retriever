@@ -61,6 +61,24 @@ def test_json():
     assert r_j[0]["features"][0]["properties"]["identifier"] == "2675320"
 
 
+@ward.test("JSON request")
+def test_json():
+    base_url = "https://labs.waterdata.usgs.gov/api/nldi/pygeoapi/processes"
+    operation = "nldi-flowtrace"
+    url = f"{base_url}/{operation}/jobs?response=document"
+    data = {
+        "inputs": [
+            {"id": "lat", "type": "text/plain", "value": "43.29139"},
+            {"id": "lon", "type": "text/plain", "value": "-73.82705"},
+            {"id": "raindroptrace", "type": "text/plain", "value": "True"},
+            {"id": "direction", "type": "text/plain", "value": "up"},
+        ]
+    }
+    payload = {"json": data}
+    r = ar.retrieve([url], "json", [payload], "POST")
+    assert r[0]["outputs"]["features"][0]["properties"]["comid"] == 22294818
+
+
 @ward.test("Text response")
 def test_text():
     base = "https://waterservices.usgs.gov/nwis/site/?"
