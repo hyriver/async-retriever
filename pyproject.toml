@@ -1,3 +1,23 @@
+[project]
+dependencies = [
+    "aiohttp-client-cache",
+    "aiohttp[speedups]",
+    "aiosqlite",
+    "cytoolz",
+    "nest-asyncio",
+    "ujson",
+]
+
+[project.optional-dependencies]
+test = [
+    "coverage[toml]",
+    "pytest",
+    "pytest-clarity",
+    "pytest-sugar",
+    "pytest-xdist[psutil]",
+    "ward",
+]
+
 [build-system]
 requires = [
     "setuptools>=42",
