@@ -28,9 +28,9 @@ def create_cachefile(db_name: Union[str, Path, None] = None) -> Path:
 async def _retrieve(
     uid: int,
     url: StrOrURL,
+    s_kwds: Dict[str, Optional[Dict[str, Any]]],
     session: CachedSession,
     read_type: str,
-    s_kwds: Dict[str, Optional[Dict[str, Any]]],
     r_kwds: Dict[str, None],
 ) -> Tuple[int, Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
     """Create an async request and return the response as binary.
@@ -41,12 +41,12 @@ async def _retrieve(
         ID of the URL for sorting after returning the results
     url : str
         URL to be retrieved
+    s_kwds: dict
+        Arguments to be passed to requests
     session : ClientSession
         A ClientSession for sending the request
     read_type : str
         Return response as text, bytes, or json.
-    s_kwds: dict
-        Arguments to be passed to requests
     r_kwds : dict
         Keywords to pass to the response read function. ``{"content_type": None}`` if read
         is ``json`` else it's empty.
@@ -58,18 +58,15 @@ async def _retrieve(
     """
     async with session(url, **s_kwds) as response:
         try:
-            response.raise_for_status()
-            resp = await getattr(response, read_type)(**r_kwds)
-        except (ClientResponseError, ContentTypeError) as ex:
+            return uid, await getattr(response, read_type)(**r_kwds)
+        except (ClientResponseError, ContentTypeError, ValueError) as ex:
             raise ServiceError(await response.text()) from ex
-        else:
-            return uid, resp
 
 
 async def async_session(
     url_kwds: Tuple[Tuple[int, StrOrURL, Dict[StrOrURL, Any]], ...],
     read: str,
-    r_kwds: Dict[str, None],
+    r_kwds: Dict[str, Any],
     request_method: str,
     cache_name: Union[Path, str],
     family: int,
@@ -114,7 +111,9 @@ async def async_session(
         trust_env=True,
     ) as session:
         request_func = getattr(session, request_method.lower())
-        tasks = (_retrieve(uid, u, request_func, read, kwds, r_kwds) for uid, u, kwds in url_kwds)
+        tasks = (
+            _retrieve(uid, url, kwds, request_func, read, r_kwds) for uid, url, kwds in url_kwds
+        )
         return await asyncio.gather(*tasks)
 
 
@@ -217,7 +216,7 @@ class ValidateInputs:
         if read not in valid_reads:
             raise InvalidInputValue("read", valid_reads)
         self.read = "read" if read == "binary" else read
-        self.r_kwds = {"content_type": None} if read == "json" else {}
+        self.r_kwds = {"content_type": None, "loads": json.loads} if read == "json" else {}
 
         self.url_kwds = self.generate_requests(urls, request_kwds)
 
@@ -249,5 +248,4 @@ class ValidateInputs:
         if len(not_found) > 0:
             invalids = ", ".join(not_found)
             raise InvalidInputValue(f"request_kwds ({invalids})", list(session_kwds))
-
         return zip(range(len(urls)), urls, request_kwds)
