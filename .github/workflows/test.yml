@@ -1,15 +1,14 @@
 on:
   push:
-    branch:
-      - "*"
+    branches:
+      - "**"
     tags-ignore:
-      - v*
+      - "**"
   pull_request:
-    branch:
-      - "*"
+    branches:
+      - "**"
     tags-ignore:
-      - v*
-
+      - "**"
 
 name: CI
 
