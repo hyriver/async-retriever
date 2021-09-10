@@ -41,7 +41,7 @@ warn_unused_configs = true
 warn_unreachable = true
 warn_no_return = true
 
-[isort]
+[tool.isort]
 profile = "black"
 default_section = "THIRDPARTY"
 known_first_party = "async_retriever"
