@@ -1,7 +1,9 @@
 on:
   push:
+    branch: "*"
     tags-ignore: v*
   pull_request:
+    branch: "*"
     tags-ignore: v*
 
 
