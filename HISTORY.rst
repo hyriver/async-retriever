@@ -2,6 +2,17 @@
 History
 =======
 
+0.2.4 (2021-09-10)
+------------------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Use ``usjon`` for converting responses to JSON.
+
+Bug Fixes
+~~~~~~~~~
+- Fix an issue with catching service error messages.
+
 0.2.3 (2021-08-26)
 ------------------
 
