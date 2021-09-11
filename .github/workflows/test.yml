@@ -1,3 +1,5 @@
+name: CI
+
 on:
   push:
     branches:
@@ -9,8 +11,6 @@ on:
       - "**"
     tags-ignore:
       - "**"
-
-name: CI
 
 jobs:
   test:
