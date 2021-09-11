@@ -7,12 +7,12 @@ class ServiceError(Exception):
 
     Parameters
     ----------
-    message : str
+    err : str
         Service error message.
     """
 
-    def __init__(self, message: str) -> None:
-        self.message = message
+    def __init__(self, err: str) -> None:
+        self.message = f"Service returned the following error message:\n{err}"
         super().__init__(self.message)
 
     def __str__(self) -> str:
