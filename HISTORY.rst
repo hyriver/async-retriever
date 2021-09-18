@@ -2,6 +2,15 @@
 History
 =======
 
+0.2.5 (unreleased)
+------------------
+
+New Features
+~~~~~~~~~~~~
+- Add two new arguments, ``timeout`` and ``expire_after``, to ``retrieve``.
+  These two arguments gives the user more control for dealing with issues
+  related to caching.
+
 0.2.4 (2021-09-10)
 ------------------
 
