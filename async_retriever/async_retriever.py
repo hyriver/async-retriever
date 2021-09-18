@@ -70,6 +70,8 @@ async def async_session(
     request_method: str,
     cache_name: Union[Path, str],
     family: int,
+    timeout: float = 5.0,
+    expire_after: float = _EXPIRE,
 ) -> Callable[[int], Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
     """Create an async session for sending requests.
 
@@ -89,6 +91,10 @@ async def async_session(
         ``./cache/aiohttp_cache.sqlite``.
     family : int
         TCP socket family
+    timeout : float, optional
+        Timeout for the request, defaults to 5.0.
+    expire_after : int, optional
+        Expiration time for the cache in seconds, defaults to 24 hours.
 
     Returns
     -------
@@ -97,9 +103,9 @@ async def async_session(
     """
     cache = SQLiteBackend(
         cache_name=cache_name,
-        expire_after=_EXPIRE,
+        expire_after=expire_after,
         allowed_methods=("GET", "POST"),
-        timeout=5.0,
+        timeout=timeout,
     )
 
     connector = TCPConnector(family=family)
@@ -137,6 +143,8 @@ def retrieve(
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
     family: str = "both",
+    timeout: float = 5.0,
+    expire_after: float = _EXPIRE,
 ) -> List[Union[str, Dict[str, Any], bytes]]:
     r"""Send async requests.
 
@@ -158,6 +166,10 @@ def retrieve(
     family : str, optional
         TCP socket family, defaults to both, i.e., IPv4 and IPv6. For IPv4
         or IPv6 only pass ``ipv4`` or ``ipv6``, respectively.
+    timeout : float, optional
+        Timeout for the request, defaults to 5.0.
+    expire_after : int, optional
+        Expiration time for the cache in seconds, defaults to 24 hours.
 
     Returns
     -------
@@ -188,7 +200,16 @@ def retrieve(
     chunked_reqs = tlz.partition_all(max_workers, inp.url_kwds)
     results = (
         loop.run_until_complete(
-            async_session(c, inp.read, inp.r_kwds, inp.request_method, inp.cache_name, inp.family),
+            async_session(
+                c,
+                inp.read,
+                inp.r_kwds,
+                inp.request_method,
+                inp.cache_name,
+                inp.family,
+                timeout,
+                expire_after,
+            ),
         )
         for c in chunked_reqs
     )
