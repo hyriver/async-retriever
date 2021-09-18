@@ -70,8 +70,8 @@ def test_json():
         "inputs": [
             {"id": "lat", "type": "text/plain", "value": "43.29139"},
             {"id": "lon", "type": "text/plain", "value": "-73.82705"},
-            {"id": "raindroptrace", "type": "text/plain", "value": "True"},
-            {"id": "direction", "type": "text/plain", "value": "up"},
+            {"id": "raindroptrace", "type": "text/plain", "value": "False"},
+            {"id": "direction", "type": "text/plain", "value": "down"},
         ]
     }
     payload = {"json": data}
