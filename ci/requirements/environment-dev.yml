@@ -21,20 +21,19 @@ dependencies:
   - owslib
   - pydantic
   - pyyaml
-  - pyproj
+  - pyproj>=1.2
   - requests
   - requests-cache
   - shapely
   - urllib3
 
   # pygeoutils deps
-  - affine
   - dask
-  - geopandas
+  - geopandas>=0.8
   - netcdf4
-  - numpy
-  - rasterio
-  - xarray
+  - numpy>=0.17
+  - rasterio>=1.2
+  - xarray>=0.17
 
   # py3dep
   - click
