@@ -15,7 +15,7 @@ path = ["tests"]
 exclude = ["tests/.ipynb_checkpoints"]
 capture-output = true
 order = "random"
-output-mode = "test-per-line"  # or 'dots-global', 'dot-module'
+test-output-style = "test-per-line"  # or 'dots-global', 'dot-module'
 fail-limit = 20
 progress-style = ["bar"]
 
