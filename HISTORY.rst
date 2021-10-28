@@ -11,6 +11,10 @@ New Features
   These two arguments gives the user more control for dealing with issues
   related to caching.
 
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Revert to ``pytest`` as the testing framework.
+
 0.2.4 (2021-09-10)
 ------------------
 
