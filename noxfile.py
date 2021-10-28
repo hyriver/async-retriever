@@ -1,12 +1,9 @@
 import nox
 
 
-@nox.session
+@nox.session(python="3.9")
 def tests(session):
     session.install(".[test]")
-    session.run("coverage", "erase")
-    session.run("coverage", "run", "-m", "ward")
     session.run("pytest")
-    session.run("coverage", "xml", "-i")
     session.run("coverage", "report")
     session.run("coverage", "html")

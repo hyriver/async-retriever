@@ -4,12 +4,9 @@ import shutil
 import sys
 from datetime import datetime
 
-import ward
-
 import async_retriever as ar
 
 
-@ward.test("Binary response")
 def test_binary():
     west, south, east, north = (-69.77, 45.07, -69.31, 45.45)
     base_url = "https://thredds.daac.ornl.gov/thredds/ncss/ornldaac/1299"
@@ -46,7 +43,6 @@ def test_binary():
     assert sys.getsizeof(r_b[0]) == 986161
 
 
-@ward.test("JSON response")
 def test_json():
     urls = ["https://labs.waterdata.usgs.gov/api/nldi/linked-data/comid/position"]
     kwds = [
@@ -61,8 +57,7 @@ def test_json():
     assert r_j[0]["features"][0]["properties"]["identifier"] == "2675320"
 
 
-@ward.test("JSON request")
-def test_json():
+def test_post():
     base_url = "https://labs.waterdata.usgs.gov/api/nldi/pygeoapi/processes"
     operation = "nldi-flowtrace"
     url = f"{base_url}/{operation}/jobs?response=document"
@@ -79,7 +74,6 @@ def test_json():
     assert r[0]["outputs"]["features"][0]["properties"]["comid"] == 22294818
 
 
-@ward.test("Text response")
 def test_text():
     base = "https://waterservices.usgs.gov/nwis/site/?"
     urls = ["&".join([base, "format=rdb", "sites=01646500", "siteStatus=all"])]
@@ -89,7 +83,6 @@ def test_text():
     assert r_t[0].split("\n")[-2].split("\t")[1] == "01646500"
 
 
-@ward.test("Ordered return")
 def test_ordered_return():
     stations = ["11073495", "08072300", "01646500"]
     url = "https://waterservices.usgs.gov/nwis/site"
@@ -100,7 +93,6 @@ def test_ordered_return():
     assert [r.split("\n")[-2].split("\t")[1] for r in resp] == stations
 
 
-@ward.test("Show versions")
 def test_show_versions():
     f = io.StringIO()
     ar.show_versions(file=f)

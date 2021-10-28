@@ -20,9 +20,10 @@ fail-limit = 20
 progress-style = ["bar"]
 
 [tool.pytest.ini_options]
-addopts = "--doctest-modules --ignore=noxfile.py -n=auto -v --durations=5"
+addopts = "--doctest-modules --ignore=noxfile.py -n=auto -v --cov=async_retriever --cov-report xml --durations=5"
 doctest_optionflags = 'NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL NUMBER'
 testpaths = [
+    "tests",
     "async_retriever",
 ]
 
