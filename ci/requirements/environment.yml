@@ -15,25 +15,9 @@ dependencies:
   - setuptools
 
   - coverage
-  - toml
-  - pytest
+  - tomli
   - pytest-clarity
   - pytest-sugar
   - pytest-xdist
   - psutil
-  - markupsafe
-  - click
-  - click-completion
-  - click-default-group
-  - colorama
-  - commonmark
-  - cucumber-tag-expressions=2
-  - jinja2
-  - pprintpp
-  - pygments
-  - rich
-  - shellingham
-
-  - pip
-  - pip:
-    - ward
+  - ward
