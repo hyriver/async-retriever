@@ -56,15 +56,13 @@ jobs:
         run: |-
           mamba info -a
           mamba list
-          python -m pip install --no-deps .
+          python -m pip install --no-deps --use-feature=in-tree-build .
       - name: Version info
         run: |-
           python -c "import async_retriever; async_retriever.show_versions()"
-      - name: Run ward and coverage
+      - name: Run pytest
         run: |-
-          coverage run -m ward
           pytest
-          coverage xml -i
       - name: Run codecov and upload the report
         uses: codecov/codecov-action@v2.1.0
         with:
