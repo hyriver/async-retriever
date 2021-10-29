@@ -12,12 +12,9 @@ dependencies:
   - cytoolz
   - nest-asyncio
   - ujson
-  - setuptools
 
-  - coverage
-  - tomli
   - pytest-clarity
+  - pytest-cov
   - pytest-sugar
   - pytest-xdist
   - psutil
-  - ward
