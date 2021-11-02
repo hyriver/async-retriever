@@ -10,6 +10,7 @@ dependencies:
   - brotlipy
   - cchardet
   - cytoolz
+  - importlib_metadata
   - nest-asyncio
   - ujson
 

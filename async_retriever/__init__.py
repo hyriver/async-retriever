@@ -2,15 +2,18 @@
 import asyncio
 import sys
 
-from pkg_resources import DistributionNotFound, get_distribution
-
 from .async_retriever import clean_cache, retrieve
 from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 from .print_versions import show_versions
 
 try:
-    __version__ = get_distribution(__name__).version
-except DistributionNotFound:
+    import importlib.metadata as metadata
+except ImportError:
+    import importlib_metadata as metadata  # type: ignore[no-redef]
+
+try:
+    __version__ = metadata.version("async_retriever")
+except Exception:
     __version__ = "999"
 
 if sys.platform.startswith("win"):

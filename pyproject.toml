@@ -10,15 +10,6 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools_scm]
 fallback_version = "999"
 
-[tool.ward]
-path = ["tests"]
-exclude = ["tests/.ipynb_checkpoints"]
-capture-output = true
-order = "random"
-test-output-style = "test-per-line"  # or 'dots-global', 'dot-module'
-fail-limit = 20
-progress-style = ["bar"]
-
 [tool.pytest.ini_options]
 addopts = "--doctest-modules --ignore=noxfile.py -n=auto -v --cov=async_retriever --cov-report xml --durations=5"
 doctest_optionflags = 'NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL NUMBER'
