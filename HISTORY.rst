@@ -14,6 +14,9 @@ New Features
 Internal Changes
 ~~~~~~~~~~~~~~~~
 - Revert to ``pytest`` as the testing framework.
+- Use ``importlib-metadata`` for getting the version insead of ``pkg_resources``
+  to decrease import time as discussed in this
+  `issue <https://github.com/pydata/xarray/issues/5676>`__.
 
 0.2.4 (2021-09-10)
 ------------------
