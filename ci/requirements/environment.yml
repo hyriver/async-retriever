@@ -14,8 +14,6 @@ dependencies:
   - nest-asyncio
   - ujson
 
-  - pytest-clarity
   - pytest-cov
-  - pytest-sugar
   - pytest-xdist
   - psutil
