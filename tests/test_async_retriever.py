@@ -37,7 +37,7 @@ def test_binary():
     )
 
     cache_name = "cache_tmp/aiohttp_cache.sqlite"
-    r_b = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache_name)
+    r_b = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache_name, ssl=False)
     ar.clean_cache(cache_name)
     shutil.rmtree("cache_tmp")
     assert sys.getsizeof(r_b[0]) == 986161
