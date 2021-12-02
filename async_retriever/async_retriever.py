@@ -98,7 +98,8 @@ async def async_session(
     expire_after : int, optional
         Expiration time for the cache in seconds, defaults to 24 hours.
     ssl : bool or SSLContext, optional
-        SSLContext to use for the connection, defaults to None. Set to False to disable.
+        SSLContext to use for the connection, defaults to None. Set to False to disable
+        SSL cetification verification.
 
     Returns
     -------
@@ -176,7 +177,8 @@ def retrieve(
     expire_after : int, optional
         Expiration time for the cache in seconds, defaults to 24 hours.
     ssl : bool or SSLContext, optional
-        SSLContext to use for the connection, defaults to None. Set to False to disable.
+        SSLContext to use for the connection, defaults to None. Set to False to disable
+        SSL cetification verification.
 
     Returns
     -------
