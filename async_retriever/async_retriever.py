@@ -2,6 +2,7 @@
 import asyncio
 import inspect
 import socket
+import ssl
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 
@@ -72,6 +73,7 @@ async def async_session(
     family: int,
     timeout: float = 5.0,
     expire_after: float = _EXPIRE,
+    ssl: Union[ssl.SSLContext, bool, None] = None,
 ) -> Callable[[int], Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
     """Create an async session for sending requests.
 
@@ -95,6 +97,8 @@ async def async_session(
         Timeout for the request, defaults to 5.0.
     expire_after : int, optional
         Expiration time for the cache in seconds, defaults to 24 hours.
+    ssl : bool or SSLContext, optional
+        SSLContext to use for the connection, defaults to None. Set to False to disable.
 
     Returns
     -------
@@ -108,7 +112,7 @@ async def async_session(
         timeout=timeout,
     )
 
-    connector = TCPConnector(family=family)
+    connector = TCPConnector(family=family, ssl=ssl)
 
     async with CachedSession(
         json_serialize=json.dumps,
@@ -145,6 +149,7 @@ def retrieve(
     family: str = "both",
     timeout: float = 5.0,
     expire_after: float = _EXPIRE,
+    ssl: Union[ssl.SSLContext, bool, None] = None,
 ) -> List[Union[str, Dict[str, Any], bytes]]:
     r"""Send async requests.
 
@@ -170,6 +175,8 @@ def retrieve(
         Timeout for the request, defaults to 5.0.
     expire_after : int, optional
         Expiration time for the cache in seconds, defaults to 24 hours.
+    ssl : bool or SSLContext, optional
+        SSLContext to use for the connection, defaults to None. Set to False to disable.
 
     Returns
     -------
@@ -209,6 +216,7 @@ def retrieve(
                 inp.family,
                 timeout,
                 expire_after,
+                ssl,
             ),
         )
         for c in chunked_reqs
