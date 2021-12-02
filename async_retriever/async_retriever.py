@@ -2,8 +2,8 @@
 import asyncio
 import inspect
 import socket
-import ssl
 from pathlib import Path
+from ssl import SSLContext
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 
 import cytoolz as tlz
@@ -73,7 +73,7 @@ async def async_session(
     family: int,
     timeout: float = 5.0,
     expire_after: float = _EXPIRE,
-    ssl: Union[ssl.SSLContext, bool, None] = None,
+    ssl: Union[SSLContext, bool, None] = None,
 ) -> Callable[[int], Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
     """Create an async session for sending requests.
 
@@ -150,7 +150,7 @@ def retrieve(
     family: str = "both",
     timeout: float = 5.0,
     expire_after: float = _EXPIRE,
-    ssl: Union[ssl.SSLContext, bool, None] = None,
+    ssl: Union[SSLContext, bool, None] = None,
 ) -> List[Union[str, Dict[str, Any], bytes]]:
     r"""Send async requests.
 
