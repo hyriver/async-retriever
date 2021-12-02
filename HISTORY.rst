@@ -2,6 +2,13 @@
 History
 =======
 
+0.2.6 (unreleased)
+------------------
+
+New Features
+~~~~~~~~~~~~
+- Expose the ``ssl`` argument for disabling the SSL certification verification (:issue_day:`41`).
+
 0.2.5 (2021-11-09)
 ------------------
 
@@ -14,7 +21,7 @@ New Features
 Internal Changes
 ~~~~~~~~~~~~~~~~
 - Revert to ``pytest`` as the testing framework.
-- Use ``importlib-metadata`` for getting the version insead of ``pkg_resources``
+- Use ``importlib-metadata`` for getting the version instead of ``pkg_resources``
   to decrease import time as discussed in this
   `issue <https://github.com/pydata/xarray/issues/5676>`__.
 
@@ -55,7 +62,7 @@ Internal Changes
 
 New Features
 ~~~~~~~~~~~~
-- The responses now are returned in the same order as the input URLs.
+- The responses now are returned to the same order as the input URLs.
 - Add support for passing connection type, i.e., IPv4 only, IPv6, only
   or both via ``family`` argument. Defaults to ``both``.
 - Set ``trust_env=True`` so the session can read system's ``netrc`` files.
@@ -80,7 +87,7 @@ Breaking Changes
 
 Bug Fixes
 ~~~~~~~~~
-- Pass a new loop explicitly to ``nest_asyncio`` (:issue:`1`).
+- Pass a new loop explicitly to ``nest_asyncio`` (:issue_async:`1`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
