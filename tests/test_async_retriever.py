@@ -74,11 +74,11 @@ def test_post():
     assert r[0]["outputs"]["features"][0]["properties"]["comid"] == 22294818
 
 
-def test_text():
+def test_text_no_caching():
     base = "https://waterservices.usgs.gov/nwis/site/?"
     urls = ["&".join([base, "format=rdb", "sites=01646500", "siteStatus=all"])]
 
-    r_t = ar.retrieve(urls, "text")
+    r_t = ar.retrieve(urls, "text", disable=True)
 
     assert r_t[0].split("\n")[-2].split("\t")[1] == "01646500"
 
