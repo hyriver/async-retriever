@@ -102,7 +102,7 @@ async def async_session(
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL cetification verification.
     disable: bool, optional
-        If ``True`` temporarily disable the caching requests and get new responses
+        If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
 
     Returns
@@ -187,7 +187,7 @@ def retrieve(
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL cetification verification.
     disable: bool, optional
-        If ``True`` temporarily disable the caching requests and get new responses
+        If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
 
     Returns
