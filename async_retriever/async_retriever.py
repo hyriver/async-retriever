@@ -74,6 +74,7 @@ async def async_session(
     timeout: float = 5.0,
     expire_after: float = _EXPIRE,
     ssl: Union[SSLContext, bool, None] = None,
+    disable: bool = False,
 ) -> Callable[[int], Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
     """Create an async session for sending requests.
 
@@ -100,6 +101,9 @@ async def async_session(
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL cetification verification.
+    disable: bool, optional
+        If ``True`` temporarily disable the caching requests and get new responses
+        from the server, defaults to False.
 
     Returns
     -------
@@ -121,11 +125,13 @@ async def async_session(
         connector=connector,
         trust_env=True,
     ) as session:
-        request_func = getattr(session, request_method.lower())
-        tasks = (
-            _retrieve(uid, url, kwds, request_func, read, r_kwds) for uid, url, kwds in url_kwds
-        )
-        return await asyncio.gather(*tasks)
+        _session = session.disabled() if disable else session
+        async with _session:
+            request_func = getattr(session, request_method.lower())
+            tasks = (
+                _retrieve(uid, url, kwds, request_func, read, r_kwds) for uid, url, kwds in url_kwds
+            )
+            return await asyncio.gather(*tasks)
 
 
 async def _clean_cache(cache_name: Union[Path, str]) -> None:
@@ -151,6 +157,7 @@ def retrieve(
     timeout: float = 5.0,
     expire_after: float = _EXPIRE,
     ssl: Union[SSLContext, bool, None] = None,
+    disable: bool = False,
 ) -> List[Union[str, Dict[str, Any], bytes]]:
     r"""Send async requests.
 
@@ -179,6 +186,9 @@ def retrieve(
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL cetification verification.
+    disable: bool, optional
+        If ``True`` temporarily disable the caching requests and get new responses
+        from the server, defaults to False.
 
     Returns
     -------
@@ -219,6 +229,7 @@ def retrieve(
                 timeout,
                 expire_after,
                 ssl,
+                disable,
             ),
         )
         for c in chunked_reqs
