@@ -7,7 +7,10 @@ History
 
 New Features
 ~~~~~~~~~~~~
-- Expose the ``ssl`` argument for disabling the SSL certification verification (:issue_day:`41`).
+- Expose the ``ssl`` argument for disabling the SSL certification
+  verification (:issue_day:`41`).
+- Add a new option called ``disable`` that if ``True``, it temporarily disables caching
+  requests and gets new responses from the server. It defaults to ``False``.
 
 0.2.5 (2021-11-09)
 ------------------
