@@ -1,10 +1,18 @@
 """Tests for the package."""
+import asyncio
 import io
 import shutil
 import sys
 from datetime import datetime
 
+from aiohttp_client_cache import CacheBackend
+
 import async_retriever as ar
+
+
+async def check_url(cache, url):
+    cache = CacheBackend(cache=cache)
+    return await cache.has_url(url)
 
 
 def test_binary():
@@ -38,9 +46,9 @@ def test_binary():
 
     cache_name = "cache_tmp/aiohttp_cache.sqlite"
     r_b = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache_name, ssl=False)
-    ar.clean_cache(cache_name)
+    ar.delet_url_cache(base_url, cache_name=cache_name)
+    assert sys.getsizeof(r_b[0]) == 986161 and not asyncio.run(check_url(cache_name, base_url))
     shutil.rmtree("cache_tmp")
-    assert sys.getsizeof(r_b[0]) == 986161
 
 
 def test_json():
