@@ -2,8 +2,16 @@
 History
 =======
 
-0.2.6 (unreleased)
+0.3.0 (unreleased)
 ------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+- Set the expiration time to never expire by default. In this case, the new
+  ``delete_url_cache`` function should be used if you know that a database
+  on a server was updated, and you want to retrieve the latest data.
+  Alternatively, you can use the ``expire_after`` argument to set the
+  expiration date for the cache.
 
 New Features
 ~~~~~~~~~~~~
@@ -11,6 +19,8 @@ New Features
   verification (:issue_day:`41`).
 - Add a new option called ``disable`` that if ``True``, it temporarily disables caching
   requests and gets new responses from the server. It defaults to ``False``.
+- Add a new function called ``delete_url_cache`` that deletes the cache for a
+  specific URL.
 
 0.2.5 (2021-11-09)
 ------------------
