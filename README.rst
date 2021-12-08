@@ -106,9 +106,9 @@ Features
 AsyncRetriever is a part of `HyRiver <https://github.com/cheginit/HyRiver>`__ software stack that
 is designed to aid in watershed analysis through web services. This package has only one purpose;
 asynchronously sending requests and retrieving responses as ``text``, ``binary``, or ``json``
-objects. It uses persistent caching to speedup the retrieval even further. Moreover, thanks
-to `nest_asyncio <https://github.com/erdewit/nest_asyncio>`__ you can use this function in
-Jupyter notebooks as well. Although this package is in the HyRiver software stack, it's
+objects. It uses persistent caching to speed up the retrieval even further. Moreover, thanks
+to `nest_asyncio <https://github.com/erdewit/nest_asyncio>`__ you can use this package in
+Jupyter notebooks. Although this package is in the HyRiver software stack, it's
 applicable to any HTTP requests.
 
 Please note that since this project is in early development stages, while the provided
@@ -137,14 +137,18 @@ using `Conda <https://docs.conda.io/en/latest/>`__:
 Quick start
 -----------
 
-AsyncRetriever has one public function: ``retrieve``. By default, this function uses
-``./cache/aiohttp_cache.sqlite`` as the cache file. You can use ``cache_name`` argument
-to customize it. Now, let's see it in action!
+AsyncRetriever has two public function: ``retrieve`` for sending requests and ``delete_url_cache``
+for removing all requests from the cache file that contain a given URL. By default, ``retrieve``
+creates and/or uses ``./cache/aiohttp_cache.sqlite`` as the cache that you can customize it
+by the ``cache_name`` argument. Also, by default, the cache doesn't have any expiration date and
+the ``delete_url_cache`` function should be used if you know that a database on a server was
+updated, and you want to retrieve the latest data. Alternatively, you can use the ``expire_after``
+argument to set the expiration date for the cache.
 
 As an example for retrieving a ``binary`` response, let's use the DAAC server to get
 `NDVI <https://daac.ornl.gov/VEGETATION/guides/US_MODIS_NDVI.html>`_.
-The function can be directly passed to ``xarray.open_mfdataset`` to get the data as
-an ``xarray`` Dataset.
+The responses can be directly passed to ``xarray.open_mfdataset`` to get the data as
+a ``xarray`` Dataset.
 
 .. code-block:: python
 
