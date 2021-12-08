@@ -46,7 +46,7 @@ def test_binary():
 
     cache_name = "cache_tmp/aiohttp_cache.sqlite"
     r_b = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache_name, ssl=False)
-    ar.delet_url_cache(base_url, cache_name=cache_name)
+    ar.delete_url_cache(base_url, cache_name=cache_name)
     assert sys.getsizeof(r_b[0]) == 986161 and not asyncio.run(check_url(cache_name, base_url))
     shutil.rmtree("cache_tmp")
 

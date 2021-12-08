@@ -22,6 +22,13 @@ def test_invalid_method(url_kwds):
     assert "GET" in str(ex.value)
 
 
+def test_delete_invalid_method(url_kwds):
+    urls, _ = url_kwds
+    with pytest.raises(InvalidInputValue) as ex:
+        ar.delete_url_cache(urls[0], request_method="getter")
+    assert "GET" in str(ex.value)
+
+
 def test_invalid_read(url_kwds):
     urls, kwds = url_kwds
     with pytest.raises(InvalidInputValue) as ex:
