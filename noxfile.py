@@ -3,14 +3,21 @@ from pathlib import Path
 
 import nox
 
+HR_DEPS = []
+
 
 @nox.session(python="3.9")
 def tests(session):
-    session.install(".[test]")
+    install_deps(session)
+
     session.run("pytest")
     session.run("coverage", "report")
     session.run("coverage", "html")
 
+
+def install_deps(session):
+    deps = [".[test]"] + [f"git+https://github.com/cheginit/{p}.git" for p in HR_DEPS]
+    session.install(*deps)
     dirs = [".pytest_cache", "build", "dist", ".eggs"]
     for d in dirs:
         shutil.rmtree(d, ignore_errors=True)
