@@ -17,6 +17,9 @@ testpaths = [
     "tests",
     "async_retriever",
 ]
+filterwarnings =[
+    "ignore:.*distutils package is deprecated.*"
+]
 
 [tool.mypy]
 allow_redefinition = false
