@@ -16,7 +16,7 @@ from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
 from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 
 _EXPIRE = -1
-__all__ = ["retrieve", "delet_url_cache"]
+__all__ = ["retrieve", "delete_url_cache"]
 
 
 def create_cachefile(db_name: Union[str, Path, None] = None) -> Path:
@@ -134,7 +134,7 @@ async def async_session(
             return await asyncio.gather(*tasks)
 
 
-async def _delet_url_cache(
+async def _delete_url_cache(
     url: StrOrURL,
     method: str,
     cache_name: Path,
@@ -144,11 +144,26 @@ async def _delet_url_cache(
     await cache.delete_url(url, method)
 
 
-def delet_url_cache(
-    url: StrOrURL, method: str = "GET", cache_name: Optional[Union[Path, str]] = None
+def delete_url_cache(
+    url: StrOrURL, request_method: str = "GET", cache_name: Optional[Union[Path, str]] = None
 ) -> None:
-    """Remove expired responses from the cache file."""
-    asyncio.run(_delet_url_cache(url, method, create_cachefile(cache_name)))
+    """Remove expired responses from the cache file.
+
+    Parameters
+    ----------
+    url : str
+        URL to be deleted from the cache
+    request_method : str, optional
+        HTTP request method to be deleted from the cache, defaults to ``GET``.
+    cache_name : str, optional
+        Path to a file for caching the session, defaults to
+        ``./cache/aiohttp_cache.sqlite``.
+    """
+    request_method = request_method.upper()
+    valid_methods = ["GET", "POST"]
+    if request_method not in valid_methods:
+        raise InvalidInputValue("method", valid_methods)
+    asyncio.run(_delete_url_cache(url, request_method, create_cachefile(cache_name)))
 
 
 def retrieve(
