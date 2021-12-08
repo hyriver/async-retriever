@@ -15,8 +15,8 @@ from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
 
 from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 
-_EXPIRE = 24 * 60 * 60
-__all__ = ["retrieve", "clean_cache"]
+_EXPIRE = -1
+__all__ = ["retrieve", "delet_url_cache"]
 
 
 def create_cachefile(db_name: Union[str, Path, None] = None) -> Path:
@@ -69,7 +69,7 @@ async def async_session(
     read: str,
     r_kwds: Dict[str, Any],
     request_method: str,
-    cache_name: Union[Path, str],
+    cache_name: Path,
     family: int,
     timeout: float = 5.0,
     expire_after: float = _EXPIRE,
@@ -134,20 +134,25 @@ async def async_session(
             return await asyncio.gather(*tasks)
 
 
-async def _clean_cache(cache_name: Union[Path, str]) -> None:
+async def _delet_url_cache(
+    url: StrOrURL,
+    method: str,
+    cache_name: Path,
+) -> None:
     """Remove expired responses from the cache file."""
     cache = CacheBackend(cache_name=cache_name)
-    await cache.delete_expired_responses()
+    await cache.delete_url(url, method)
 
 
-def clean_cache(cache_name: Union[Path, str]) -> None:
+def delet_url_cache(
+    url: StrOrURL, method: str = "GET", cache_name: Optional[Union[Path, str]] = None
+) -> None:
     """Remove expired responses from the cache file."""
-    cache_name = create_cachefile(cache_name)
-    asyncio.run(_clean_cache(cache_name))
+    asyncio.run(_delet_url_cache(url, method, create_cachefile(cache_name)))
 
 
 def retrieve(
-    urls: Union[StrOrURL, List[StrOrURL], Tuple[StrOrURL, ...]],
+    urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
     read: str,
     request_kwds: Optional[List[Dict[str, Any]]] = None,
     request_method: str = "GET",
@@ -241,7 +246,7 @@ def retrieve(
 class ValidateInputs:
     def __init__(
         self,
-        urls: Union[StrOrURL, List[StrOrURL], Tuple[StrOrURL, ...]],
+        urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
         read: str,
         request_kwds: Optional[List[Dict[str, Any]]] = None,
         request_method: str = "GET",
@@ -271,7 +276,7 @@ class ValidateInputs:
 
     @staticmethod
     def generate_requests(
-        urls: Union[StrOrURL, List[StrOrURL], Tuple[StrOrURL, ...]],
+        urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
         request_kwds: Optional[List[Dict[str, Any]]],
     ):
         """Generate urls and keywords."""
