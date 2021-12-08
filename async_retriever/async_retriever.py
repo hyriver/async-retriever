@@ -15,7 +15,7 @@ from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
 
 from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 
-_EXPIRE = -1
+EXPIRE = -1
 __all__ = ["retrieve", "delete_url_cache"]
 
 
@@ -72,7 +72,7 @@ async def async_session(
     cache_name: Path,
     family: int,
     timeout: float = 5.0,
-    expire_after: float = _EXPIRE,
+    expire_after: float = EXPIRE,
     ssl: Union[SSLContext, bool, None] = None,
     disable: bool = False,
 ) -> Callable[[int], Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
@@ -97,7 +97,7 @@ async def async_session(
     timeout : float, optional
         Timeout for the request, defaults to 5.0.
     expire_after : int, optional
-        Expiration time for the cache in seconds, defaults to 24 hours.
+        Expiration time for the cache in seconds, defaults to -1 (never expire).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL cetification verification.
@@ -175,7 +175,7 @@ def retrieve(
     cache_name: Optional[Union[Path, str]] = None,
     family: str = "both",
     timeout: float = 5.0,
-    expire_after: float = _EXPIRE,
+    expire_after: float = EXPIRE,
     ssl: Union[SSLContext, bool, None] = None,
     disable: bool = False,
 ) -> List[Union[str, Dict[str, Any], bytes]]:
@@ -202,7 +202,7 @@ def retrieve(
     timeout : float, optional
         Timeout for the request, defaults to 5.0.
     expire_after : int, optional
-        Expiration time for the cache in seconds, defaults to 24 hours.
+        Expiration time for response caching in seconds, defaults to -1 (never expire).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL cetification verification.
