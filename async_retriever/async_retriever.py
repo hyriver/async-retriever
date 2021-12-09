@@ -2,18 +2,23 @@
 import asyncio
 import inspect
 import socket
+import sys
 from pathlib import Path
 from ssl import SSLContext
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 
 import cytoolz as tlz
-import nest_asyncio
 import ujson as json
 from aiohttp import ClientResponseError, ContentTypeError, TCPConnector
 from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
 
 from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
+
+try:
+    import nest_asyncio
+except ImportError:
+    nest_asyncio = None
 
 EXPIRE = -1
 __all__ = ["retrieve", "delete_url_cache"]
@@ -134,6 +139,20 @@ async def async_session(
             return await asyncio.gather(*tasks)
 
 
+def _get_event_loop() -> asyncio.AbstractEventLoop:
+    """Create an event loop."""
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+
+    if "IPython" in sys.modules:
+        if nest_asyncio is None:
+            raise ImportError("nest_asyncio")
+        nest_asyncio.apply(loop)
+    return loop
+
+
 async def _delete_url_cache(
     url: StrOrURL,
     method: str,
@@ -159,11 +178,14 @@ def delete_url_cache(
         Path to a file for caching the session, defaults to
         ``./cache/aiohttp_cache.sqlite``.
     """
+    loop = _get_event_loop()
+    asyncio.set_event_loop(loop)
+
     request_method = request_method.upper()
     valid_methods = ["GET", "POST"]
     if request_method not in valid_methods:
         raise InvalidInputValue("method", valid_methods)
-    asyncio.run(_delete_url_cache(url, request_method, create_cachefile(cache_name)))
+    loop.run_until_complete(_delete_url_cache(url, request_method, create_cachefile(cache_name)))
 
 
 def retrieve(
@@ -232,8 +254,7 @@ def retrieve(
     """
     inp = ValidateInputs(urls, read, request_kwds, request_method, cache_name, family)
 
-    loop = asyncio.new_event_loop()
-    nest_asyncio.apply(loop)
+    loop = _get_event_loop()
     asyncio.set_event_loop(loop)
 
     chunked_reqs = tlz.partition_all(max_workers, inp.url_kwds)
