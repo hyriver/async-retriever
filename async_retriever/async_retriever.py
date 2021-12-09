@@ -139,18 +139,20 @@ async def async_session(
             return await asyncio.gather(*tasks)
 
 
-def _get_event_loop() -> asyncio.AbstractEventLoop:
+def _get_event_loop() -> Tuple[asyncio.AbstractEventLoop, bool]:
     """Create an event loop."""
     try:
         loop = asyncio.get_running_loop()
+        new_loop = False
     except RuntimeError:
         loop = asyncio.new_event_loop()
+        new_loop = True
 
     if "IPython" in sys.modules:
         if nest_asyncio is None:
             raise ImportError("nest_asyncio")
         nest_asyncio.apply(loop)
-    return loop
+    return loop, new_loop
 
 
 async def _delete_url_cache(
@@ -178,7 +180,7 @@ def delete_url_cache(
         Path to a file for caching the session, defaults to
         ``./cache/aiohttp_cache.sqlite``.
     """
-    loop = _get_event_loop()
+    loop, new_loop = _get_event_loop()
     asyncio.set_event_loop(loop)
 
     request_method = request_method.upper()
@@ -186,6 +188,8 @@ def delete_url_cache(
     if request_method not in valid_methods:
         raise InvalidInputValue("method", valid_methods)
     loop.run_until_complete(_delete_url_cache(url, request_method, create_cachefile(cache_name)))
+    if new_loop:
+        loop.close()
 
 
 def retrieve(
@@ -254,7 +258,7 @@ def retrieve(
     """
     inp = ValidateInputs(urls, read, request_kwds, request_method, cache_name, family)
 
-    loop = _get_event_loop()
+    loop, new_loop = _get_event_loop()
     asyncio.set_event_loop(loop)
 
     chunked_reqs = tlz.partition_all(max_workers, inp.url_kwds)
@@ -276,7 +280,10 @@ def retrieve(
         for c in chunked_reqs
     )
 
-    return [r for _, r in sorted(tlz.concat(results))]
+    resp = [r for _, r in sorted(tlz.concat(results))]
+    if new_loop:
+        loop.close()
+    return resp
 
 
 class ValidateInputs:
