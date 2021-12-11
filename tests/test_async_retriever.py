@@ -1,18 +1,37 @@
 """Tests for the package."""
 import asyncio
 import io
-import shutil
 import sys
 from datetime import datetime
+from pathlib import Path
 
-from aiohttp_client_cache import CacheBackend
+from aiohttp_client_cache import SQLiteBackend
 
 import async_retriever as ar
 
+SMALL = 1e-3
 
-async def check_url(cache, url):
-    cache = CacheBackend(cache=cache)
-    return await cache.has_url(url)
+
+async def check_url(url, method="GET", **kwargs):
+    cache = SQLiteBackend(cache_name=Path("cache", "aiohttp_cache.sqlite"))
+    return await cache.has_url(url, method, **kwargs)
+
+
+def test_disable_cache():
+    url = "https://nationalmap.gov/epqs/pqs.php"
+    payload = {"params": {"x": -100, "y": 38, "units": "Meters", "output": "json"}}
+    resp = ar.retrieve([url], "json", [payload], disable=True)
+    elev = resp[0]["USGS_Elevation_Point_Query_Service"]["Elevation_Query"]["Elevation"]
+    assert abs(elev - 761.67) < SMALL and not asyncio.run(check_url(url, params=payload["params"]))
+
+
+def test_delete_url():
+    url = "https://nationalmap.gov/epqs/pqs.php"
+    payload = {"params": {"x": -100, "y": 38, "units": "Meters", "output": "json"}}
+    resp = ar.retrieve([url], "json", [payload])
+    elev = resp[0]["USGS_Elevation_Point_Query_Service"]["Elevation_Query"]["Elevation"]
+    ar.delete_url_cache(url, params=payload["params"])
+    assert abs(elev - 761.67) < SMALL and not asyncio.run(check_url(url, params=payload["params"]))
 
 
 def test_binary():
@@ -44,11 +63,9 @@ def test_binary():
         ),
     )
 
-    cache_name = "cache_tmp/aiohttp_cache.sqlite"
+    cache_name = "cache/tmp/aiohttp_cache.sqlite"
     r_b = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache_name, ssl=False)
-    ar.delete_url_cache(base_url, cache_name=cache_name)
-    assert sys.getsizeof(r_b[0]) == 986161 and not asyncio.run(check_url(cache_name, base_url))
-    shutil.rmtree("cache_tmp")
+    assert sys.getsizeof(r_b[0]) == 986161
 
 
 def test_json():
@@ -82,11 +99,11 @@ def test_post():
     assert r[0]["outputs"]["features"][0]["properties"]["comid"] == 22294818
 
 
-def test_text_no_caching():
+def test_text():
     base = "https://waterservices.usgs.gov/nwis/site/?"
     urls = ["&".join([base, "format=rdb", "sites=01646500", "siteStatus=all"])]
 
-    r_t = ar.retrieve(urls, "text", disable=True)
+    r_t = ar.retrieve(urls, "text")
 
     assert r_t[0].split("\n")[-2].split("\t")[1] == "01646500"
 
