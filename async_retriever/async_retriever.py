@@ -11,7 +11,7 @@ import cytoolz as tlz
 import ujson as json
 from aiohttp import ClientResponseError, ContentTypeError, TCPConnector
 from aiohttp.typedefs import StrOrURL
-from aiohttp_client_cache import CacheBackend, CachedSession, SQLiteBackend
+from aiohttp_client_cache import CachedSession, SQLiteBackend
 
 from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 
@@ -156,19 +156,20 @@ def _get_event_loop() -> Tuple[asyncio.AbstractEventLoop, bool]:
 
 
 async def _delete_url_cache(
-    url: StrOrURL,
-    method: str,
-    cache_name: Path,
+    url: StrOrURL, method: str = "GET", cache_name: Optional[Path] = None, **kwargs
 ) -> None:
-    """Remove expired responses from the cache file."""
-    cache = CacheBackend(cache_name=cache_name)
-    await cache.delete_url(url, method)
+    """Delete cached response associated with `url`, along with its history (if applicable)."""
+    cache = SQLiteBackend(cache_name=cache_name)
+    await cache.delete_url(url, method, **kwargs)
 
 
 def delete_url_cache(
-    url: StrOrURL, request_method: str = "GET", cache_name: Optional[Union[Path, str]] = None
+    url: StrOrURL,
+    request_method: str = "GET",
+    cache_name: Optional[Union[Path, str]] = None,
+    **kwargs,
 ) -> None:
-    """Remove expired responses from the cache file.
+    """Delete cached response associated with `url`, along with its history (if applicable).
 
     Parameters
     ----------
@@ -179,6 +180,8 @@ def delete_url_cache(
     cache_name : str, optional
         Path to a file for caching the session, defaults to
         ``./cache/aiohttp_cache.sqlite``.
+    kwargs : dict, optional
+        Keywords to pass to the ``cache.delete_url()``.
     """
     loop, new_loop = _get_event_loop()
     asyncio.set_event_loop(loop)
@@ -187,7 +190,10 @@ def delete_url_cache(
     valid_methods = ["GET", "POST"]
     if request_method not in valid_methods:
         raise InvalidInputValue("method", valid_methods)
-    loop.run_until_complete(_delete_url_cache(url, request_method, create_cachefile(cache_name)))
+
+    loop.run_until_complete(
+        _delete_url_cache(url, request_method, create_cachefile(cache_name), **kwargs)
+    )
     if new_loop:
         loop.close()
 
