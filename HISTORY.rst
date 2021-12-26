@@ -7,20 +7,17 @@ History
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
-- Set the expiration time to never expire by default. In this case, the new
-  ``delete_url_cache`` function should be used if you know that a database
-  on a server was updated, and you want to retrieve the latest data.
-  Alternatively, you can use the ``expire_after`` argument to set the
-  expiration date for the cache.
+- Set the expiration time to never expire by default.
 
 New Features
 ~~~~~~~~~~~~
+- Add two new arguments to ``retrieve`` for controlling caching. First, ``delete_url_cache``
+  for deleting caches for specific requests. Second, ``expire_after`` for setting a
+  custom expiration time.
 - Expose the ``ssl`` argument for disabling the SSL certification
   verification (:issue_day:`41`).
 - Add a new option called ``disable`` that if ``True``, it temporarily disables caching
-  requests and gets new responses from the server. It defaults to ``False``.
-- Add a new function called ``delete_url_cache`` that deletes the cache for a
-  specific URL.
+  requests and gets new responses. It defaults to ``False``.
 
 0.2.5 (2021-11-09)
 ------------------
