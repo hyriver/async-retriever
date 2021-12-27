@@ -1,6 +1,6 @@
 repos:
   - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
     - id: trailing-whitespace
     - id: requirements-txt-fixer
@@ -57,7 +57,7 @@ repos:
       args: [--max-line-length, "100"]
 
   # - repo: https://github.com/terrencepreilly/darglint
-  #   rev: v1.8.0
+  #   rev: v1.8.1
   #   hooks:
   #   - id: darglint
   #     name: Lint docstrings with Darglint
@@ -81,12 +81,6 @@ repos:
     - id: tryceratops
       name: Check try-exceptions blocks with tryceratops
 
-  # - repo: https://github.com/dizballanze/gray
-  #   rev: v0.10.0
-  #   hooks:
-  #     - id: gray
-  #       args: ["-f", "add-trailing-comma,autoflake,fixit,isort,pyupgrade,trim,unify,black", "--black-line-length", "100"]
-
   - repo: https://github.com/PyCQA/flake8
     rev: 4.0.1
     hooks:
@@ -95,7 +89,7 @@ repos:
       additional_dependencies: [flake8-comprehensions, flake8-builtins, flake8-blind-except, flake8-bugbear, flake8-docstrings, flake8-simplify]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.920
+    rev: v0.930
     hooks:
     - id: mypy
       name: Static type checking with mypy
