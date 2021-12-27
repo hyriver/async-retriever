@@ -78,32 +78,17 @@ def test_json():
             },
         },
     ]
-    r_j = ar.retrieve(urls, "json", request_kwds=kwds)
+    r_j = ar.retrieve(urls, "json", kwds)
     assert r_j[0]["features"][0]["properties"]["identifier"] == "2675320"
 
 
-def test_post():
-    base_url = "https://labs.waterdata.usgs.gov/api/nldi/pygeoapi/processes"
-    operation = "nldi-flowtrace"
-    url = f"{base_url}/{operation}/jobs?response=document"
-    data = {
-        "inputs": [
-            {"id": "lat", "type": "text/plain", "value": "43.29139"},
-            {"id": "lon", "type": "text/plain", "value": "-73.82705"},
-            {"id": "raindroptrace", "type": "text/plain", "value": "False"},
-            {"id": "direction", "type": "text/plain", "value": "down"},
-        ]
-    }
-    payload = {"json": data}
-    r = ar.retrieve([url], "json", [payload], "POST")
-    assert r[0]["outputs"]["features"][0]["properties"]["comid"] == 22294818
-
-
-def test_text():
+def test_text_post():
     base = "https://waterservices.usgs.gov/nwis/site/?"
-    urls = ["&".join([base, "format=rdb", "sites=01646500", "siteStatus=all"])]
+    urls = [
+        "&".join([base, "format=rdb", f"sites={','.join(['01646500'] * 20)}", "siteStatus=all"])
+    ]
 
-    r_t = ar.retrieve(urls, "text")
+    r_t = ar.retrieve(urls, "text", request_method="POST")
 
     assert r_t[0].split("\n")[-2].split("\t")[1] == "01646500"
 
