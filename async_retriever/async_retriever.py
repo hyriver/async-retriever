@@ -5,7 +5,7 @@ import socket
 import sys
 from pathlib import Path
 from ssl import SSLContext
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Awaitable, Dict, Iterable, List, Optional, Tuple, Union
 
 import cytoolz as tlz
 import ujson as json
@@ -80,7 +80,7 @@ async def async_session(
     expire_after: float = EXPIRE,
     ssl: Union[SSLContext, bool, None] = None,
     disable: bool = False,
-) -> Callable[[int], Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
+) -> Awaitable[Union[str, bytes, Dict[str, Any]]]:
     """Create an async session for sending requests.
 
     Parameters
@@ -136,7 +136,7 @@ async def async_session(
             tasks = (
                 _retrieve(uid, url, kwds, request_func, read, r_kwds) for uid, url, kwds in url_kwds
             )
-            return await asyncio.gather(*tasks)
+            return await asyncio.gather(*tasks)  # type: ignore
 
 
 def _get_event_loop() -> Tuple[asyncio.AbstractEventLoop, bool]:
@@ -150,13 +150,13 @@ def _get_event_loop() -> Tuple[asyncio.AbstractEventLoop, bool]:
 
     if "IPython" in sys.modules:
         if nest_asyncio is None:
-            raise ImportError("nest_asyncio")
+            raise ImportError("nest-asyncio")
         nest_asyncio.apply(loop)
     return loop, new_loop
 
 
 async def _delete_url_cache(
-    url: StrOrURL, method: str = "GET", cache_name: Optional[Path] = None, **kwargs
+    url: StrOrURL, method: str = "GET", cache_name: Optional[Path] = None, **kwargs: str
 ) -> None:
     """Delete cached response associated with `url`, along with its history (if applicable)."""
     cache = SQLiteBackend(cache_name=cache_name)
@@ -167,7 +167,7 @@ def delete_url_cache(
     url: StrOrURL,
     request_method: str = "GET",
     cache_name: Optional[Union[Path, str]] = None,
-    **kwargs,
+    **kwargs: str,
 ) -> None:
     """Delete cached response associated with `url`, along with its history (if applicable).
 
@@ -327,7 +327,7 @@ class ValidateInputs:
     def generate_requests(
         urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
         request_kwds: Optional[List[Dict[str, Any]]],
-    ):
+    ) -> Iterable[Tuple[int, StrOrURL, Dict[str, Any]]]:
         """Generate urls and keywords."""
         if not isinstance(urls, (list, tuple)):
             raise InvalidInputType("``urls``", "list of str", "[url1, ...]")
