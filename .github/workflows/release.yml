@@ -1,9 +1,10 @@
+name: Publish
+
 on:
   push:
     tags:
       - 'v*'
-
-name: Publish
+  workflow_dispatch: # allows you to trigger manually
 
 jobs:
   changelog:
