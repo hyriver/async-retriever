@@ -19,10 +19,10 @@ async def check_url(url, method="GET", **kwargs):
 
 def test_disable_cache():
     url = "https://nationalmap.gov/epqs/pqs.php"
-    payload = {"params": {"x": -100, "y": 38, "units": "Meters", "output": "json"}}
+    payload = {"params": {"x": -101, "y": 38, "units": "Meters", "output": "json"}}
     resp = ar.retrieve([url], "json", [payload], disable=True)
     elev = resp[0]["USGS_Elevation_Point_Query_Service"]["Elevation_Query"]["Elevation"]
-    assert abs(elev - 761.67) < SMALL and not asyncio.run(check_url(url, params=payload["params"]))
+    assert abs(elev - 880.38) < SMALL and not asyncio.run(check_url(url, params=payload["params"]))
 
 
 def test_delete_url():
