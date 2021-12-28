@@ -4,7 +4,7 @@ import inspect
 import socket
 import sys
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Awaitable, Dict, Iterable, List, Optional, Tuple, Union
 
 import ujson as json
 from aiohttp import ClientResponseError, ContentTypeError
@@ -91,6 +91,8 @@ async def delete_url(
 
 
 class BaseRetriever:
+    """Base class for async retriever."""
+
     def __init__(
         self,
         urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
