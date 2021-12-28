@@ -64,8 +64,9 @@ def test_binary():
     )
 
     cache_name = "cache/tmp/aiohttp_cache.sqlite"
-    r_b = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache_name, ssl=False)
-    assert sys.getsizeof(r_b[0]) == 986161
+    r = ar.retrieve(urls, "binary", request_kwds=kwds, cache_name=cache_name, ssl=False)
+    r_b = ar.retrieve_bytes(urls, request_kwds=kwds, cache_name=cache_name, ssl=False)
+    assert sys.getsizeof(r[0]) == sys.getsizeof(r_b[0]) == 986161
 
 
 def test_json():
@@ -78,8 +79,11 @@ def test_json():
             },
         },
     ]
-    r_j = ar.retrieve(urls, "json", kwds)
-    assert r_j[0]["features"][0]["properties"]["identifier"] == "2675320"
+    r = ar.retrieve(urls, "json", kwds)
+    r_j = ar.retrieve_json(urls, kwds)
+    r_id = r[0]["features"][0]["properties"]["identifier"]
+    rj_id = r_j[0]["features"][0]["properties"]["identifier"]
+    assert r_id == rj_id == "2675320"
 
 
 def test_text_post():
@@ -88,9 +92,12 @@ def test_text_post():
         "&".join([base, "format=rdb", f"sites={','.join(['01646500'] * 20)}", "siteStatus=all"])
     ]
 
-    r_t = ar.retrieve(urls, "text", request_method="POST")
+    r = ar.retrieve(urls, "text", request_method="POST")
+    r_t = ar.retrieve_text(urls, request_method="POST")
+    r_id = r[0].split("\n")[-2].split("\t")[1]
+    rt_id = r_t[0].split("\n")[-2].split("\t")[1]
 
-    assert r_t[0].split("\n")[-2].split("\t")[1] == "01646500"
+    assert r_id == rt_id == "01646500"
 
 
 def test_ordered_return():
