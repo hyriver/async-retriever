@@ -169,7 +169,7 @@ def delete_url_cache(
     cache_name: Optional[Union[Path, str]] = None,
     **kwargs: str,
 ) -> None:
-    """Delete cached response associated with `url`, along with its history (if applicable).
+    """Delete cached response associated with ``url``, along with its history (if applicable).
 
     Parameters
     ----------
