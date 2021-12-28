@@ -2,7 +2,13 @@
 import asyncio
 import sys
 
-from .async_retriever import delete_url_cache, retrieve
+from .async_retriever import (
+    delete_url_cache,
+    retrieve,
+    retrieve_bytes,
+    retrieve_json,
+    retrieve_text,
+)
 from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 from .print_versions import show_versions
 
@@ -21,6 +27,9 @@ if sys.platform.startswith("win"):
 
 __all__ = [
     "retrieve",
+    "retrieve_text",
+    "retrieve_json",
+    "retrieve_bytes",
     "delete_url_cache",
     "InvalidInputType",
     "InvalidInputValue",
