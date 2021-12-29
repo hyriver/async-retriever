@@ -2,6 +2,23 @@
 History
 =======
 
+0.3.1 (unreleased)
+------------------
+
+New Features
+~~~~~~~~~~~~
+- Add three new functions called ``retrieve_text``, ``retrieve_json``, and
+  ``retrieve_binary``. These functions are derived from the ``retrieve`` function
+  and are used to retrieve the text, JSON, or binary content of a response. They
+  are meant to help with type hinting since they have only one return type instead
+  of three different return types that the ``retrieve`` function has.
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Move all private functions to a new module called ``utils``. This makes the code-base
+  more readable and easier to maintain.
+
+
 0.3.0 (2021-12-27)
 ------------------
 
