@@ -5,7 +5,7 @@ import sys
 from .async_retriever import (
     delete_url_cache,
     retrieve,
-    retrieve_bytes,
+    retrieve_binary,
     retrieve_json,
     retrieve_text,
 )
@@ -29,7 +29,7 @@ __all__ = [
     "retrieve",
     "retrieve_text",
     "retrieve_json",
-    "retrieve_bytes",
+    "retrieve_binary",
     "delete_url_cache",
     "InvalidInputType",
     "InvalidInputValue",

@@ -14,7 +14,7 @@ from . import utils
 from .exceptions import InvalidInputValue
 from .utils import EXPIRE, BaseRetriever
 
-__all__ = ["retrieve", "delete_url_cache", "retrieve_text", "retrieve_json", "retrieve_bytes"]
+__all__ = ["retrieve", "delete_url_cache", "retrieve_text", "retrieve_json", "retrieve_binary"]
 
 
 async def async_session(
@@ -370,7 +370,7 @@ def retrieve_json(
     return resp
 
 
-def retrieve_bytes(
+def retrieve_binary(
     urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
     request_kwds: Optional[List[Dict[str, Any]]] = None,
     request_method: str = "GET",
