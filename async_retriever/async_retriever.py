@@ -335,7 +335,7 @@ def retrieve_json(
 
     Returns
     -------
-    list
+    dict
         List of responses in the order of input URLs.
 
     Examples
@@ -413,7 +413,7 @@ def retrieve_bytes(
 
     Returns
     -------
-    list
+    bytes
         List of responses in the order of input URLs.
     """
     resp: List[bytes] = retrieve(  # type: ignore
