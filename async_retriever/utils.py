@@ -44,15 +44,16 @@ async def retriever(
         ID of the URL for sorting after returning the results
     url : str
         URL to be retrieved
-    s_kwds: dict
+    s_kwds : dict
         Arguments to be passed to requests
     session : ClientSession
         A ClientSession for sending the request
     read_type : str
         Return response as text, bytes, or json.
     r_kwds : dict
-        Keywords to pass to the response read function. ``{"content_type": None}`` if read
-        is ``json`` else it's empty.
+        Keywords to pass to the response read function.
+        It is ``{"content_type": None}`` if ``read`` is ``json``
+        else an empty ``dict``.
 
     Returns
     -------
@@ -85,7 +86,7 @@ def get_event_loop() -> Tuple[asyncio.AbstractEventLoop, bool]:
 async def delete_url(
     url: StrOrURL, method: str = "GET", cache_name: Optional[Path] = None, **kwargs: str
 ) -> None:
-    """Delete cached response associated with `url`, along with its history (if applicable)."""
+    """Delete cached response associated with ``url``."""
     cache = SQLiteBackend(cache_name=cache_name)
     await cache.delete_url(url, method, **kwargs)
 

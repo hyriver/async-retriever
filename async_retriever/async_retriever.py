@@ -54,7 +54,7 @@ async def async_session(
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL cetification verification.
-    disable: bool, optional
+    disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
 
@@ -145,8 +145,8 @@ def retrieve(
     read : str
         Method for returning the request; ``binary``, ``json``, and ``text``.
     request_kwds : list of dict, optional
-        List of requests keywords corresponding to input URLs (1 on 1 mapping), defaults to None.
-        For example, ``[{"params": {...}, "headers": {...}}, ...]``.
+        List of requests keywords corresponding to input URLs (1 on 1 mapping),
+        defaults to ``None``. For example, ``[{"params": {...}, "headers": {...}}, ...]``.
     request_method : str, optional
         Request type; ``GET`` (``get``) or ``POST`` (``post``). Defaults to ``GET``.
     max_workers : int, optional
@@ -163,7 +163,7 @@ def retrieve(
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL cetification verification.
-    disable: bool, optional
+    disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
 
@@ -234,8 +234,8 @@ def retrieve_text(
     urls : list of str
         List of URLs.
     request_kwds : list of dict, optional
-        List of requests keywords corresponding to input URLs (1 on 1 mapping), defaults to None.
-        For example, ``[{"params": {...}, "headers": {...}}, ...]``.
+        List of requests keywords corresponding to input URLs (1 on 1 mapping),
+        defaults to ``None``. For example, ``[{"params": {...}, "headers": {...}}, ...]``.
     request_method : str, optional
         Request type; ``GET`` (``get``) or ``POST`` (``post``). Defaults to ``GET``.
     max_workers : int, optional
@@ -246,13 +246,13 @@ def retrieve_text(
         TCP socket family, defaults to both, i.e., IPv4 and IPv6. For IPv4
         or IPv6 only pass ``ipv4`` or ``ipv6``, respectively.
     timeout : float, optional
-        Timeout for the request, defaults to 5.0.
+        Timeout for the request in seconds, defaults to 5.0.
     expire_after : int, optional
         Expiration time for response caching in seconds, defaults to -1 (never expire).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL cetification verification.
-    disable: bool, optional
+    disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
 
@@ -311,8 +311,8 @@ def retrieve_json(
     urls : list of str
         List of URLs.
     request_kwds : list of dict, optional
-        List of requests keywords corresponding to input URLs (1 on 1 mapping), defaults to None.
-        For example, ``[{"params": {...}, "headers": {...}}, ...]``.
+        List of requests keywords corresponding to input URLs (1 on 1 mapping),
+        defaults to ``None``. For example, ``[{"params": {...}, "headers": {...}}, ...]``.
     request_method : str, optional
         Request type; ``GET`` (``get``) or ``POST`` (``post``). Defaults to ``GET``.
     max_workers : int, optional
@@ -329,7 +329,7 @@ def retrieve_json(
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL cetification verification.
-    disable: bool, optional
+    disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
 
@@ -389,8 +389,8 @@ def retrieve_binary(
     urls : list of str
         List of URLs.
     request_kwds : list of dict, optional
-        List of requests keywords corresponding to input URLs (1 on 1 mapping), defaults to None.
-        For example, ``[{"params": {...}, "headers": {...}}, ...]``.
+        List of requests keywords corresponding to input URLs (1 on 1 mapping),
+        defaults to ``None``. For example, ``[{"params": {...}, "headers": {...}}, ...]``.
     request_method : str, optional
         Request type; ``GET`` (``get``) or ``POST`` (``post``). Defaults to ``GET``.
     max_workers : int, optional
@@ -407,7 +407,7 @@ def retrieve_binary(
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL cetification verification.
-    disable: bool, optional
+    disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
 
