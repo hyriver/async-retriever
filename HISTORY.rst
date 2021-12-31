@@ -2,7 +2,7 @@
 History
 =======
 
-0.3.1 (unreleased)
+0.3.1 (2021-12-31)
 ------------------
 
 New Features
