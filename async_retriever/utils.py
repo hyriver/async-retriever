@@ -4,7 +4,7 @@ import inspect
 import socket
 import sys
 from pathlib import Path
-from typing import Any, Awaitable, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Awaitable, Dict, Iterable, Optional, Sequence, Tuple, Union
 
 import ujson as json
 from aiohttp import ClientResponseError, ContentTypeError
@@ -84,7 +84,7 @@ def get_event_loop() -> Tuple[asyncio.AbstractEventLoop, bool]:
 
 
 async def delete_url(
-    url: StrOrURL, method: str = "GET", cache_name: Optional[Path] = None, **kwargs: str
+    url: StrOrURL, method: str = "GET", cache_name: Optional[Path] = None, **kwargs: Dict[str, Any]
 ) -> None:
     """Delete cached response associated with ``url``."""
     cache = SQLiteBackend(cache_name=cache_name)
@@ -96,9 +96,9 @@ class BaseRetriever:
 
     def __init__(
         self,
-        urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
+        urls: Sequence[StrOrURL],
         read: str,
-        request_kwds: Optional[List[Dict[str, Any]]] = None,
+        request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
         request_method: str = "GET",
         cache_name: Optional[Union[Path, str]] = None,
         family: str = "both",
@@ -126,8 +126,8 @@ class BaseRetriever:
 
     @staticmethod
     def generate_requests(
-        urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
-        request_kwds: Optional[List[Dict[str, Any]]],
+        urls: Sequence[StrOrURL],
+        request_kwds: Optional[Sequence[Dict[str, Any]]],
     ) -> Iterable[Tuple[int, StrOrURL, Dict[str, Any]]]:
         """Generate urls and keywords."""
         if not isinstance(urls, (list, tuple)):

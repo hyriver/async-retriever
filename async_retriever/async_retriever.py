@@ -2,7 +2,7 @@
 import asyncio
 from pathlib import Path
 from ssl import SSLContext
-from typing import Any, Awaitable, Dict, List, Optional, Tuple, Union
+from typing import Any, Awaitable, Dict, List, Optional, Sequence, Tuple, Union
 
 import cytoolz as tlz
 import ujson as json
@@ -92,7 +92,7 @@ def delete_url_cache(
     url: StrOrURL,
     request_method: str = "GET",
     cache_name: Optional[Union[Path, str]] = None,
-    **kwargs: str,
+    **kwargs: Dict[str, Any],
 ) -> None:
     """Delete cached response associated with ``url``, along with its history (if applicable).
 
@@ -124,9 +124,9 @@ def delete_url_cache(
 
 
 def retrieve(
-    urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
+    urls: Sequence[StrOrURL],
     read: str,
-    request_kwds: Optional[List[Dict[str, Any]]] = None,
+    request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
     request_method: str = "GET",
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
@@ -216,8 +216,8 @@ def retrieve(
 
 
 def retrieve_text(
-    urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
-    request_kwds: Optional[List[Dict[str, Any]]] = None,
+    urls: Sequence[StrOrURL],
+    request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
     request_method: str = "GET",
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
@@ -293,8 +293,8 @@ def retrieve_text(
 
 
 def retrieve_json(
-    urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
-    request_kwds: Optional[List[Dict[str, Any]]] = None,
+    urls: Sequence[StrOrURL],
+    request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
     request_method: str = "GET",
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
@@ -371,8 +371,8 @@ def retrieve_json(
 
 
 def retrieve_binary(
-    urls: Union[List[StrOrURL], Tuple[StrOrURL, ...]],
-    request_kwds: Optional[List[Dict[str, Any]]] = None,
+    urls: Sequence[StrOrURL],
+    request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
     request_method: str = "GET",
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
