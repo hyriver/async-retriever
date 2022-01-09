@@ -111,7 +111,7 @@ def tests(session):
     """Run the test suite."""
     install_deps(session, "test")
 
-    session.run("pytest", *session.posargs)
+    session.run("pytest", "--doctest-modules", *session.posargs)
     session.run("coverage", "report")
     session.run("coverage", "html")
 
