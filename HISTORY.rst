@@ -2,6 +2,13 @@
 History
 =======
 
+0.3.2 (unreleased)
+-------------------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Include the URL of a failed request in its exception error message.
+
 0.3.1 (2021-12-31)
 ------------------
 
