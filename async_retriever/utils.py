@@ -64,7 +64,7 @@ async def retriever(
         try:
             return uid, await getattr(response, read_type)(**r_kwds)
         except (ClientResponseError, ContentTypeError, ValueError) as ex:
-            raise ServiceError(await response.text()) from ex
+            raise ServiceError(await response.text(), response.url) from ex
 
 
 def get_event_loop() -> Tuple[asyncio.AbstractEventLoop, bool]:

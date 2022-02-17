@@ -11,8 +11,12 @@ class ServiceError(Exception):
         Service error message.
     """
 
-    def __init__(self, err: str) -> None:
-        self.message = f"Service returned the following error message:\n{err}"
+    def __init__(self, err: str, url: Optional[str] = None) -> None:
+        self.message = "Service returned the following error message:\n"
+        if url is None:
+            self.message += err
+        else:
+            self.message += f"URL: {url}\nERROR: {err}\n"
         super().__init__(self.message)
 
     def __str__(self) -> str:
