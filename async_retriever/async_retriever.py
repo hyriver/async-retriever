@@ -53,7 +53,7 @@ async def async_session(
         Expiration time for the cache in seconds, defaults to -1 (never expire).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
-        SSL cetification verification.
+        SSL certification verification.
     disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
@@ -162,7 +162,7 @@ def retrieve(
         Expiration time for response caching in seconds, defaults to -1 (never expire).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
-        SSL cetification verification.
+        SSL certification verification.
     disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
@@ -251,7 +251,7 @@ def retrieve_text(
         Expiration time for response caching in seconds, defaults to -1 (never expire).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
-        SSL cetification verification.
+        SSL certification verification.
     disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
@@ -328,7 +328,7 @@ def retrieve_json(
         Expiration time for response caching in seconds, defaults to -1 (never expire).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
-        SSL cetification verification.
+        SSL certification verification.
     disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
@@ -406,7 +406,7 @@ def retrieve_binary(
         Expiration time for response caching in seconds, defaults to -1 (never expire).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
-        SSL cetification verification.
+        SSL certification verification.
     disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
