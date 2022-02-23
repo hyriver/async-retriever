@@ -23,7 +23,6 @@ async def async_session(
     r_kwds: Dict[str, Any],
     request_method: str,
     cache_name: Path,
-    family: int,
     timeout: float = 5.0,
     expire_after: float = EXPIRE,
     ssl: Union[SSLContext, bool, None] = None,
@@ -45,8 +44,6 @@ async def async_session(
     cache_name : str
         Path to a file for caching the session, defaults to
         ``./cache/aiohttp_cache.sqlite``.
-    family : int
-        TCP socket family
     timeout : float, optional
         Timeout for the request, defaults to 5.0.
     expire_after : int, optional
@@ -69,8 +66,7 @@ async def async_session(
         allowed_methods=("GET", "POST"),
         timeout=timeout,
     )
-
-    connector = TCPConnector(family=family, ssl=ssl)
+    connector = TCPConnector(ssl=ssl)
 
     async with CachedSession(
         json_serialize=json.dumps,
@@ -130,7 +126,6 @@ def retrieve(
     request_method: str = "GET",
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
-    family: str = "both",
     timeout: float = 5.0,
     expire_after: float = EXPIRE,
     ssl: Union[SSLContext, bool, None] = None,
@@ -153,9 +148,6 @@ def retrieve(
         Maximum number of async processes, defaults to 8.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
-    family : str, optional
-        TCP socket family, defaults to both, i.e., IPv4 and IPv6. For IPv4
-        or IPv6 only pass ``ipv4`` or ``ipv6``, respectively.
     timeout : float, optional
         Timeout for the request, defaults to 5.0.
     expire_after : int, optional
@@ -187,7 +179,7 @@ def retrieve(
     >>> resp[0].split('\n')[-2].split('\t')[1]
     '01646500'
     """
-    inp = BaseRetriever(urls, read, request_kwds, request_method, cache_name, family)
+    inp = BaseRetriever(urls, read, request_kwds, request_method, cache_name)
 
     loop, new_loop = utils.get_event_loop()
     asyncio.set_event_loop(loop)
@@ -198,7 +190,6 @@ def retrieve(
         r_kwds=inp.r_kwds,
         request_method=inp.request_method,
         cache_name=inp.cache_name,
-        family=inp.family,
         timeout=timeout,
         expire_after=expire_after,
         ssl=ssl,
@@ -221,7 +212,6 @@ def retrieve_text(
     request_method: str = "GET",
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
-    family: str = "both",
     timeout: float = 5.0,
     expire_after: float = EXPIRE,
     ssl: Union[SSLContext, bool, None] = None,
@@ -242,9 +232,6 @@ def retrieve_text(
         Maximum number of async processes, defaults to 8.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
-    family : str, optional
-        TCP socket family, defaults to both, i.e., IPv4 and IPv6. For IPv4
-        or IPv6 only pass ``ipv4`` or ``ipv6``, respectively.
     timeout : float, optional
         Timeout for the request in seconds, defaults to 5.0.
     expire_after : int, optional
@@ -283,7 +270,6 @@ def retrieve_text(
         request_method,
         max_workers,
         cache_name,
-        family,
         timeout,
         expire_after,
         ssl,
@@ -298,7 +284,6 @@ def retrieve_json(
     request_method: str = "GET",
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
-    family: str = "both",
     timeout: float = 5.0,
     expire_after: float = EXPIRE,
     ssl: Union[SSLContext, bool, None] = None,
@@ -319,9 +304,6 @@ def retrieve_json(
         Maximum number of async processes, defaults to 8.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
-    family : str, optional
-        TCP socket family, defaults to both, i.e., IPv4 and IPv6. For IPv4
-        or IPv6 only pass ``ipv4`` or ``ipv6``, respectively.
     timeout : float, optional
         Timeout for the request, defaults to 5.0.
     expire_after : int, optional
@@ -361,7 +343,6 @@ def retrieve_json(
         request_method,
         max_workers,
         cache_name,
-        family,
         timeout,
         expire_after,
         ssl,
@@ -376,7 +357,6 @@ def retrieve_binary(
     request_method: str = "GET",
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
-    family: str = "both",
     timeout: float = 5.0,
     expire_after: float = EXPIRE,
     ssl: Union[SSLContext, bool, None] = None,
@@ -397,9 +377,6 @@ def retrieve_binary(
         Maximum number of async processes, defaults to 8.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
-    family : str, optional
-        TCP socket family, defaults to both, i.e., IPv4 and IPv6. For IPv4
-        or IPv6 only pass ``ipv4`` or ``ipv6``, respectively.
     timeout : float, optional
         Timeout for the request, defaults to 5.0.
     expire_after : int, optional
@@ -423,7 +400,6 @@ def retrieve_binary(
         request_method,
         max_workers,
         cache_name,
-        family,
         timeout,
         expire_after,
         ssl,

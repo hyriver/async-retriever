@@ -1,7 +1,6 @@
 """Core async functions."""
 import asyncio
 import inspect
-import socket
 import sys
 from pathlib import Path
 from typing import Any, Awaitable, Dict, Iterable, Optional, Sequence, Tuple, Union
@@ -64,7 +63,7 @@ async def retriever(
         try:
             return uid, await getattr(response, read_type)(**r_kwds)
         except (ClientResponseError, ContentTypeError, ValueError) as ex:
-            raise ServiceError(await response.text(), response.url) from ex
+            raise ServiceError(await response.text(), str(response.url)) from ex
 
 
 def get_event_loop() -> Tuple[asyncio.AbstractEventLoop, bool]:
@@ -101,7 +100,6 @@ class BaseRetriever:
         request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
         request_method: str = "GET",
         cache_name: Optional[Union[Path, str]] = None,
-        family: str = "both",
     ) -> None:
         """Validate inputs to retrieve function."""
         self.request_method = request_method.upper()
@@ -116,11 +114,6 @@ class BaseRetriever:
         self.r_kwds = {"content_type": None, "loads": json.loads} if read == "json" else {}
 
         self.url_kwds = self.generate_requests(urls, request_kwds)
-
-        valid_family = {"both": 0, "ipv4": socket.AF_INET, "ipv6": socket.AF_INET6}
-        if family not in valid_family:
-            raise InvalidInputValue("family", list(valid_family.keys()))
-        self.family = valid_family[family]
 
         self.cache_name = create_cachefile(cache_name)
 
