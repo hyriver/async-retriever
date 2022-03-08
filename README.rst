@@ -117,18 +117,18 @@ use to make web calls:
 * ``retrieve_binary``: Get responses as ``binary`` objects.
 * ``retrieve_json``: Get responses as ``json`` objects.
 
-You can also use the general purpose ``retrieve`` function to get responses as any
+You can also use the general-purpose ``retrieve`` function to get responses as any
 of the three types. All responses are returned as a list that has the same order as the
 input list of requests. Moreover, there is another function called ``delete_url_cache``
 for removing all requests from a cache file that contains the given URL.
 
 You can control the caching behavior by setting the following environment variables:
 
-* ``HYRIVER_CACHE_NAME``: Path to the caching SQLite database, defaults to
+* ``HYRIVER_CACHE_NAME``: Path to the caching SQLite database. It defaults to
   ``./cache/aiohttp_cache.sqlite``
-* ``HYRIVER_CACHE_EXPIRE``: Expiration time for cached requests in seconds, defaults to
+* ``HYRIVER_CACHE_EXPIRE``: Expiration time for cached requests in seconds. It defaults to
   -1 (never expire).
-* ``HYRIVER_CACHE_DISABLE``: Disable reading/writing from/to the cache, defaults to false.
+* ``HYRIVER_CACHE_DISABLE``: Disable reading/writing from/to the cache. The default is false.
 
 For example, in your code before using any of the AsyncRetriever functions you can do:
 
@@ -173,7 +173,7 @@ using `Conda <https://docs.conda.io/en/latest/>`__:
 Quick start
 -----------
 
-AsyncRetriever by default, creates and/or uses ``./cache/aiohttp_cache.sqlite`` as the cache
+AsyncRetriever by default creates and/or uses ``./cache/aiohttp_cache.sqlite`` as the cache
 that you can customize by the ``cache_name`` argument. Also, by default, the cache doesn't
 have any expiration date and the ``delete_url_cache`` function should be used if you know
 that a database on a server was updated, and you want to retrieve the latest data.
