@@ -5,6 +5,14 @@ History
 0.3.2 (unreleased)
 -------------------
 
+New Features
+~~~~~~~~~~~~
+- Add support for setting caching-related arguments using three environmental variables:
+
+  * ``HYRIVER_CACHE_NAME``: Path to the caching SQLite database.
+  * ``HYRIVER_CACHE_EXPIRE``: Expiration time for cached requests in seconds.
+  * ``HYRIVER_CACHE_DISABLE``: Disable reading/writing from/to the cache.
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 - Include the URL of a failed request in its exception error message.
@@ -40,8 +48,8 @@ New Features
   custom expiration time.
 - Expose the ``ssl`` argument for disabling the SSL certification
   verification (:issue_day:`41`).
-- Add a new option called ``disable`` that if ``True``, it temporarily disables caching
-  requests and gets new responses. It defaults to ``False``.
+- Add a new option called ``disable`` that temporarily disables caching
+  requests/responses if set to ``True``. It defaults to ``False``.
 
 0.2.5 (2021-11-09)
 ------------------
@@ -49,7 +57,7 @@ New Features
 New Features
 ~~~~~~~~~~~~
 - Add two new arguments, ``timeout`` and ``expire_after``, to ``retrieve``.
-  These two arguments gives the user more control for dealing with issues
+  These two arguments give the user more control for dealing with issues
   related to caching.
 
 Internal Changes
@@ -64,7 +72,7 @@ Internal Changes
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
-- Use ``usjon`` for converting responses to JSON.
+- Use ``ujon`` for converting responses to JSON.
 
 Bug Fixes
 ~~~~~~~~~
@@ -88,7 +96,7 @@ New Features
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
-- Handle all cache file related operations in the ``create_cachefile`` function.
+- Handle all cache file-related operations in the ``create_cachefile`` function.
 
 
 0.2.1 (2021-07-31)
@@ -97,15 +105,15 @@ Internal Changes
 New Features
 ~~~~~~~~~~~~
 - The responses now are returned to the same order as the input URLs.
-- Add support for passing connection type, i.e., IPv4 only, IPv6, only
-  or both via ``family`` argument. Defaults to ``both``.
-- Set ``trust_env=True`` so the session can read system's ``netrc`` files.
+- Add support for passing connection type, i.e., IPv4 only, IPv6 only,
+  or both via the ``family`` argument. Defaults to ``both``.
+- Set ``trust_env=True``, so the session can read the system's ``netrc`` files.
   This can be useful for working with services such as EarthData service
   that read the user authentication info from a ``netrc`` file.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
-- Replace ``AsyncRequest`` class with ``_retrieve`` function to increase
+- Replace the ``AsyncRequest`` class with the ``_retrieve`` function to increase
   readability and reduce overhead.
 - More robust handling of validating user inputs via a new class called ``ValidateInputs``.
 - Move all if-blocks in ``async_session`` to other functions to improve performance.
@@ -126,7 +134,7 @@ Bug Fixes
 Internal Changes
 ~~~~~~~~~~~~~~~~
 - Refactor the entire code-base for more efficient handling of different request methods.
-- Check validity of inputs before sending requests.
+- Check the validity of inputs before sending requests.
 - Improve documentation.
 - Improve cache handling by removing the expired responses before returning the results.
 - Increase testing coverage to 100%.
