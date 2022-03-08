@@ -132,7 +132,7 @@ You can control the caching behavior by setting the following environment variab
 
 For example, in your code before using any of the AsyncRetriever functions you can do:
 
-.. code-block:: console
+.. code-block:: python
 
     import os
 
