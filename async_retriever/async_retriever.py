@@ -1,5 +1,6 @@
 """Core async functions."""
 import asyncio
+import os
 from pathlib import Path
 from ssl import SSLContext
 from typing import Any, Awaitable, Dict, List, Optional, Sequence, Tuple, Union
@@ -24,7 +25,7 @@ async def async_session(
     request_method: str,
     cache_name: Path,
     timeout: float = 5.0,
-    expire_after: float = EXPIRE,
+    expire_after: int = EXPIRE,
     ssl: Union[SSLContext, bool, None] = None,
     disable: bool = False,
 ) -> Awaitable[Union[str, bytes, Dict[str, Any]]]:
@@ -49,11 +50,11 @@ async def async_session(
     expire_after : int, optional
         Expiration time for the cache in seconds, defaults to -1 (never expire).
     ssl : bool or SSLContext, optional
-        SSLContext to use for the connection, defaults to None. Set to False to disable
+        SSLContext to use for the connection, defaults to None. Set to ``False`` to disable
         SSL certification verification.
     disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
-        from the server, defaults to False.
+        from the server, defaults to ``False``.
 
     Returns
     -------
@@ -61,13 +62,13 @@ async def async_session(
         An async gather function
     """
     cache = SQLiteBackend(
-        cache_name=cache_name,
-        expire_after=expire_after,
+        cache_name=os.getenv("HYRIVER_CACHE_NAME", cache_name),
+        expire_after=int(os.getenv("HYRIVER_CACHE_EXPIRE", expire_after)),
         allowed_methods=("GET", "POST"),
         timeout=timeout,
     )
     connector = TCPConnector(ssl=ssl)
-
+    disable = os.getenv("HYRIVER_CACHE_DISABLE", f"{disable}").lower() == "true"
     async with CachedSession(
         json_serialize=json.dumps,
         cache=cache,
