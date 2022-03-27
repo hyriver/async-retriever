@@ -13,14 +13,13 @@ from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 from .print_versions import show_versions
 
 try:
-    import importlib.metadata as metadata
+    import importlib.metadata
 except ImportError:
-    import importlib_metadata as metadata  # type: ignore[no-redef]
+    import importlib_metadata
 
-try:
-    __version__ = metadata.version("async_retriever")
-except Exception:
-    __version__ = "999"
+    __version__ = importlib_metadata.version("async_retriever")
+else:
+    __version__ = importlib.metadata.version("async_retriever")
 
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
