@@ -136,9 +136,9 @@ For example, in your code before using any of the AsyncRetriever functions you c
 
     import os
 
-    os.environ['HYRIVER_CACHE_NAME'] = 'path/to/file.sqlite'
-    os.environ['HYRIVER_CACHE_EXPIRE'] = '3600'
-    os.environ['HYRIVER_CACHE_DISABLE'] = 'true'
+    os.environ["HYRIVER_CACHE_NAME"] = "path/to/file.sqlite"
+    os.environ["HYRIVER_CACHE_EXPIRE"] = "3600"
+    os.environ["HYRIVER_CACHE_DISABLE"] = "true"
 
 You can find some example notebooks `here <https://github.com/cheginit/HyRiver-examples>`__.
 
