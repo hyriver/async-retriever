@@ -11,7 +11,17 @@ New Features
 
   * ``HYRIVER_CACHE_NAME``: Path to the caching SQLite database.
   * ``HYRIVER_CACHE_EXPIRE``: Expiration time for cached requests in seconds.
-  * ``HYRIVER_CACHE_DISABLE``: Disable reading/writing from/to the cache.
+  * ``HYRIVER_CACHE_DISABLE``: Disable reading/writing from/to the cache file.
+
+  You can do this like so:
+
+.. code-block:: python
+
+    import os
+
+    os.environ["HYRIVER_CACHE_NAME"] = "path/to/file.sqlite"
+    os.environ["HYRIVER_CACHE_EXPIRE"] = "3600"
+    os.environ["HYRIVER_CACHE_DISABLE"] = "true"
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -26,7 +36,7 @@ New Features
   ``retrieve_binary``. These functions are derived from the ``retrieve`` function
   and are used to retrieve the text, JSON, or binary content of a response. They
   are meant to help with type hinting since they have only one return type instead
-  of three different return types that the ``retrieve`` function has.
+  of the three different return types that the ``retrieve`` function has.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -57,7 +67,7 @@ New Features
 New Features
 ~~~~~~~~~~~~
 - Add two new arguments, ``timeout`` and ``expire_after``, to ``retrieve``.
-  These two arguments give the user more control for dealing with issues
+  These two arguments give the user more control in dealing with issues
   related to caching.
 
 Internal Changes
