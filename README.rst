@@ -122,7 +122,8 @@ of the three types. All responses are returned as a list that has the same order
 input list of requests. Moreover, there is another function called ``delete_url_cache``
 for removing all requests from a cache file that contains the given URL.
 
-You can control the caching behavior by setting the following environment variables:
+You can control the request/response caching behavior by setting the following
+environment variables:
 
 * ``HYRIVER_CACHE_NAME``: Path to the caching SQLite database. It defaults to
   ``./cache/aiohttp_cache.sqlite``
@@ -130,7 +131,7 @@ You can control the caching behavior by setting the following environment variab
   -1 (never expire).
 * ``HYRIVER_CACHE_DISABLE``: Disable reading/writing from/to the cache. The default is false.
 
-For example, in your code before using any of the AsyncRetriever functions you can do:
+For example, in your code before making any requests you can do:
 
 .. code-block:: python
 
