@@ -106,7 +106,6 @@ def delete_url_cache(
         Keywords to pass to the ``cache.delete_url()``.
     """
     loop, new_loop = utils.get_event_loop()
-    asyncio.set_event_loop(loop)
 
     request_method = request_method.upper()
     valid_methods = ["GET", "POST"]
@@ -183,7 +182,6 @@ def retrieve(
     inp = BaseRetriever(urls, read, request_kwds, request_method, cache_name)
 
     loop, new_loop = utils.get_event_loop()
-    asyncio.set_event_loop(loop)
 
     session = tlz.partial(
         async_session,

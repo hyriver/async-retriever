@@ -74,7 +74,7 @@ def get_event_loop() -> Tuple[asyncio.AbstractEventLoop, bool]:
     except RuntimeError:
         loop = asyncio.new_event_loop()
         new_loop = True
-
+    asyncio.set_event_loop(loop)
     if "IPython" in sys.modules:
         if nest_asyncio is None:
             raise ImportError("nest-asyncio")
