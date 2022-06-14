@@ -5,12 +5,11 @@ channels:
 dependencies:
   - aiodns
   - aiohttp>=3.8.1
-  - aiohttp-client-cache>=0.5.1
+  - aiohttp-client-cache>=0.6.1
   - aiosqlite
   - brotli
   - cchardet
   - cytoolz
-  - importlib_metadata
   - ujson
 
   - pytest-cov
