@@ -1,5 +1,6 @@
 """Top-level package."""
 import asyncio
+import importlib.metadata
 import sys
 
 from .async_retriever import (
@@ -12,14 +13,7 @@ from .async_retriever import (
 from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 from .print_versions import show_versions
 
-try:
-    import importlib.metadata
-except ImportError:
-    import importlib_metadata
-
-    __version__ = importlib_metadata.version("async_retriever")
-else:
-    __version__ = importlib.metadata.version("async_retriever")
+__version__ = importlib.metadata.version("async_retriever")
 
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
