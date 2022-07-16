@@ -1,5 +1,11 @@
 version = 1
 
+exclude_patterns = [
+    "tests/**",
+    "*/print_versions.py",
+    "*/__init__.py",
+]
+
 [[analyzers]]
 name = "python"
 enabled = true
