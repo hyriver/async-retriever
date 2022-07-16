@@ -1,17 +1,5 @@
 version = 1
 
-test_patterns = [
-    "*/tests/**",
-    "*/test_*.py"
-]
-
-exclude_patterns = [
-    "docs/**",
-    "ci/**",
-    "*/print_versions.py",
-    "*/__init__.py",
-]
-
 [[analyzers]]
 name = "python"
 enabled = true
