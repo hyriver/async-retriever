@@ -9,6 +9,7 @@ from .async_retriever import (
     retrieve_binary,
     retrieve_json,
     retrieve_text,
+    stream_write,
 )
 from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
 from .print_versions import show_versions
@@ -20,6 +21,7 @@ if sys.platform.startswith("win"):
 
 __all__ = [
     "retrieve",
+    "stream_write",
     "retrieve_text",
     "retrieve_json",
     "retrieve_binary",

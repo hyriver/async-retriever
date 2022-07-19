@@ -7,7 +7,7 @@ from typing import Any, Awaitable, Dict, List, Optional, Sequence, Tuple, Union
 
 import cytoolz as tlz
 import ujson as json
-from aiohttp import TCPConnector
+from aiohttp import ClientSession, TCPConnector
 from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import CachedSession, SQLiteBackend
 
@@ -15,7 +15,14 @@ from . import utils
 from .exceptions import InvalidInputValue
 from .utils import EXPIRE, BaseRetriever
 
-__all__ = ["retrieve", "delete_url_cache", "retrieve_text", "retrieve_json", "retrieve_binary"]
+__all__ = [
+    "retrieve",
+    "stream_write",
+    "delete_url_cache",
+    "retrieve_text",
+    "retrieve_json",
+    "retrieve_binary",
+]
 
 
 async def async_session(
@@ -85,6 +92,37 @@ async def async_session(
             return await asyncio.gather(*tasks)  # type: ignore
 
 
+async def stream_session(
+    url_kwds: Tuple[Tuple[Path, StrOrURL, Dict[StrOrURL, Any]], ...],
+    request_method: str,
+    ssl: Union[SSLContext, bool, None] = None,
+) -> None:
+    """Create an async session for sending requests.
+
+    Parameters
+    ----------
+    url_kwds : list of tuples
+        A list of file paths and URLs or file paths, URLs, and their payloads
+        to be saved as a file.
+    request_method : str
+        The request type; GET or POST.
+    ssl : bool or SSLContext, optional
+        SSLContext to use for the connection, defaults to None. Set to ``False`` to disable
+        SSL certification verification.
+    """
+    async with ClientSession(
+        json_serialize=json.dumps,
+        connector=TCPConnector(ssl=ssl),
+        trust_env=True,
+    ) as session:
+        request_func = getattr(session, request_method.lower())
+        tasks = (
+            utils.stream_session(url, kwds, request_func, filepath)
+            for filepath, url, kwds in url_kwds
+        )
+        await asyncio.gather(*tasks)
+
+
 def delete_url_cache(
     url: StrOrURL,
     request_method: str = "GET",
@@ -121,7 +159,7 @@ def delete_url_cache(
 
 def retrieve(
     urls: Sequence[StrOrURL],
-    read: str,
+    read_method: str,
     request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
     request_method: str = "GET",
     max_workers: int = 8,
@@ -137,7 +175,7 @@ def retrieve(
     ----------
     urls : list of str
         List of URLs.
-    read : str
+    read_method : str
         Method for returning the request; ``binary``, ``json``, and ``text``.
     request_kwds : list of dict, optional
         List of requests keywords corresponding to input URLs (1 on 1 mapping),
@@ -179,13 +217,19 @@ def retrieve(
     >>> resp[0].split('\n')[-2].split('\t')[1]
     '01646500'
     """
-    inp = BaseRetriever(urls, read, request_kwds, request_method, cache_name)
+    inp = BaseRetriever(
+        urls,
+        read_method=read_method,
+        request_kwds=request_kwds,
+        request_method=request_method,
+        cache_name=cache_name,
+    )
 
     loop, new_loop = utils.get_event_loop()
 
     session = tlz.partial(
         async_session,
-        read=inp.read,
+        read=inp.read_method,
         r_kwds=inp.r_kwds,
         request_method=inp.request_method,
         cache_name=inp.cache_name,
@@ -203,6 +247,63 @@ def retrieve(
     if new_loop:
         loop.close()
     return resp
+
+
+def stream_write(
+    urls: Sequence[StrOrURL],
+    file_paths: List[Union[str, Path]],
+    request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
+    request_method: str = "GET",
+    max_workers: int = 8,
+    ssl: Union[SSLContext, bool, None] = None,
+) -> None:
+    r"""Send async requests.
+
+    Parameters
+    ----------
+    urls : list of str
+        List of URLs.
+    file_paths : list of str or Path
+        List of file paths to write the response to.
+    request_kwds : list of dict, optional
+        List of requests keywords corresponding to input URLs (1 on 1 mapping),
+        defaults to ``None``. For example, ``[{"params": {...}, "headers": {...}}, ...]``.
+    request_method : str, optional
+        Request type; ``GET`` (``get``) or ``POST`` (``post``). Defaults to ``GET``.
+    max_workers : int, optional
+        Maximum number of async processes, defaults to 8.
+    ssl : bool or SSLContext, optional
+        SSLContext to use for the connection, defaults to None. Set to False to disable
+        SSL certification verification.
+
+    Examples
+    --------
+    >>> import async_retriever as ar
+    >>> import tempfile
+    >>> url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
+    >>> with tempfile.NamedTemporaryFile() as temp:
+    ...     ar.stream_write([url], [temp.name])
+    """
+    inp = BaseRetriever(
+        urls,
+        file_paths=file_paths,
+        request_kwds=request_kwds,
+        request_method=request_method,
+    )
+
+    loop, new_loop = utils.get_event_loop()
+
+    session = tlz.partial(
+        stream_session,
+        request_method=inp.request_method,
+        ssl=ssl,
+    )
+
+    chunked_reqs = tlz.partition_all(max_workers, inp.url_kwds)
+
+    _ = [loop.run_until_complete(session(url_kwds=c)) for c in chunked_reqs]
+    if new_loop:
+        loop.close()
 
 
 def retrieve_text(
