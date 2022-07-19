@@ -2,6 +2,15 @@
 History
 =======
 
+0.3.4 (2022-07-20)
+------------------
+
+New Features
+~~~~~~~~~~~~
+- Add a new function, ``stream_write``, for writing a response to a file as it's being
+  retrieved. This could be very useful for downloading large files. This function does
+  not use persistent caching.
+
 0.3.3 (2022-06-14)
 ------------------
 
