@@ -2,6 +2,7 @@
 import asyncio
 import io
 import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
 
@@ -98,6 +99,15 @@ def test_text_post():
     rt_id = r_t[0].split("\n")[-2].split("\t")[1]
 
     assert r_id == rt_id == "01646500"
+
+
+def test_stream():
+    with tempfile.NamedTemporaryFile() as temp:
+        url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
+        ar.stream_write([url], [temp.name])
+        with open(temp.name) as f:
+            data = f.readlines()
+        assert len(data) == 15724
 
 
 def test_ordered_return():

@@ -5,6 +5,13 @@ from aiohttp import InvalidURL
 import async_retriever as ar
 from async_retriever import InvalidInputType, InvalidInputValue, ServiceError
 
+try:
+    import typeguard  # noqa: F401
+except ImportError:
+    has_typeguard = False
+else:
+    has_typeguard = True
+
 
 @pytest.fixture
 def url_kwds():
@@ -83,3 +90,22 @@ def test_service_error():
     with pytest.raises(ServiceError) as ex:
         _ = ar.retrieve(urls, "json", request_kwds=kwds)
     assert "illegal bbox" in str(ex.value)
+
+    with pytest.raises(ServiceError) as ex:
+        _ = ar.stream_write(urls, ["temp"], request_kwds=kwds)
+    assert "illegal bbox" in str(ex.value)
+
+
+@pytest.mark.skipif(has_typeguard, reason="Broken if Typeguard is enabled")
+def test_wrong_path_type():
+    with pytest.raises(InvalidInputType) as ex:
+        url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
+        _ = ar.stream_write([url], "temp")
+    assert "list of paths" in str(ex.value)
+
+
+def test_wrong_path_number():
+    with pytest.raises(ValueError) as ex:
+        url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
+        _ = ar.stream_write([url], ["temp"] * 2)
+    assert "same size" in str(ex.value)
