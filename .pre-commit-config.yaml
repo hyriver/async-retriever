@@ -105,6 +105,7 @@ repos:
       - flake8-bugbear
       - flake8-docstrings
       - flake8-simplify
+      - pep8-naming
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.971
