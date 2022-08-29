@@ -62,7 +62,7 @@ async def retriever(
     async with session(url, **s_kwds) as response:
         try:
             return uid, await getattr(response, read_type)(**r_kwds)
-        except (ClientResponseError, ContentTypeError, ValueError) as ex:
+        except (ClientResponseError, ValueError) as ex:
             raise ServiceError(await response.text(), str(response.url)) from ex
 
 
