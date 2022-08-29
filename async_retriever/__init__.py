@@ -1,6 +1,6 @@
 """Top-level package."""
 import asyncio
-import importlib.metadata
+from importlib.metadata import version, PackageNotFoundError
 import sys
 
 from .async_retriever import (
@@ -11,10 +11,13 @@ from .async_retriever import (
     retrieve_text,
     stream_write,
 )
-from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
+from .exceptions import InputTypeError, InputValueError, ServiceError
 from .print_versions import show_versions
 
-__version__ = importlib.metadata.version("async_retriever")
+try:
+    __version__ = version("async_retriever")
+except PackageNotFoundError:
+    __version__ = "999"
 
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -26,8 +29,8 @@ __all__ = [
     "retrieve_json",
     "retrieve_binary",
     "delete_url_cache",
-    "InvalidInputType",
-    "InvalidInputValue",
+    "InputTypeError",
+    "InputValueError",
     "ServiceError",
     "show_versions",
 ]
