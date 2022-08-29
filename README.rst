@@ -33,8 +33,8 @@
     :target: https://github.com/hyriver/pydaymet/actions/workflows/test.yml
     :alt: Github Actions
 
-.. |async| image:: https://github.com/hyriver/async_retriever/actions/workflows/test.yml/badge.svg
-    :target: https://github.com/hyriver/async_retriever/actions/workflows/test.yml
+.. |async| image:: https://github.com/hyriver/async-retriever/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/hyriver/async-retriever/actions/workflows/test.yml
     :alt: Github Actions
 
 =============== ==================================================================== ============
@@ -50,7 +50,7 @@ PyGeoUtils_     Convert responses from PyGeoOGC's supported web services to data
 =============== ==================================================================== ============
 
 .. _PyGeoHydro: https://github.com/hyriver/pygeohydro
-.. _AsyncRetriever: https://github.com/hyriver/async_retriever
+.. _AsyncRetriever: https://github.com/hyriver/async-retriever
 .. _PyGeoOGC: https://github.com/hyriver/pygeoogc
 .. _PyGeoUtils: https://github.com/hyriver/pygeoutils
 .. _PyNHD: https://github.com/hyriver/pynhd
@@ -60,24 +60,24 @@ PyGeoUtils_     Convert responses from PyGeoOGC's supported web services to data
 AsyncRetriever: Asynchronous requests with persistent caching
 -------------------------------------------------------------
 
-.. image:: https://img.shields.io/pypi/v/async_retriever.svg
-    :target: https://pypi.python.org/pypi/async_retriever
+.. image:: https://img.shields.io/pypi/v/async-retriever.svg
+    :target: https://pypi.python.org/pypi/async-retriever
     :alt: PyPi
 
-.. image:: https://img.shields.io/conda/vn/conda-forge/async_retriever.svg
-    :target: https://anaconda.org/conda-forge/async_retriever
+.. image:: https://img.shields.io/conda/vn/conda-forge/async-retriever.svg
+    :target: https://anaconda.org/conda-forge/async-retriever
     :alt: Conda Version
 
-.. image:: https://codecov.io/gh/hyriver/async_retriever/branch/main/graph/badge.svg
-    :target: https://codecov.io/gh/hyriver/async_retriever
+.. image:: https://codecov.io/gh/hyriver/async-retriever/branch/main/graph/badge.svg
+    :target: https://codecov.io/gh/hyriver/async-retriever
     :alt: CodeCov
 
-.. image:: https://img.shields.io/pypi/pyversions/async_retriever.svg
-    :target: https://pypi.python.org/pypi/async_retriever
+.. image:: https://img.shields.io/pypi/pyversions/async-retriever.svg
+    :target: https://pypi.python.org/pypi/async-retriever
     :alt: Python Versions
 
-.. image:: https://github.com/hyriver/async_retriever/actions/workflows/test.yml/badge.svg
-    :target: https://github.com/hyriver/async_retriever/actions/workflows/test.yml
+.. image:: https://github.com/hyriver/async-retriever/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/hyriver/async-retriever/actions/workflows/test.yml
     :alt: Github Actions
 
 |
@@ -86,8 +86,8 @@ AsyncRetriever: Asynchronous requests with persistent caching
     :target: https://github.com/PyCQA/bandit
     :alt: Security Status
 
-.. image:: https://www.codefactor.io/repository/github/hyriver/async_retriever/badge
-   :target: https://www.codefactor.io/repository/github/hyriver/async_retriever
+.. image:: https://www.codefactor.io/repository/github/hyriver/async-retriever/badge
+   :target: https://www.codefactor.io/repository/github/hyriver/async-retriever
    :alt: CodeFactor
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
@@ -149,7 +149,7 @@ instance with the HyRiver stack pre-installed will be launched in your web brows
 can start coding!
 
 Moreover, requests for additional functionalities can be submitted via
-`issue tracker <https://github.com/hyriver/async_retriever/issues>`__.
+`issue tracker <https://github.com/hyriver/async-retriever/issues>`__.
 
 Citation
 --------
@@ -172,18 +172,18 @@ If you use any of HyRiver packages in your research, we appreciate citations:
 Installation
 ------------
 
-You can install ``async_retriever`` using ``pip``:
+You can install ``async-retriever`` using ``pip``:
 
 .. code-block:: console
 
-    $ pip install async_retriever
+    $ pip install async-retriever
 
-Alternatively, ``async_retriever`` can be installed from the ``conda-forge`` repository
+Alternatively, ``async-retriever`` can be installed from the ``conda-forge`` repository
 using `Conda <https://docs.conda.io/en/latest/>`__:
 
 .. code-block:: console
 
-    $ conda install -c conda-forge async_retriever
+    $ conda install -c conda-forge async-retriever
 
 Quick start
 -----------
@@ -204,7 +204,7 @@ a ``xarray`` Dataset. We can also disable SSL certificate verification by settin
 
     import io
     import xarray as xr
-    import async_retriever as ar
+    import async-retriever as ar
     from datetime import datetime
 
     west, south, east, north = (-69.77, 45.07, -69.31, 45.45)
@@ -342,5 +342,5 @@ Contributing
 ------------
 
 Contributions are appreciated and very welcomed. Please read
-`CONTRIBUTING.rst <https://github.com/hyriver/async_retriever/blob/main/CONTRIBUTING.rst>`__
+`CONTRIBUTING.rst <https://github.com/hyriver/async-retriever/blob/main/CONTRIBUTING.rst>`__
 for instructions.
