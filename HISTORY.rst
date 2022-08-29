@@ -2,7 +2,7 @@
 History
 =======
 
-0.4.0 (unreleased)
+0.3.5 (unreleased)
 ------------------
 
 Breaking Changes
