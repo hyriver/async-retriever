@@ -3,7 +3,7 @@ import pytest
 from aiohttp import InvalidURL
 
 import async_retriever as ar
-from async_retriever import InvalidInputType, InvalidInputValue, ServiceError
+from async_retriever import InputTypeError, InputValueError, ServiceError
 
 try:
     import typeguard  # noqa: F401
@@ -24,28 +24,28 @@ def url_kwds():
 
 def test_invalid_method(url_kwds):
     urls, kwds = url_kwds
-    with pytest.raises(InvalidInputValue) as ex:
+    with pytest.raises(InputValueError) as ex:
         _ = ar.retrieve(urls, "text", request_kwds=kwds, request_method="getter")
     assert "GET" in str(ex.value)
 
 
 def test_delete_invalid_method(url_kwds):
     urls, _ = url_kwds
-    with pytest.raises(InvalidInputValue) as ex:
+    with pytest.raises(InputValueError) as ex:
         ar.delete_url_cache(urls[0], request_method="getter")
     assert "GET" in str(ex.value)
 
 
 def test_invalid_read(url_kwds):
     urls, kwds = url_kwds
-    with pytest.raises(InvalidInputValue) as ex:
+    with pytest.raises(InputValueError) as ex:
         _ = ar.retrieve(urls, "texts", request_kwds=kwds)
     assert "read" in str(ex.value)
 
 
 def test_invalid_url(url_kwds):
     urls, kwds = url_kwds
-    with pytest.raises(InvalidInputType) as ex:
+    with pytest.raises(InputTypeError) as ex:
         _ = ar.retrieve(urls[0], "text", request_kwds=kwds)
     assert "list of str" in str(ex.value)
 
@@ -67,7 +67,7 @@ def test_invalid_length(url_kwds):
 def test_invalid_kwds(url_kwds):
     urls, kwds = url_kwds
     kwds = [{"paramss": v} for kw in kwds for _, v in kw.items()]
-    with pytest.raises(InvalidInputValue) as ex:
+    with pytest.raises(InputValueError) as ex:
         _ = ar.retrieve(urls, "text", request_kwds=kwds)
     assert "paramss" in str(ex.value)
 
@@ -98,7 +98,7 @@ def test_service_error():
 
 @pytest.mark.skipif(has_typeguard, reason="Broken if Typeguard is enabled")
 def test_wrong_path_type():
-    with pytest.raises(InvalidInputType) as ex:
+    with pytest.raises(InputTypeError) as ex:
         url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
         _ = ar.stream_write([url], "temp")
     assert "list of paths" in str(ex.value)

@@ -12,7 +12,7 @@ from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import CachedSession, SQLiteBackend
 
 from . import utils
-from .exceptions import InvalidInputValue
+from .exceptions import InputValueError
 from .utils import EXPIRE, BaseRetriever
 
 __all__ = [
@@ -148,7 +148,7 @@ def delete_url_cache(
     request_method = request_method.upper()
     valid_methods = ["GET", "POST"]
     if request_method not in valid_methods:
-        raise InvalidInputValue("method", valid_methods)
+        raise InputValueError("method", valid_methods)
 
     loop.run_until_complete(
         utils.delete_url(url, request_method, utils.create_cachefile(cache_name), **kwargs)

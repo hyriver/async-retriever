@@ -10,7 +10,7 @@ from aiohttp import ClientResponseError, ClientSession, ContentTypeError
 from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import CachedSession, SQLiteBackend
 
-from .exceptions import InvalidInputType, InvalidInputValue, ServiceError
+from .exceptions import InputTypeError, InputValueError, ServiceError
 
 try:
     import nest_asyncio
@@ -122,12 +122,12 @@ class BaseRetriever:
         self.request_method = request_method.upper()
         valid_methods = ["GET", "POST"]
         if self.request_method not in valid_methods:
-            raise InvalidInputValue("method", valid_methods)
+            raise InputValueError("method", valid_methods)
 
         self.file_paths = None
         if file_paths is not None:
             if not isinstance(file_paths, (list, tuple)):
-                raise InvalidInputType("file_paths", "list of paths")
+                raise InputTypeError("file_paths", "list of paths")
             self.file_paths = [Path(f) for f in file_paths]
             for f in self.file_paths:
                 f.parent.mkdir(parents=True, exist_ok=True)
@@ -137,7 +137,7 @@ class BaseRetriever:
         if read_method is not None:
             valid_reads = ["binary", "json", "text"]
             if read_method not in valid_reads:
-                raise InvalidInputValue("read", valid_reads)
+                raise InputValueError("read", valid_reads)
             self.read_method = "read" if read_method == "binary" else read_method
             self.r_kwds = (
                 {"content_type": None, "loads": json.loads} if read_method == "json" else {}
@@ -155,7 +155,7 @@ class BaseRetriever:
     ) -> Iterable[Tuple[Union[int, Path], StrOrURL, Dict[str, Any]]]:
         """Generate urls and keywords."""
         if not isinstance(urls, (list, tuple)):
-            raise InvalidInputType("``urls``", "list of str", "[url1, ...]")
+            raise InputTypeError("``urls``", "list of str", "[url1, ...]")
 
         if file_paths is None:
             url_id = range(len(urls))
@@ -176,6 +176,6 @@ class BaseRetriever:
         not_found = [p for kwds in request_kwds for p in kwds if p not in session_kwds]
         if len(not_found) > 0:
             invalids = ", ".join(not_found)
-            raise InvalidInputValue(f"request_kwds ({invalids})", list(session_kwds))
+            raise InputValueError(f"request_kwds ({invalids})", list(session_kwds))
 
         return zip(url_id, urls, request_kwds)

@@ -1,7 +1,7 @@
 """Top-level package."""
 import asyncio
-from importlib.metadata import version, PackageNotFoundError
 import sys
+from importlib.metadata import PackageNotFoundError, version
 
 from .async_retriever import (
     delete_url_cache,

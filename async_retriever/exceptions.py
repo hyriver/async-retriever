@@ -23,7 +23,7 @@ class ServiceError(Exception):
         return self.message
 
 
-class InvalidInputValue(Exception):
+class InputValueError(Exception):
     """Exception raised for invalid input.
 
     Parameters
@@ -48,7 +48,7 @@ class InvalidInputValue(Exception):
         return self.message
 
 
-class InvalidInputType(Exception):
+class InputTypeError(Exception):
     """Exception raised when a function argument type is invalid.
 
     Parameters
