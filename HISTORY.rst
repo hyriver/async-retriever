@@ -2,6 +2,19 @@
 History
 =======
 
+0.4.0 (unreleased)
+------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+- Append "Error" to all exception classes for conforming to PEP-8 naming conventions.
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Bump minimum version of ``aiohttp-client-cache`` to 0.7.3 since the ``attrs`` version
+  issue has been addressed.
+
+
 0.3.4 (2022-07-31)
 ------------------
 
