@@ -64,8 +64,8 @@ AsyncRetriever: Asynchronous requests with persistent caching
     :target: https://pypi.python.org/pypi/async-retriever
     :alt: PyPi
 
-.. image:: https://img.shields.io/conda/vn/conda-forge/async_retriever.svg
-    :target: https://anaconda.org/conda-forge/async_retriever
+.. image:: https://img.shields.io/conda/vn/conda-forge/async-retriever.svg
+    :target: https://anaconda.org/conda-forge/async-retriever
     :alt: Conda Version
 
 .. image:: https://codecov.io/gh/hyriver/async-retriever/branch/main/graph/badge.svg
@@ -120,7 +120,7 @@ use to make web calls:
 You can also use the general-purpose ``retrieve`` function to get responses as any
 of the three types. All responses are returned as a list that has the same order as the
 input list of requests. Moreover, there is another function called ``delete_url_cache``
-for removing all requests from a cache file that contains the given URL.
+for removing all requests from a cache file that contains a given URL.
 
 You can control the request/response caching behavior by setting the following
 environment variables:
@@ -183,7 +183,7 @@ using `Conda <https://docs.conda.io/en/latest/>`__:
 
 .. code-block:: console
 
-    $ conda install -c conda-forge async_retriever
+    $ conda install -c conda-forge async-retriever
 
 Quick start
 -----------
