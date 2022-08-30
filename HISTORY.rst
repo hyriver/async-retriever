@@ -2,6 +2,15 @@
 History
 =======
 
+0.3.6 (2022-08-30)
+------------------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Add the missing PyPi classifiers for the supported Python versions.
+- Release the package as both ``async_retriever`` and ``async-retriever``
+  on PyPi and Conda-forge.
+
 0.3.5 (2022-08-29)
 ------------------
 
