@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Awaitable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 import ujson as json
-from aiohttp import ClientResponseError, ClientSession, ContentTypeError
+from aiohttp import ClientResponseError, ClientSession
 from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import CachedSession, SQLiteBackend
 
