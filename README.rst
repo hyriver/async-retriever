@@ -64,8 +64,8 @@ AsyncRetriever: Asynchronous requests with persistent caching
     :target: https://pypi.python.org/pypi/async-retriever
     :alt: PyPi
 
-.. image:: https://img.shields.io/conda/vn/conda-forge/async-retriever.svg
-    :target: https://anaconda.org/conda-forge/async-retriever
+.. image:: https://img.shields.io/conda/vn/conda-forge/async_retriever.svg
+    :target: https://anaconda.org/conda-forge/async_retriever
     :alt: Conda Version
 
 .. image:: https://codecov.io/gh/hyriver/async-retriever/branch/main/graph/badge.svg
@@ -183,7 +183,7 @@ using `Conda <https://docs.conda.io/en/latest/>`__:
 
 .. code-block:: console
 
-    $ conda install -c conda-forge async-retriever
+    $ conda install -c conda-forge async_retriever
 
 Quick start
 -----------
@@ -204,7 +204,7 @@ a ``xarray`` Dataset. We can also disable SSL certificate verification by settin
 
     import io
     import xarray as xr
-    import async-retriever as ar
+    import async_retriever as ar
     from datetime import datetime
 
     west, south, east, north = (-69.77, 45.07, -69.31, 45.45)
