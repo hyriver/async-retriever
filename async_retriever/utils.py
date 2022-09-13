@@ -17,8 +17,6 @@ try:
 except ImportError:
     nest_asyncio = None
 
-EXPIRE = -1
-
 
 def create_cachefile(db_name: Union[str, Path, None] = None) -> Path:
     """Create a cache folder in the current working directory."""

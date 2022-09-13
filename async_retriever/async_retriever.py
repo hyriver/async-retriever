@@ -13,7 +13,7 @@ from aiohttp_client_cache import CachedSession, SQLiteBackend
 
 from . import utils
 from .exceptions import InputValueError
-from .utils import EXPIRE, BaseRetriever
+from .utils import BaseRetriever
 
 __all__ = [
     "retrieve",
@@ -32,7 +32,7 @@ async def async_session(
     request_method: str,
     cache_name: Path,
     timeout: float = 5.0,
-    expire_after: int = EXPIRE,
+    expire_after: int = -1,
     ssl: Union[SSLContext, bool, None] = None,
     disable: bool = False,
 ) -> Awaitable[Union[str, bytes, Dict[str, Any]]]:
@@ -70,7 +70,7 @@ async def async_session(
     """
     cache = SQLiteBackend(
         cache_name=os.getenv("HYRIVER_CACHE_NAME", cache_name),
-        expire_after=int(os.getenv("HYRIVER_CACHE_EXPIRE", expire_after)),
+        expire_after=int(os.getenv("HYRIVER_CACHE_-1", expire_after)),
         allowed_methods=("GET", "POST"),
         timeout=timeout,
     )
@@ -165,7 +165,7 @@ def retrieve(
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
     timeout: float = 5.0,
-    expire_after: float = EXPIRE,
+    expire_after: float = -1,
     ssl: Union[SSLContext, bool, None] = None,
     disable: bool = False,
 ) -> List[Union[str, Dict[str, Any], bytes]]:
@@ -313,7 +313,7 @@ def retrieve_text(
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
     timeout: float = 5.0,
-    expire_after: float = EXPIRE,
+    expire_after: float = -1,
     ssl: Union[SSLContext, bool, None] = None,
     disable: bool = False,
 ) -> List[str]:
@@ -385,7 +385,7 @@ def retrieve_json(
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
     timeout: float = 5.0,
-    expire_after: float = EXPIRE,
+    expire_after: float = -1,
     ssl: Union[SSLContext, bool, None] = None,
     disable: bool = False,
 ) -> List[Dict[str, Any]]:
@@ -458,7 +458,7 @@ def retrieve_binary(
     max_workers: int = 8,
     cache_name: Optional[Union[Path, str]] = None,
     timeout: float = 5.0,
-    expire_after: float = EXPIRE,
+    expire_after: float = -1,
     ssl: Union[SSLContext, bool, None] = None,
     disable: bool = False,
 ) -> List[bytes]:
