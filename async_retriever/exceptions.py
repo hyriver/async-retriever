@@ -1,5 +1,7 @@
 """Customized exceptions."""
-from typing import Generator, List, Optional, Union
+from __future__ import annotations
+
+from typing import Generator
 
 
 class ServiceError(Exception):
@@ -11,7 +13,7 @@ class ServiceError(Exception):
         Service error message.
     """
 
-    def __init__(self, err: str, url: Optional[str] = None) -> None:
+    def __init__(self, err: str, url: str | None = None) -> None:
         self.message = "Service returned the following error message:\n"
         if url is None:
             self.message += err
@@ -37,7 +39,7 @@ class InputValueError(Exception):
     def __init__(
         self,
         inp: str,
-        valid_inputs: Union[List[str], Generator[str, None, None]],
+        valid_inputs: list[str] | Generator[str, None, None],
     ) -> None:
         self.message = f"Given {inp} is invalid. Valid options are:\n" + "\n".join(
             str(i) for i in valid_inputs
@@ -65,7 +67,7 @@ class InputTypeError(Exception):
         self,
         arg: str,
         valid_type: str,
-        example: Optional[str] = None,
+        example: str | None = None,
     ) -> None:
         self.message = f"The {arg} argument should be of type {valid_type}"
         if example is not None:

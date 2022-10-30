@@ -1,9 +1,11 @@
 """Core async functions."""
+from __future__ import annotations
+
 import asyncio
 import os
 from pathlib import Path
 from ssl import SSLContext
-from typing import Any, Awaitable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Awaitable, Sequence
 
 import cytoolz as tlz
 import ujson as json
@@ -26,16 +28,16 @@ __all__ = [
 
 
 async def async_session(
-    url_kwds: Tuple[Tuple[int, StrOrURL, Dict[StrOrURL, Any]], ...],
+    url_kwds: tuple[tuple[int, StrOrURL, dict[StrOrURL, Any]], ...],
     read: str,
-    r_kwds: Dict[str, Any],
+    r_kwds: dict[str, Any],
     request_method: str,
     cache_name: Path,
     timeout: float = 5.0,
     expire_after: int = -1,
-    ssl: Union[SSLContext, bool, None] = None,
+    ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> Awaitable[Union[str, bytes, Dict[str, Any]]]:
+) -> Awaitable[str | bytes | dict[str, Any]]:
     """Create an async session for sending requests.
 
     Parameters
@@ -93,9 +95,9 @@ async def async_session(
 
 
 async def stream_session(
-    url_kwds: Tuple[Tuple[Path, StrOrURL, Dict[StrOrURL, Any]], ...],
+    url_kwds: tuple[tuple[Path, StrOrURL, dict[StrOrURL, Any]], ...],
     request_method: str,
-    ssl: Union[SSLContext, bool, None] = None,
+    ssl: SSLContext | bool | None = None,
 ) -> None:
     """Create an async session for sending requests.
 
@@ -126,8 +128,8 @@ async def stream_session(
 def delete_url_cache(
     url: StrOrURL,
     request_method: str = "GET",
-    cache_name: Optional[Union[Path, str]] = None,
-    **kwargs: Dict[str, Any],
+    cache_name: Path | str | None = None,
+    **kwargs: dict[str, Any],
 ) -> None:
     """Delete cached response associated with ``url``, along with its history (if applicable).
 
@@ -160,15 +162,15 @@ def delete_url_cache(
 def retrieve(
     urls: Sequence[StrOrURL],
     read_method: str,
-    request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
+    request_kwds: Sequence[dict[str, Any]] | None = None,
     request_method: str = "GET",
     max_workers: int = 8,
-    cache_name: Optional[Union[Path, str]] = None,
+    cache_name: Path | str | None = None,
     timeout: float = 5.0,
     expire_after: float = -1,
-    ssl: Union[SSLContext, bool, None] = None,
+    ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> List[Union[str, Dict[str, Any], bytes]]:
+) -> list[str | dict[str, Any] | bytes]:
     r"""Send async requests.
 
     Parameters
@@ -251,11 +253,11 @@ def retrieve(
 
 def stream_write(
     urls: Sequence[StrOrURL],
-    file_paths: List[Union[str, Path]],
-    request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
+    file_paths: list[str | Path],
+    request_kwds: Sequence[dict[str, Any]] | None = None,
     request_method: str = "GET",
     max_workers: int = 8,
-    ssl: Union[SSLContext, bool, None] = None,
+    ssl: SSLContext | bool | None = None,
 ) -> None:
     r"""Send async requests.
 
@@ -308,15 +310,15 @@ def stream_write(
 
 def retrieve_text(
     urls: Sequence[StrOrURL],
-    request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
+    request_kwds: Sequence[dict[str, Any]] | None = None,
     request_method: str = "GET",
     max_workers: int = 8,
-    cache_name: Optional[Union[Path, str]] = None,
+    cache_name: Path | str | None = None,
     timeout: float = 5.0,
     expire_after: float = -1,
-    ssl: Union[SSLContext, bool, None] = None,
+    ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> List[str]:
+) -> list[str]:
     r"""Send async requests and get the response as ``text``.
 
     Parameters
@@ -363,7 +365,7 @@ def retrieve_text(
     >>> resp[0].split('\n')[-2].split('\t')[1]
     '01646500'
     """
-    resp: List[str] = retrieve(  # type: ignore
+    resp: list[str] = retrieve(  # type: ignore
         urls,
         "text",
         request_kwds,
@@ -380,15 +382,15 @@ def retrieve_text(
 
 def retrieve_json(
     urls: Sequence[StrOrURL],
-    request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
+    request_kwds: Sequence[dict[str, Any]] | None = None,
     request_method: str = "GET",
     max_workers: int = 8,
-    cache_name: Optional[Union[Path, str]] = None,
+    cache_name: Path | str | None = None,
     timeout: float = 5.0,
     expire_after: float = -1,
-    ssl: Union[SSLContext, bool, None] = None,
+    ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     r"""Send async requests and get the response as ``json``.
 
     Parameters
@@ -436,7 +438,7 @@ def retrieve_json(
     >>> print(r[0]["features"][0]["properties"]["identifier"])
     2675320
     """
-    resp: List[Dict[str, Any]] = retrieve(  # type: ignore
+    resp: list[dict[str, Any]] = retrieve(  # type: ignore
         urls,
         "json",
         request_kwds,
@@ -453,15 +455,15 @@ def retrieve_json(
 
 def retrieve_binary(
     urls: Sequence[StrOrURL],
-    request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
+    request_kwds: Sequence[dict[str, Any]] | None = None,
     request_method: str = "GET",
     max_workers: int = 8,
-    cache_name: Optional[Union[Path, str]] = None,
+    cache_name: Path | str | None = None,
     timeout: float = 5.0,
     expire_after: float = -1,
-    ssl: Union[SSLContext, bool, None] = None,
+    ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> List[bytes]:
+) -> list[bytes]:
     r"""Send async requests and get the response as ``bytes``.
 
     Parameters
@@ -493,7 +495,7 @@ def retrieve_binary(
     bytes
         List of responses in the order of input URLs.
     """
-    resp: List[bytes] = retrieve(  # type: ignore
+    resp: list[bytes] = retrieve(  # type: ignore
         urls,
         "binary",
         request_kwds,

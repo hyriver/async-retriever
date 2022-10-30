@@ -1,9 +1,11 @@
 """Core async functions."""
+from __future__ import annotations
+
 import asyncio
 import inspect
 import sys
 from pathlib import Path
-from typing import Any, Awaitable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Awaitable, Iterable, Sequence
 
 import ujson as json
 from aiohttp import ClientResponseError, ClientSession
@@ -18,7 +20,7 @@ except ImportError:
     nest_asyncio = None
 
 
-def create_cachefile(db_name: Union[str, Path, None] = None) -> Path:
+def create_cachefile(db_name: str | Path | None = None) -> Path:
     """Create a cache folder in the current working directory."""
     fname = Path("cache", "aiohttp_cache.sqlite") if db_name is None else Path(db_name)
     fname.parent.mkdir(parents=True, exist_ok=True)
@@ -28,11 +30,11 @@ def create_cachefile(db_name: Union[str, Path, None] = None) -> Path:
 async def retriever(
     uid: int,
     url: StrOrURL,
-    s_kwds: Dict[str, Optional[Dict[str, Any]]],
+    s_kwds: dict[str, dict[str, Any] | None],
     session: CachedSession,
     read_type: str,
-    r_kwds: Dict[str, None],
-) -> Tuple[int, Union[str, Awaitable[Union[str, bytes, Dict[str, Any]]]]]:
+    r_kwds: dict[str, None],
+) -> tuple[int, str | Awaitable[str | bytes | dict[str, Any]]]:
     """Create an async request and return the response as binary.
 
     Parameters
@@ -66,7 +68,7 @@ async def retriever(
 
 async def stream_session(
     url: StrOrURL,
-    s_kwds: Dict[str, Optional[Dict[str, Any]]],
+    s_kwds: dict[str, dict[str, Any] | None],
     session: ClientSession,
     filepath: Path,
 ) -> None:
@@ -80,7 +82,7 @@ async def stream_session(
                 fd.write(chunk)
 
 
-def get_event_loop() -> Tuple[asyncio.AbstractEventLoop, bool]:
+def get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
     """Create an event loop."""
     try:
         loop = asyncio.get_running_loop()
@@ -97,7 +99,7 @@ def get_event_loop() -> Tuple[asyncio.AbstractEventLoop, bool]:
 
 
 async def delete_url(
-    url: StrOrURL, method: str = "GET", cache_name: Optional[Path] = None, **kwargs: Dict[str, Any]
+    url: StrOrURL, method: str = "GET", cache_name: Path | None = None, **kwargs: dict[str, Any]
 ) -> None:
     """Delete cached response associated with ``url``."""
     cache = SQLiteBackend(cache_name=cache_name)
@@ -110,11 +112,11 @@ class BaseRetriever:
     def __init__(
         self,
         urls: Sequence[StrOrURL],
-        file_paths: Optional[List[Union[str, Path]]] = None,
-        read_method: Optional[str] = None,
-        request_kwds: Optional[Sequence[Dict[str, Any]]] = None,
+        file_paths: list[str | Path] | None = None,
+        read_method: str | None = None,
+        request_kwds: Sequence[dict[str, Any]] | None = None,
         request_method: str = "GET",
-        cache_name: Optional[Union[Path, str]] = None,
+        cache_name: Path | str | None = None,
     ) -> None:
         """Validate inputs to retrieve function."""
         self.request_method = request_method.upper()
@@ -148,9 +150,9 @@ class BaseRetriever:
     @staticmethod
     def generate_requests(
         urls: Sequence[StrOrURL],
-        request_kwds: Optional[Sequence[Dict[str, Any]]],
-        file_paths: Optional[List[Path]],
-    ) -> Iterable[Tuple[Union[int, Path], StrOrURL, Dict[str, Any]]]:
+        request_kwds: Sequence[dict[str, Any]] | None,
+        file_paths: list[Path] | None,
+    ) -> Iterable[tuple[int | Path, StrOrURL, dict[str, Any]]]:
         """Generate urls and keywords."""
         if not isinstance(urls, (list, tuple)):
             raise InputTypeError("``urls``", "list of str", "[url1, ...]")
