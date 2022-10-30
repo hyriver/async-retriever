@@ -2,6 +2,14 @@
 History
 =======
 
+0.3.7 (unreleased)
+------------------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Use ``pyupgrade`` package to update the type hinting annotations
+  to Python 3.10 style.
+
 0.3.6 (2022-08-30)
 ------------------
 
