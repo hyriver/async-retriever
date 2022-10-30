@@ -12,8 +12,10 @@ import platform
 import struct
 import subprocess
 import sys
-from types import ModuleType
-from typing import TextIO
+from typing import TYPE_CHECKING, TextIO
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 __all__ = ["show_versions"]
 
@@ -155,7 +157,10 @@ def show_versions(file: TextIO = sys.stdout) -> None:
         ("matplotlib", lambda mod: mod.__version__),
         #  pydaymet
         ("pydaymet", lambda mod: mod.__version__),
+        #  hydrosignatures
+        ("hydrosignatures", lambda mod: mod.__version__),
         #  misc
+        ("numba", lambda mod: mod.__version__),
         ("bottleneck", lambda mod: mod.__version__),
         ("pygeos", lambda mod: mod.__version__),
         ("tables", lambda mod: mod.__version__),
