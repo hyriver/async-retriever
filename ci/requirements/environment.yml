@@ -4,14 +4,14 @@ channels:
   - nodefaults
 dependencies:
   - aiodns
-  - aiohttp>=3.8.1
-  - aiohttp-client-cache>=0.7.3
   - aiosqlite
+  - aiohttp >=3.8.1
   - brotli
   - cchardet
   - cytoolz
+  - nest-asyncio
+  - aiohttp-client-cache >=0.7.3
   - ujson
-  - loguru
 
   - pytest-cov
   - pytest-xdist
