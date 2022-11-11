@@ -8,13 +8,12 @@ dependencies:
 
   # async_retriever deps
   - aiodns
-  - aiosqlite
   - aiohttp >=3.8.1
+  - aiohttp-client-cache >=0.7.3
+  - aiosqlite
   - brotli
-  - cchardet
   - cytoolz
   - nest-asyncio
-  - aiohttp-client-cache >=0.7.3
   - ujson
 
   # pygeoogc deps
