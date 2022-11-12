@@ -7,7 +7,6 @@ from aiohttp import InvalidURL
 import async_retriever as ar
 from async_retriever import InputTypeError, InputValueError, ServiceError
 
-
 has_typeguard = True if sys.modules.get("typeguard") else False
 
 
