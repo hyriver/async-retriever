@@ -1,7 +1,7 @@
 """Customized exceptions."""
 from __future__ import annotations
 
-from typing import Generator
+from typing import Generator, Sequence
 
 
 class ServiceError(Exception):
@@ -39,11 +39,10 @@ class InputValueError(Exception):
     def __init__(
         self,
         inp: str,
-        valid_inputs: list[str] | Generator[str, None, None],
+        valid_inputs: Sequence[str | int] | Generator[str | int, None, None],
     ) -> None:
-        self.message = f"Given {inp} is invalid. Valid options are:\n" + "\n".join(
-            str(i) for i in valid_inputs
-        )
+        self.message = f"Given {inp} is invalid. Valid options are:\n"
+        self.message += "\n".join(str(i) for i in valid_inputs)
         super().__init__(self.message)
 
     def __str__(self) -> str:

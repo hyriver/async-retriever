@@ -174,7 +174,7 @@ class BaseRetriever:
 
         session_kwds = inspect.signature(CachedSession._request).parameters.keys()
         not_found = [p for kwds in request_kwds for p in kwds if p not in session_kwds]
-        if len(not_found) > 0:
+        if not_found:
             invalids = ", ".join(not_found)
             raise InputValueError(f"request_kwds ({invalids})", list(session_kwds))
 
