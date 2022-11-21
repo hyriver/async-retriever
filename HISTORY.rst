@@ -9,6 +9,8 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 - Use ``pyupgrade`` package to update the type hinting annotations
   to Python 3.10 style.
+- Modify the codebase based on `Refurb <https://github.com/dosisod/refurb>`__
+  suggestions.
 
 0.3.6 (2022-08-30)
 ------------------
