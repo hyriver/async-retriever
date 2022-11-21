@@ -5,6 +5,12 @@ History
 0.3.7 (unreleased)
 ------------------
 
+New Features
+~~~~~~~~~~~~
+- Add support for specifying the chunk size in ``stream_write``. Defaults to
+  ``None`` which was the default behavior before, and means iterating over and
+  writing the responses as they are received from the server.
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 - Use ``pyupgrade`` package to update the type hinting annotations
