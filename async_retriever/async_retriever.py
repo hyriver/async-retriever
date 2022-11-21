@@ -98,6 +98,7 @@ async def stream_session(
     url_kwds: tuple[tuple[Path, StrOrURL, dict[StrOrURL, Any]], ...],
     request_method: str,
     ssl: SSLContext | bool | None = None,
+    chunk_size: int | None = None,
 ) -> None:
     """Create an async session for sending requests.
 
@@ -109,8 +110,12 @@ async def stream_session(
     request_method : str
         The request type; GET or POST.
     ssl : bool or SSLContext, optional
-        SSLContext to use for the connection, defaults to None. Set to ``False`` to disable
-        SSL certification verification.
+        SSLContext to use for the connection, defaults to ``None``. Set to
+        ``False`` to disable SSL certification verification.
+    chunk_size : int, optional
+        The size of the chunks in bytes to be written to the file, defaults to ``None``,
+        which will iterates over data chunks and write them as received from
+        the server.
     """
     async with ClientSession(
         json_serialize=json.dumps,
@@ -119,7 +124,7 @@ async def stream_session(
     ) as session:
         request_func = getattr(session, request_method.lower())
         tasks = (
-            utils.stream_session(url, kwds, request_func, filepath)
+            utils.stream_session(url, kwds, request_func, filepath, chunk_size)
             for filepath, url, kwds in url_kwds
         )
         await asyncio.gather(*tasks)
@@ -258,6 +263,7 @@ def stream_write(
     request_method: str = "GET",
     max_workers: int = 8,
     ssl: SSLContext | bool | None = None,
+    chunk_size: int | None = None,
 ) -> None:
     r"""Send async requests.
 
@@ -277,6 +283,10 @@ def stream_write(
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL certification verification.
+    chunk_size : int, optional
+        The size of the chunks in bytes to be written to the file, defaults to ``None``,
+        which will iterates over data chunks and write them as received from
+        the server.
 
     Examples
     --------
@@ -299,6 +309,7 @@ def stream_write(
         stream_session,
         request_method=inp.request_method,
         ssl=ssl,
+        chunk_size=chunk_size,
     )
 
     chunked_reqs = tlz.partition_all(max_workers, inp.url_kwds)

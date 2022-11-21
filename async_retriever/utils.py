@@ -71,15 +71,19 @@ async def stream_session(
     s_kwds: dict[str, dict[str, Any] | None],
     session: ClientSession,
     filepath: Path,
+    chunk_size: int | None = None,
 ) -> None:
     """Stream the response to a file."""
     async with session(url, **s_kwds) as response:
         if response.status != 200:
             raise ServiceError(await response.text(), str(response.url))
-
         with filepath.open("wb") as fd:
-            async for chunk, _ in response.content.iter_chunks():
-                fd.write(chunk)
+            if chunk_size is None:
+                async for chunk, _ in response.content.iter_chunks():
+                    fd.write(chunk)
+            else:
+                async for chunk in response.content.iter_chunked(chunk_size):
+                    fd.write(chunk)
 
 
 def get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
