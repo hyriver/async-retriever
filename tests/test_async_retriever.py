@@ -102,12 +102,17 @@ def test_text_post():
 
 
 def test_stream():
+    url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
     with tempfile.NamedTemporaryFile() as temp:
-        url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
         ar.stream_write([url], [temp.name])
-        with open(temp.name) as f:
-            data = f.readlines()
-        assert len(data) == 15724
+        assert Path(temp.name).stat().st_size == 512789
+
+
+def test_stream_chunked():
+    url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
+    with tempfile.NamedTemporaryFile() as temp:
+        ar.stream_write([url], [temp.name], chunk_size=5000)
+        assert Path(temp.name).stat().st_size == 512789
 
 
 def test_ordered_return():
