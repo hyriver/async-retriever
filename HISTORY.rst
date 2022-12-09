@@ -2,7 +2,7 @@
 History
 =======
 
-0.3.7 (unreleased)
+0.3.7 (2022-12-09)
 ------------------
 
 New Features
