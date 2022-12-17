@@ -33,6 +33,10 @@
     :target: https://github.com/hyriver/pydaymet/actions/workflows/test.yml
     :alt: Github Actions
 
+.. |pynldas2| image:: https://github.com/hyriver/pynldas2/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/hyriver/pynldas2/actions/workflows/test.yml
+    :alt: Github Actions
+
 .. |async| image:: https://github.com/hyriver/async-retriever/actions/workflows/test.yml/badge.svg
     :target: https://github.com/hyriver/async-retriever/actions/workflows/test.yml
     :alt: Github Actions
@@ -48,6 +52,7 @@ PyNHD_           Navigate and subset NHDPlus (MR and HR) using web services     
 Py3DEP_          Access topographic data through National Map's 3DEP web service      |py3dep|
 PyGeoHydro_      Access NWIS, NID, WQP, HCDN 2009, NLCD, CAMELS, and SSEBop databases |pygeohydro|
 PyDaymet_        Access daily, monthly, and annual climate data via Daymet            |pydaymet|
+PyNLDAS2_        Access hourly NLDAS-2 data via web services                          |pynldas2|
 HydroSignatures_ A collection of tools for computing hydrological signatures          |signatures|
 AsyncRetriever_  High-level API for asynchronous requests with persistent caching     |async|
 PyGeoOGC_        Send queries to any ArcGIS RESTful-, WMS-, and WFS-based services    |pygeoogc|
@@ -58,9 +63,10 @@ PyGeoUtils_      Utilities for manipulating geospatial, (Geo)JSON, and (Geo)TIFF
 .. _AsyncRetriever: https://github.com/hyriver/async-retriever
 .. _PyGeoOGC: https://github.com/hyriver/pygeoogc
 .. _PyGeoUtils: https://github.com/hyriver/pygeoutils
-.. _PyNHD : https://github.com/hyriver/pynhd
+.. _PyNHD: https://github.com/hyriver/pynhd
 .. _Py3DEP: https://github.com/hyriver/py3dep
 .. _PyDaymet: https://github.com/hyriver/pydaymet
+.. _PyNLDAS2: https://github.com/hyriver/pynldas2
 .. _HydroSignatures: https://github.com/hyriver/hydrosignatures
 
 AsyncRetriever: Asynchronous requests with persistent caching
@@ -252,7 +258,7 @@ We can remove these requests and their responses from the cache like so:
     ar.delete_url_cache(base_url)
 
 .. image:: https://raw.githubusercontent.com/hyriver/HyRiver-examples/main/notebooks/_static/ndvi.png
-    :target: https://github.com/hyriver/HyRiver-examples/blob/main/notebooks/async.ipunb
+    :target: https://github.com/hyriver/HyRiver-examples/blob/main/notebooks/async.ipynb
 
 For a ``json`` response example, let's get water level recordings of an NOAA's water level station,
 8534720 (Atlantic City, NJ), during 2012, using CO-OPS API. Note that this CO-OPS product has a
@@ -308,7 +314,7 @@ For a ``json`` response example, let's get water level recordings of an NOAA's w
     water_level.attrs = rjson["metadata"]
 
 .. image:: https://raw.githubusercontent.com/hyriver/HyRiver-examples/main/notebooks/_static/water_level.png
-    :target: https://github.com/hyriver/HyRiver-examples/blob/main/notebooks/async.ipunb
+    :target: https://github.com/hyriver/HyRiver-examples/blob/main/notebooks/async.ipynb
 
 Now, let's see an example without any payload or headers. Here's how we can retrieve
 harmonic constituents of several NOAA stations from CO-OPS:
@@ -344,7 +350,7 @@ harmonic constituents of several NOAA stations from CO-OPS:
     phs = pd.concat(phs_list, axis=1)
 
 .. image:: https://raw.githubusercontent.com/hyriver/HyRiver-examples/main/notebooks/_static/tides.png
-    :target: https://github.com/hyriver/HyRiver-examples/blob/main/notebooks/async.ipunb
+    :target: https://github.com/hyriver/HyRiver-examples/blob/main/notebooks/async.ipynb
 
 Contributing
 ------------
