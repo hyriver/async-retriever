@@ -2,6 +2,21 @@
 History
 =======
 
+0.3.9 (unreleased)
+------------------
+
+Bug Fixes
+~~~~~~~~~
+- Fix a bug in reading the ``HYRIVER_CACHE_EXPIRE`` environmental variable.
+- Bump the minimum version of ``aiohttp-client-cache`` to 0.8.1 to fix a bug
+  in reading cache files that were created with previous versions.
+  (:issue_async:`41`)
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Enable ``fast_save`` in ``aiohttp-client-cache`` to speed up saving responses
+  to the cache file.
+
 0.3.7 (2022-12-09)
 ------------------
 
