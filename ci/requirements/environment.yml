@@ -4,8 +4,8 @@ channels:
   - nodefaults
 dependencies:
   - aiodns
-  - aiohttp >=3.8.1
-  - aiohttp-client-cache >=0.7.3
+  - aiohttp >=3.8.3
+  - aiohttp-client-cache >=0.8.1
   - aiosqlite
   - brotli
   - cytoolz
