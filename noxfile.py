@@ -16,7 +16,7 @@ def get_package_name():
 python_versions = ["3.10"]
 package = get_package_name()
 gh_deps = {
-    "async-retriever": [],
+    "async_retriever": [],
     "pygeoogc": ["async-retriever"],
     "pygeoutils": ["async-retriever", "pygeoogc"],
     "pynhd": ["async-retriever", "pygeoogc", "pygeoutils"],
