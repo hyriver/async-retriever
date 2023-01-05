@@ -72,9 +72,10 @@ async def async_session(
     """
     cache = SQLiteBackend(
         cache_name=os.getenv("HYRIVER_CACHE_NAME", cache_name),
-        expire_after=int(os.getenv("HYRIVER_CACHE_-1", expire_after)),
+        expire_after=int(os.getenv("HYRIVER_CACHE_EXPIRE", expire_after)),
         allowed_methods=("GET", "POST"),
         timeout=timeout,
+        fast_save=True,
     )
     connector = TCPConnector(ssl=ssl)
     disable = os.getenv("HYRIVER_CACHE_DISABLE", f"{disable}").lower() == "true"
