@@ -128,4 +128,4 @@ def test_ordered_return():
 def test_show_versions():
     f = io.StringIO()
     ar.show_versions(file=f)
-    assert "INSTALLED VERSIONS" in f.getvalue()
+    assert "SYS INFO" in f.getvalue()
