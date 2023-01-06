@@ -25,6 +25,19 @@ class ServiceError(Exception):
         return self.message
 
 
+class DependencyError(ImportError):
+    """Exception raised when nest-asyncio is not installed."""
+
+    def __init__(self) -> None:
+        self.message = "\n".join(
+            ("For IPython users, nest-asyncio must be installed.", "pip install nest-asyncio")
+        )
+        super().__init__(self.message)
+
+    def __str__(self) -> str:
+        return self.message
+
+
 class InputValueError(Exception):
     """Exception raised for invalid input.
 

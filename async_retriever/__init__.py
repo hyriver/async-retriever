@@ -11,7 +11,7 @@ from .async_retriever import (
     retrieve_text,
     stream_write,
 )
-from .exceptions import InputTypeError, InputValueError, ServiceError
+from .exceptions import DependencyError, InputTypeError, InputValueError, ServiceError
 from .print_versions import show_versions
 
 try:
@@ -19,7 +19,7 @@ try:
 except PackageNotFoundError:
     __version__ = "999"
 
-if sys.platform.startswith("win"):
+if sys.platform == "win32":  # pragma: no cover
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 __all__ = [
@@ -32,5 +32,6 @@ __all__ = [
     "InputTypeError",
     "InputValueError",
     "ServiceError",
+    "DependencyError",
     "show_versions",
 ]
