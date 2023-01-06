@@ -11,7 +11,8 @@ import cytoolz as tlz
 import ujson as json
 from aiohttp import ClientSession, TCPConnector
 from aiohttp.typedefs import StrOrURL
-from aiohttp_client_cache import CachedSession, SQLiteBackend
+from aiohttp_client_cache import SQLiteBackend
+from aiohttp_client_cache.session import CachedSession
 
 from . import utils
 from .exceptions import InputValueError
@@ -28,7 +29,7 @@ __all__ = [
 
 
 async def async_session(
-    url_kwds: tuple[tuple[int, StrOrURL, dict[StrOrURL, Any]], ...],
+    url_kwds: tuple[tuple[int, StrOrURL, dict[str, Any]], ...],
     read: str,
     r_kwds: dict[str, Any],
     request_method: str,
@@ -71,7 +72,7 @@ async def async_session(
         An async gather function
     """
     cache = SQLiteBackend(
-        cache_name=os.getenv("HYRIVER_CACHE_NAME", cache_name),
+        cache_name=os.getenv("HYRIVER_CACHE_NAME", str(cache_name)),
         expire_after=int(os.getenv("HYRIVER_CACHE_EXPIRE", expire_after)),
         allowed_methods=("GET", "POST"),
         timeout=timeout,
@@ -85,7 +86,7 @@ async def async_session(
         connector=connector,
         trust_env=True,
     ) as session:
-        _session = session.disabled() if disable else session
+        _session = session.disabled() if disable else session  # type: ignore
         async with _session:
             request_func = getattr(session, request_method.lower())
             tasks = (
@@ -96,7 +97,7 @@ async def async_session(
 
 
 async def stream_session(
-    url_kwds: tuple[tuple[Path, StrOrURL, dict[StrOrURL, Any]], ...],
+    url_kwds: tuple[tuple[Path, StrOrURL, dict[str, Any]], ...],
     request_method: str,
     ssl: SSLContext | bool | None = None,
     chunk_size: int | None = None,
