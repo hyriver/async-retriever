@@ -16,6 +16,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 - Enable ``fast_save`` in ``aiohttp-client-cache`` to speed up saving responses
   to the cache file.
+- Use ``pyright`` for type checking instead of ``mypy`` and fix all type errors.
 
 0.3.7 (2022-12-09)
 ------------------
