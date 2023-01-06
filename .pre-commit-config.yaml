@@ -31,7 +31,7 @@ repos:
     rev: v2.1.2
     hooks:
       - id: pycln
-        name: Find and remove unused import statements
+        name: Find and remove unused import statements with pycln
         args: [--config=pyproject.toml]
 
   - repo: https://github.com/bwhmather/ssort
@@ -114,12 +114,6 @@ repos:
       name: Modernizing Python codebases using Refurb
       additional_dependencies:
       - numpy
-
-  - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.287
-    hooks:
-    - id: pyright
-      name: Type checking with pyright
 
   - repo: https://github.com/PyCQA/bandit
     rev: 1.7.4
