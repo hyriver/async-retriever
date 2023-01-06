@@ -2,22 +2,20 @@
 from __future__ import annotations
 
 import asyncio
+import importlib.util
 import inspect
 import sys
 from pathlib import Path
-from typing import Any, Awaitable, Iterable, Sequence
+from typing import Any, Awaitable, Callable, Iterable, Sequence
 
 import ujson as json
-from aiohttp import ClientResponseError, ClientSession
+from aiohttp import ClientResponseError
+from aiohttp.client import _RequestContextManager
 from aiohttp.typedefs import StrOrURL
-from aiohttp_client_cache import CachedSession, SQLiteBackend
+from aiohttp_client_cache import SQLiteBackend
+from aiohttp_client_cache.session import CachedSession
 
-from .exceptions import InputTypeError, InputValueError, ServiceError
-
-try:
-    import nest_asyncio
-except ImportError:
-    nest_asyncio = None
+from .exceptions import DependencyError, InputTypeError, InputValueError, ServiceError
 
 
 def create_cachefile(db_name: str | Path | None = None) -> Path:
@@ -30,8 +28,8 @@ def create_cachefile(db_name: str | Path | None = None) -> Path:
 async def retriever(
     uid: int,
     url: StrOrURL,
-    s_kwds: dict[str, dict[str, Any] | None],
-    session: CachedSession,
+    s_kwds: dict[str, dict[str, Any]],
+    session: Callable[[StrOrURL], _RequestContextManager],
     read_type: str,
     r_kwds: dict[str, None],
 ) -> tuple[int, str | Awaitable[str | bytes | dict[str, Any]]]:
@@ -69,7 +67,7 @@ async def retriever(
 async def stream_session(
     url: StrOrURL,
     s_kwds: dict[str, dict[str, Any] | None],
-    session: ClientSession,
+    session: Callable[[StrOrURL], _RequestContextManager],
     filepath: Path,
     chunk_size: int | None = None,
 ) -> None:
@@ -96,17 +94,19 @@ def get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
         new_loop = True
     asyncio.set_event_loop(loop)
     if "IPython" in sys.modules:
-        if nest_asyncio is None:
-            raise ImportError("nest-asyncio")
+        if importlib.util.find_spec("nest_asyncio") is None:
+            raise DependencyError
+        import nest_asyncio  # type: ignore
+
         nest_asyncio.apply(loop)
     return loop, new_loop
 
 
 async def delete_url(
-    url: StrOrURL, method: str = "GET", cache_name: Path | None = None, **kwargs: dict[str, Any]
+    url: StrOrURL, method: str, cache_name: Path, **kwargs: dict[str, Any]
 ) -> None:
     """Delete cached response associated with ``url``."""
-    cache = SQLiteBackend(cache_name=cache_name)
+    cache = SQLiteBackend(cache_name=str(cache_name))
     await cache.delete_url(url, method, **kwargs)
 
 
