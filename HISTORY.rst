@@ -5,6 +5,11 @@ History
 0.3.10 (unreleased)
 -------------------
 
+New Features
+~~~~~~~~~~~~
+- Refactor the ``show_versions`` function now to improve performance and
+  print the output in a nicer table-like format.
+
 Bug Fixes
 ~~~~~~~~~
 - Fix a bug in reading the ``HYRIVER_CACHE_EXPIRE`` environmental variable.
@@ -17,6 +22,8 @@ Internal Changes
 - Enable ``fast_save`` in ``aiohttp-client-cache`` to speed up saving responses
   to the cache file.
 - Use ``pyright`` for type checking instead of ``mypy`` and fix all type errors.
+- Skip 0.13.8/9 versions so the minor version of all HyRiver packages become
+  the same.
 
 0.3.7 (2022-12-09)
 ------------------
