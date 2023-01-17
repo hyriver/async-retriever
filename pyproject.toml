@@ -8,6 +8,74 @@ requires = [
 [tool.setuptools_scm]
 fallback_version = "999"
 
+[project]
+name = "async_retriever"
+description = "High-level API for asynchronous requests with persistent caching."
+authors = [{name = "Taher Chegini", email = "cheginit@gmail.com"}]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Internet :: WWW/HTTP",
+    "Typing :: Typed",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "aiohttp-client-cache>=0.8.1",
+    "aiohttp[speedups]>=3.8.3",
+    "aiosqlite",
+    "cytoolz",
+    "ujson",
+]
+dynamic = ["version"]
+
+[project.readme]
+file = "README.rst"
+content-type = "text/x-rst"
+
+[project.urls]
+Homepage = "https://docs.hyriver.io/readme/async-retriever.html"
+Issues = "https://github.com/hyriver/async-retriever/issues"
+CI = "https://github.com/hyriver/async-retriever/actions"
+Changelog = "https://docs.hyriver.io/changelogs/async-retriever.html"
+
+[project.optional-dependencies]
+notebook = ["nest-asyncio"]
+test = [
+    "coverage[toml]",
+    "pytest-cov",
+    "pytest-xdist[psutil]",
+]
+typeguard = [
+    "coverage[toml]",
+    "pygments",
+    "pytest-cov",
+    "pytest-xdist[psutil]",
+    "typeguard",
+]
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+platforms = ["any"]
+license-files = ["LICENSE"]
+
+[tool.setuptools.packages]
+find = {namespaces = false}
+
+[tool.setuptools.package-data]
+async_retriever = ["py.typed"]
+
 [tool.pytest.ini_options]
 addopts = "--ignore=noxfile.py -n=auto -v --cov=async_retriever --cov-report xml --durations=5"
 doctest_optionflags = 'NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL NUMBER'
@@ -18,7 +86,19 @@ testpaths = [
 filterwarnings =[
     "ignore:.*distutils.*",
     "ignore:.*--rsyncdir command line argument.*",
+    "ignore:.*numpy.ndarray size changed.*",
 ]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = ['async_retriever']
+
+[tool.coverage.report]
+exclude_lines = [
+    'raise DependencyError',
+]
+ignore_errors = true
 
 [tool.mypy]
 strict = true
@@ -63,5 +143,19 @@ include = ["async_retriever"]
 exclude = [
     ".nox/",
     "**/__pycache__",
+    "**/__init__.py",
     "tests/",
 ]
+typeCheckingMode = "strict"
+reportMissingTypeStubs = false
+reportUnknownVariableType = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+reportUnknownLambdaType = false
+reportUnknownParameterType = false
+reportUnnecessaryIsInstance = false
+reportUntypedFunctionDecorator = false
+
+[tool.codespell]
+skip = "__pycache__,_build,.mypy_cache,.git,./htmlcov,.nox"
+ignore-words-list = "paramss"
