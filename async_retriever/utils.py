@@ -10,7 +10,7 @@ from typing import Any, Awaitable, Callable, Iterable, Sequence
 
 import ujson as json
 from aiohttp import ClientResponseError
-from aiohttp.client import _RequestContextManager
+from aiohttp.client import _RequestContextManager  # type: ignore
 from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import SQLiteBackend
 from aiohttp_client_cache.session import CachedSession
@@ -181,7 +181,7 @@ class BaseRetriever:
             msg = "``urls`` and ``request_kwds`` must have the same size."
             raise ValueError(msg)
 
-        session_kwds = inspect.signature(CachedSession._request).parameters.keys()
+        session_kwds = inspect.signature(CachedSession._request).parameters.keys()  # type: ignore
         not_found = [p for kwds in request_kwds for p in kwds if p not in session_kwds]
         if not_found:
             invalids = ", ".join(not_found)
