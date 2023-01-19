@@ -15,7 +15,12 @@ from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import SQLiteBackend
 from aiohttp_client_cache.session import CachedSession
 
-from .exceptions import DependencyError, InputTypeError, InputValueError, ServiceError
+from async_retriever.exceptions import (
+    DependencyError,
+    InputTypeError,
+    InputValueError,
+    ServiceError,
+)
 
 
 def create_cachefile(db_name: str | Path | None = None) -> Path:

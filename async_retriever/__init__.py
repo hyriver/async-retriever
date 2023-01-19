@@ -3,7 +3,7 @@ import asyncio
 import sys
 from importlib.metadata import PackageNotFoundError, version
 
-from .async_retriever import (
+from async_retriever.async_retriever import (
     delete_url_cache,
     retrieve,
     retrieve_binary,
@@ -11,8 +11,13 @@ from .async_retriever import (
     retrieve_text,
     stream_write,
 )
-from .exceptions import DependencyError, InputTypeError, InputValueError, ServiceError
-from .print_versions import show_versions
+from async_retriever.exceptions import (
+    DependencyError,
+    InputTypeError,
+    InputValueError,
+    ServiceError,
+)
+from async_retriever.print_versions import show_versions
 
 try:
     __version__ = version("async_retriever")

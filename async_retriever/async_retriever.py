@@ -14,9 +14,9 @@ from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import SQLiteBackend
 from aiohttp_client_cache.session import CachedSession
 
-from . import utils
-from .exceptions import InputValueError
-from .utils import BaseRetriever
+from async_retriever import utils
+from async_retriever.exceptions import InputValueError
+from async_retriever.utils import BaseRetriever
 
 __all__ = [
     "retrieve",
