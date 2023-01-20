@@ -9,6 +9,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 - Fully migrate ``setup.cfg`` and ``setup.py`` to ``pyproject.toml``.
 - Convert relative imports to absolute with ``absolufy-imports``.
+- Make ``utils`` module private.
 
 0.3.10 (2023-01-08)
 -------------------
