@@ -6,12 +6,10 @@ import importlib.util
 import inspect
 import sys
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Sequence
 
 import ujson as json
 from aiohttp import ClientResponseError
-from aiohttp.client import _RequestContextManager  # type: ignore
-from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import SQLiteBackend
 from aiohttp_client_cache.session import CachedSession
 
@@ -21,6 +19,10 @@ from async_retriever.exceptions import (
     InputValueError,
     ServiceError,
 )
+
+if TYPE_CHECKING:
+    from aiohttp.client import _RequestContextManager  # type: ignore
+    from aiohttp.typedefs import StrOrURL
 
 
 def create_cachefile(db_name: str | Path | None = None) -> Path:
