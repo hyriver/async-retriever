@@ -3,20 +3,23 @@ from __future__ import annotations
 
 import asyncio
 import os
-from pathlib import Path
-from ssl import SSLContext
-from typing import Any, Awaitable, Sequence
+from typing import TYPE_CHECKING, Any, Awaitable, Sequence
 
 import cytoolz as tlz
 import ujson as json
 from aiohttp import ClientSession, TCPConnector
-from aiohttp.typedefs import StrOrURL
 from aiohttp_client_cache import SQLiteBackend
 from aiohttp_client_cache.session import CachedSession
 
-from async_retriever import utils
+import async_retriever._utils as utils
+from async_retriever._utils import BaseRetriever
 from async_retriever.exceptions import InputValueError
-from async_retriever.utils import BaseRetriever
+
+if TYPE_CHECKING:
+    from pathlib import Path
+    from ssl import SSLContext
+
+    from aiohttp.typedefs import StrOrURL
 
 __all__ = [
     "retrieve",
