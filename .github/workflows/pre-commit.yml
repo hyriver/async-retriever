@@ -2,7 +2,7 @@ name: Linting
 
 on:
   pull_request:
-  workflow_dispatch: # allows you to trigger manually
+  workflow_dispatch:   # allows you to trigger manually
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,6 +12,6 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: excitedleigh/setup-nox@v2.1.0
-      - run: nox -s pre-commit
+    - uses: actions/checkout@v3
+    - uses: excitedleigh/setup-nox@v2.1.0
+    - run: nox -s pre-commit
