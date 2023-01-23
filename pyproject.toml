@@ -78,18 +78,18 @@ skip = "__pycache__,_build,.mypy_cache,.git,./htmlcov,.nox"
 exclude_lines = [
   "raise DependencyError",
   "if TYPE_CHECKING:",
-  'if "IPython" in sys.modules:',
+  'if "IPython" in sys.modules:'
 ]
 ignore_errors = true
 
 [tool.coverage.run]
 branch = true
+omit = [
+  "**/__init__.py",
+  "**/print_versions.py"
+]
 parallel = true
 source = ['async_retriever']
-omit =[
-    "**/__init__.py",
-    "**/print_versions.py",
-]
 
 [tool.isort]
 default_section = "THIRDPARTY"
