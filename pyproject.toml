@@ -2,11 +2,29 @@
 build-backend = "setuptools.build_meta"
 requires = [
   "setuptools>=42",
-  "setuptools-scm>=7"
+  "setuptools-scm>=7",
 ]
 
 [project]
+name = "async_retriever"
+description = "High-level API for asynchronous requests with persistent caching."
+[project.readme]
+content-type = "text/x-rst"
+file = "README.rst"
+
+license = {text = "MIT"}
 authors = [{name = "Taher Chegini", email = "cheginit@gmail.com"}]
+requires-python = ">=3.8"
+dependencies = [
+  "aiohttp[speedups]>=3.8.3",
+  "aiohttp-client-cache>=0.8.1",
+  "aiosqlite",
+  "cytoolz",
+  "ujson",
+]
+dynamic = [
+  "version",
+]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Framework :: AsyncIO",
@@ -23,43 +41,29 @@ classifiers = [
   "Topic :: Internet :: WWW/HTTP",
   "Typing :: Typed"
 ]
-dependencies = [
-  "aiohttp-client-cache>=0.8.1",
-  "aiohttp[speedups]>=3.8.3",
-  "aiosqlite",
-  "cytoolz",
-  "ujson"
-]
-description = "High-level API for asynchronous requests with persistent caching."
-dynamic = ["version"]
-license = {text = "MIT"}
-name = "async_retriever"
-requires-python = ">=3.8"
-
 [project.optional-dependencies]
-notebook = ["nest-asyncio"]
+notebook = [
+  "nest-asyncio",
+]
 test = [
   "coverage[toml]",
   "pytest-cov",
-  "pytest-xdist[psutil]"
+  "pytest-xdist[psutil]",
 ]
 typeguard = [
   "coverage[toml]",
   "pygments",
   "pytest-cov",
   "pytest-xdist[psutil]",
-  "typeguard"
+  "typeguard",
 ]
-
-[project.readme]
-content-type = "text/x-rst"
-file = "README.rst"
 
 [project.urls]
 CI = "https://github.com/hyriver/async-retriever/actions"
 Changelog = "https://docs.hyriver.io/changelogs/async-retriever.html"
 Homepage = "https://docs.hyriver.io/readme/async-retriever.html"
 Issues = "https://github.com/hyriver/async-retriever/issues"
+
 
 [tool.bandit]
 targets = [
