@@ -7,6 +7,9 @@ History
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
+- Rewrite the private ``async_session`` function as two separate functions
+  called ``async_session_without_cache`` and ``async_session_with_cache``.
+  This makes the code more readable and easier to maintain.
 - Fully migrate ``setup.cfg`` and ``setup.py`` to ``pyproject.toml``.
 - Convert relative imports to absolute with ``absolufy-imports``.
 - Make ``utils`` module private.
