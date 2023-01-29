@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import os
-from typing import TYPE_CHECKING, Any, Awaitable, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 import cytoolz as tlz
 import ujson as json
@@ -31,7 +31,7 @@ __all__ = [
 ]
 
 
-async def async_session(
+async def async_session_with_cache(
     url_kwds: tuple[tuple[int, StrOrURL, dict[str, Any]], ...],
     read: str,
     r_kwds: dict[str, Any],
@@ -40,8 +40,7 @@ async def async_session(
     timeout: float = 5.0,
     expire_after: int = -1,
     ssl: SSLContext | bool | None = None,
-    disable: bool = False,
-) -> Awaitable[str | bytes | dict[str, Any]]:
+) -> list[str | bytes | dict[str, Any]]:
     """Create an async session for sending requests.
 
     Parameters
@@ -65,9 +64,6 @@ async def async_session(
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to ``False`` to disable
         SSL certification verification.
-    disable : bool, optional
-        If ``True`` temporarily disable caching requests and get new responses
-        from the server, defaults to ``False``.
 
     Returns
     -------
@@ -82,21 +78,58 @@ async def async_session(
         fast_save=True,
     )
     connector = TCPConnector(ssl=ssl)
-    disable = os.getenv("HYRIVER_CACHE_DISABLE", f"{disable}").lower() == "true"
     async with CachedSession(
         json_serialize=json.dumps,
         cache=cache,
         connector=connector,
         trust_env=True,
     ) as session:
-        _session = session.disabled() if disable else session  # type: ignore
-        async with _session:
-            request_func = getattr(session, request_method.lower())
-            tasks = (
-                utils.retriever(uid, url, kwds, request_func, read, r_kwds)
-                for uid, url, kwds in url_kwds
-            )
-            return await asyncio.gather(*tasks)  # type: ignore
+        request_func = getattr(session, request_method.lower())
+        tasks = (
+            utils.retriever(uid, url, kwds, request_func, read, r_kwds)
+            for uid, url, kwds in url_kwds
+        )
+        return await asyncio.gather(*tasks)
+
+
+async def async_session_without_cache(
+    url_kwds: tuple[tuple[int, StrOrURL, dict[str, Any]], ...],
+    read: str,
+    r_kwds: dict[str, Any],
+    request_method: str,
+    ssl: SSLContext | bool | None = None,
+) -> list[str | bytes | dict[str, Any]]:
+    """Create an async session for sending requests.
+
+    Parameters
+    ----------
+    url_kwds : list of tuples of urls and payloads
+        A list of URLs or URLs with their payloads to be retrieved.
+    read : str
+        The method for returning the request; ``binary`` (bytes), ``json``, and ``text``.
+    r_kwds : dict
+        Keywords to pass to the response read function. ``{"content_type": None}`` if read
+        is ``json`` else it's empty.
+    request_method : str
+        The request type; GET or POST.
+    ssl : bool or SSLContext, optional
+        SSLContext to use for the connection, defaults to None. Set to ``False`` to disable
+        SSL certification verification.
+
+    Returns
+    -------
+    asyncio.gather
+        An async gather function
+    """
+    async with ClientSession(
+        json_serialize=json.dumps, trust_env=True, connector=TCPConnector(ssl=ssl)
+    ) as session:
+        request_func = getattr(session, request_method.lower())
+        tasks = (
+            utils.retriever(uid, url, kwds, request_func, read, r_kwds)
+            for uid, url, kwds in url_kwds
+        )
+        return await asyncio.gather(*tasks)
 
 
 async def stream_session(
@@ -123,9 +156,7 @@ async def stream_session(
         the server.
     """
     async with ClientSession(
-        json_serialize=json.dumps,
-        connector=TCPConnector(ssl=ssl),
-        trust_env=True,
+        json_serialize=json.dumps, trust_env=True, connector=TCPConnector(ssl=ssl)
     ) as session:
         request_func = getattr(session, request_method.lower())
         tasks = (
@@ -237,22 +268,29 @@ def retrieve(
         cache_name=cache_name,
     )
 
-    loop, new_loop = utils.get_event_loop()
-
-    session = tlz.partial(
-        async_session,
-        read=inp.read_method,
-        r_kwds=inp.r_kwds,
-        request_method=inp.request_method,
-        cache_name=inp.cache_name,
-        timeout=timeout,
-        expire_after=expire_after,
-        ssl=ssl,
-        disable=disable,
-    )
+    disable = os.getenv("HYRIVER_CACHE_DISABLE", f"{disable}").lower() == "true"
+    if disable:
+        session = tlz.partial(
+            async_session_without_cache,
+            read=inp.read_method,
+            r_kwds=inp.r_kwds,
+            request_method=inp.request_method,
+            ssl=ssl,
+        )
+    else:
+        session = tlz.partial(
+            async_session_with_cache,
+            read=inp.read_method,
+            r_kwds=inp.r_kwds,
+            request_method=inp.request_method,
+            cache_name=inp.cache_name,
+            timeout=timeout,
+            expire_after=expire_after,
+            ssl=ssl,
+        )
 
     chunked_reqs = tlz.partition_all(max_workers, inp.url_kwds)
-
+    loop, new_loop = utils.get_event_loop()
     results = (loop.run_until_complete(session(url_kwds=c)) for c in chunked_reqs)
 
     resp = [r for _, r in sorted(tlz.concat(results))]
