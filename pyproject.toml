@@ -12,16 +12,6 @@ readme = "README.rst"
 license = {text = "MIT"}
 authors = [{name = "Taher Chegini", email = "cheginit@gmail.com"}]
 requires-python = ">=3.8"
-dependencies = [
-  "aiohttp[speedups]>=3.8.3",
-  "aiohttp-client-cache>=0.8.1",
-  "aiosqlite",
-  "cytoolz",
-  "ujson",
-]
-dynamic = [
-  "version",
-]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Framework :: AsyncIO",
@@ -37,6 +27,16 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Topic :: Internet :: WWW/HTTP",
   "Typing :: Typed"
+]
+dynamic = [
+  "version",
+]
+dependencies = [
+  "aiohttp[speedups]>=3.8.3",
+  "aiohttp-client-cache>=0.8.1",
+  "aiosqlite",
+  "cytoolz",
+  "ujson",
 ]
 [project.optional-dependencies]
 notebook = [
