@@ -69,7 +69,6 @@ targets = [
 
 [tool.black]
 line-length = 100
-target-version = ["py38"]
 
 [tool.codespell]
 ignore-words-list = "paramss"
