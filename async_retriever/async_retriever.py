@@ -5,7 +5,7 @@ import asyncio
 import os
 from typing import TYPE_CHECKING, Any, Sequence
 
-import cytoolz as tlz
+import cytoolz.curried as tlz
 import ujson as json
 from aiohttp import ClientSession, TCPConnector
 from aiohttp_client_cache import SQLiteBackend
