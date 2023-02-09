@@ -33,40 +33,6 @@ __all__ = [
 ]
 
 
-async def stream_session(
-    url_kwds: tuple[tuple[Path, StrOrURL, dict[str, Any]], ...],
-    request_method: str,
-    ssl: SSLContext | bool | None = None,
-    chunk_size: int | None = None,
-) -> None:
-    """Create an async session for sending requests.
-
-    Parameters
-    ----------
-    url_kwds : list of tuples
-        A list of file paths and URLs or file paths, URLs, and their payloads
-        to be saved as a file.
-    request_method : str
-        The request type; GET or POST.
-    ssl : bool or SSLContext, optional
-        SSLContext to use for the connection, defaults to ``None``. Set to
-        ``False`` to disable SSL certification verification.
-    chunk_size : int, optional
-        The size of the chunks in bytes to be written to the file, defaults to ``None``,
-        which will iterates over data chunks and write them as received from
-        the server.
-    """
-    async with ClientSession(
-        json_serialize=json.dumps, trust_env=True, connector=TCPConnector(ssl=ssl)
-    ) as session:
-        request_func = getattr(session, request_method.lower())
-        tasks = (
-            utils.stream_session(url, kwds, request_func, filepath, chunk_size)
-            for filepath, url, kwds in url_kwds
-        )
-        await asyncio.gather(*tasks)
-
-
 def delete_url_cache(
     url: StrOrURL,
     request_method: str = "GET",
@@ -99,6 +65,40 @@ def delete_url_cache(
     )
     if new_loop:
         loop.close()
+
+
+async def stream_session(
+    url_kwds: tuple[tuple[Path, StrOrURL, dict[str, Any]], ...],
+    request_method: str,
+    ssl: SSLContext | bool | None = None,
+    chunk_size: int | None = None,
+) -> None:
+    """Create an async session for sending requests.
+
+    Parameters
+    ----------
+    url_kwds : list of tuples
+        A list of file paths and URLs or file paths, URLs, and their payloads
+        to be saved as a file.
+    request_method : str
+        The request type; GET or POST.
+    ssl : bool or SSLContext, optional
+        SSLContext to use for the connection, defaults to ``None``. Set to
+        ``False`` to disable SSL certification verification.
+    chunk_size : int, optional
+        The size of the chunks in bytes to be written to the file, defaults to ``None``,
+        which will iterates over data chunks and write them as received from
+        the server.
+    """
+    async with ClientSession(
+        json_serialize=json.dumps, trust_env=True, connector=TCPConnector(ssl=ssl)
+    ) as session:
+        request_func = getattr(session, request_method.lower())
+        tasks = (
+            utils.stream_session(url, kwds, request_func, filepath, chunk_size)
+            for filepath, url, kwds in url_kwds
+        )
+        await asyncio.gather(*tasks)
 
 
 def stream_write(
