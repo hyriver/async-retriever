@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import os
-from typing import TYPE_CHECKING, Any, Literal, Sequence, overload
+from typing import TYPE_CHECKING, Any, Literal, Sequence, Union, overload
 
 import cytoolz.curried as tlz
 import ujson as json
@@ -20,6 +20,8 @@ if TYPE_CHECKING:
     from ssl import SSLContext
 
     from aiohttp.typedefs import StrOrURL
+
+    RESPONSE = Union[list[str], list[bytes], list[dict[str, Any]]]
 
 __all__ = [
     "delete_url_cache",
@@ -171,7 +173,7 @@ async def async_session_with_cache(
     timeout: float = 5.0,
     expire_after: int = -1,
     ssl: SSLContext | bool | None = None,
-) -> list[str | bytes | dict[str, Any]]:
+) -> RESPONSE:
     """Create an async session for sending requests.
 
     Parameters
@@ -228,7 +230,7 @@ async def async_session_without_cache(
     r_kwds: dict[str, Any],
     request_method: str,
     ssl: SSLContext | bool | None = None,
-) -> list[str | bytes | dict[str, Any]]:
+) -> RESPONSE:
     """Create an async session for sending requests.
 
     Parameters
@@ -274,7 +276,7 @@ def retrieve(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> Sequence[str]:
+) -> list[str]:
     ...
 
 
@@ -290,7 +292,7 @@ def retrieve(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> Sequence[dict[str, Any]]:
+) -> list[dict[str, Any]]:
     ...
 
 
@@ -306,7 +308,7 @@ def retrieve(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> Sequence[bytes]:
+) -> list[bytes]:
     ...
 
 
@@ -321,7 +323,7 @@ def retrieve(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> Sequence[str | dict[str, Any] | bytes]:
+) -> RESPONSE:
     r"""Send async requests.
 
     Parameters
@@ -419,7 +421,7 @@ def retrieve_text(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> Sequence[str]:
+) -> list[str]:
     r"""Send async requests and get the response as ``text``.
 
     Parameters
@@ -490,7 +492,7 @@ def retrieve_json(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> Sequence[dict[str, Any]]:
+) -> list[dict[str, Any]]:
     r"""Send async requests and get the response as ``json``.
 
     Parameters
@@ -562,7 +564,7 @@ def retrieve_binary(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> Sequence[bytes]:
+) -> list[bytes]:
     r"""Send async requests and get the response as ``bytes``.
 
     Parameters
