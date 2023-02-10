@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from aiohttp.typedefs import StrOrURL
 
-    RESPONSE = Union[list[str], list[bytes], list[dict[str, Any]]]
+    RESPONSE = Union[list[str], list[bytes], list[dict[str, Any]], list[list[dict[str, Any]]]]
 
 __all__ = [
     "delete_url_cache",
@@ -292,7 +292,7 @@ def retrieve(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> list[dict[str, Any]]:
+) -> list[dict[str, Any]] | list[list[dict[str, Any]]]:
     ...
 
 
@@ -492,7 +492,7 @@ def retrieve_json(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
-) -> list[dict[str, Any]]:
+) -> list[dict[str, Any]] | list[list[dict[str, Any]]]:
     r"""Send async requests and get the response as ``json``.
 
     Parameters
