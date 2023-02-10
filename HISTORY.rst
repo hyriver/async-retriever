@@ -2,7 +2,7 @@
 History
 =======
 
-0.3.11 (unreleased)
+0.3.11 (2023-02-10)
 -------------------
 
 Internal Changes
