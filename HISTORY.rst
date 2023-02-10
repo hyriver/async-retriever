@@ -2,7 +2,7 @@
 History
 =======
 
-0.3.11 (2023-02-10)
+0.3.12 (2023-02-10)
 -------------------
 
 Internal Changes
@@ -13,6 +13,7 @@ Internal Changes
 - Fully migrate ``setup.cfg`` and ``setup.py`` to ``pyproject.toml``.
 - Convert relative imports to absolute with ``absolufy-imports``.
 - Make ``utils`` module private.
+- Sync all patch versions of HyRiver packages to x.x.12.
 
 0.3.10 (2023-01-08)
 -------------------
