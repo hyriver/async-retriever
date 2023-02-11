@@ -6,7 +6,7 @@ requires = [
 ]
 
 [project]
-name = "async_retriever"
+name = "async-retriever"
 description = "High-level API for asynchronous requests with persistent caching."
 readme = "README.rst"
 license = {text = "MIT"}
