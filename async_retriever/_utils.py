@@ -39,7 +39,8 @@ async def retriever(
     session: Callable[[StrOrURL], _RequestContextManager],
     read_type: str,
     r_kwds: dict[str, None],
-) -> tuple[int, str | Awaitable[str | bytes | dict[str, Any]]]:
+    raise_status: bool,
+) -> tuple[int, str | Awaitable[str | bytes | dict[str, Any]] | None]:
     """Create an async request and return the response as binary.
 
     Parameters
@@ -58,6 +59,9 @@ async def retriever(
         Keywords to pass to the response read function.
         It is ``{"content_type": None}`` if ``read`` is ``json``
         else an empty ``dict``.
+    raise_status : bool
+        Raise an exception if the response status is not 200. If
+        ``False`` return ``None``.
 
     Returns
     -------
@@ -68,7 +72,8 @@ async def retriever(
         try:
             return uid, await getattr(response, read_type)(**r_kwds)
         except (ClientResponseError, ValueError) as ex:
-            raise ServiceError(await response.text(), str(response.url)) from ex
+            if raise_status:
+                raise ServiceError(await response.text(), str(response.url)) from ex
 
 
 async def stream_session(

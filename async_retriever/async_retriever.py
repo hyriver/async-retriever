@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from aiohttp.typedefs import StrOrURL
 
-    RESPONSE = Union[list[str], list[bytes], list[dict[str, Any]], list[list[dict[str, Any]]]]
+    RESPONSE = Union["list[str]", "list[bytes]", "list[dict[str, Any]]", "list[list[dict[str, Any]]]"]
 
 __all__ = [
     "delete_url_cache",
@@ -173,6 +173,7 @@ async def async_session_with_cache(
     timeout: float = 5.0,
     expire_after: int = -1,
     ssl: SSLContext | bool | None = None,
+    raise_status: bool = True,
 ) -> RESPONSE:
     """Create an async session for sending requests.
 
@@ -197,6 +198,9 @@ async def async_session_with_cache(
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to ``False`` to disable
         SSL certification verification.
+    raise_status : bool, optional
+        Raise an exception if the response status is not 200. If
+        ``False`` return ``None``. Defaults to ``True``.
 
     Returns
     -------
@@ -218,7 +222,7 @@ async def async_session_with_cache(
     ) as session:
         request_func = getattr(session, request_method.lower())
         tasks = (
-            utils.retriever(uid, url, kwds, request_func, read, r_kwds)
+            utils.retriever(uid, url, kwds, request_func, read, r_kwds, raise_status)
             for uid, url, kwds in url_kwds
         )
         return await asyncio.gather(*tasks)
@@ -230,6 +234,7 @@ async def async_session_without_cache(
     r_kwds: dict[str, Any],
     request_method: str,
     ssl: SSLContext | bool | None = None,
+    raise_status: bool = True,
 ) -> RESPONSE:
     """Create an async session for sending requests.
 
@@ -247,6 +252,9 @@ async def async_session_without_cache(
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to ``False`` to disable
         SSL certification verification.
+    raise_status : bool, optional
+        Raise an exception if the response status is not 200. If
+        ``False`` return ``None``. Defaults to ``True``.
 
     Returns
     -------
@@ -258,7 +266,7 @@ async def async_session_without_cache(
     ) as session:
         request_func = getattr(session, request_method.lower())
         tasks = (
-            utils.retriever(uid, url, kwds, request_func, read, r_kwds)
+            utils.retriever(uid, url, kwds, request_func, read, r_kwds, raise_status)
             for uid, url, kwds in url_kwds
         )
         return await asyncio.gather(*tasks)
@@ -268,14 +276,15 @@ async def async_session_without_cache(
 def retrieve(
     urls: Sequence[StrOrURL],
     read_method: Literal["text"],
-    request_kwds: Sequence[dict[str, Any]] | None = None,
-    request_method: str = "GET",
-    max_workers: int = 8,
-    cache_name: Path | str | None = None,
-    timeout: float = 5.0,
-    expire_after: float = -1,
-    ssl: SSLContext | bool | None = None,
-    disable: bool = False,
+    request_kwds: Sequence[dict[str, Any]] | None = ...,
+    request_method: str = ...,
+    max_workers: int = ...,
+    cache_name: Path | str | None = ...,
+    timeout: float = ...,
+    expire_after: float = ...,
+    ssl: SSLContext | bool | None = ...,
+    disable: bool = ...,
+    raise_status: bool = ...,
 ) -> list[str]:
     ...
 
@@ -284,14 +293,15 @@ def retrieve(
 def retrieve(
     urls: Sequence[StrOrURL],
     read_method: Literal["json"],
-    request_kwds: Sequence[dict[str, Any]] | None = None,
-    request_method: str = "GET",
-    max_workers: int = 8,
-    cache_name: Path | str | None = None,
-    timeout: float = 5.0,
-    expire_after: float = -1,
-    ssl: SSLContext | bool | None = None,
-    disable: bool = False,
+    request_kwds: Sequence[dict[str, Any]] | None = ...,
+    request_method: str = ...,
+    max_workers: int = ...,
+    cache_name: Path | str | None = ...,
+    timeout: float = ...,
+    expire_after: float = ...,
+    ssl: SSLContext | bool | None = ...,
+    disable: bool = ...,
+    raise_status: bool = ...,
 ) -> list[dict[str, Any]] | list[list[dict[str, Any]]]:
     ...
 
@@ -300,14 +310,15 @@ def retrieve(
 def retrieve(
     urls: Sequence[StrOrURL],
     read_method: Literal["binary"],
-    request_kwds: Sequence[dict[str, Any]] | None = None,
-    request_method: str = "GET",
-    max_workers: int = 8,
-    cache_name: Path | str | None = None,
-    timeout: float = 5.0,
-    expire_after: float = -1,
-    ssl: SSLContext | bool | None = None,
-    disable: bool = False,
+    request_kwds: Sequence[dict[str, Any]] | None = ...,
+    request_method: str = ...,
+    max_workers: int = ...,
+    cache_name: Path | str | None = ...,
+    timeout: float = ...,
+    expire_after: float = ...,
+    ssl: SSLContext | bool | None = ...,
+    disable: bool = ...,
+    raise_status: bool = ...,
 ) -> list[bytes]:
     ...
 
@@ -323,6 +334,7 @@ def retrieve(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
+    raise_status: bool = True,
 ) -> RESPONSE:
     r"""Send async requests.
 
@@ -351,6 +363,9 @@ def retrieve(
     disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
+    raise_status : bool, optional
+        Raise an exception if the response status is not 200. If
+        ``False`` return ``None``. Defaults to ``True``.
 
     Returns
     -------
@@ -388,6 +403,7 @@ def retrieve(
             r_kwds=inp.r_kwds,
             request_method=inp.request_method,
             ssl=ssl,
+            raise_status=raise_status,
         )
     else:
         session = tlz.partial(
@@ -399,6 +415,7 @@ def retrieve(
             timeout=timeout,
             expire_after=expire_after,
             ssl=ssl,
+            raise_status=raise_status,
         )
 
     chunked_reqs = tlz.partition_all(max_workers, inp.url_kwds)
@@ -421,6 +438,7 @@ def retrieve_text(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
+    raise_status: bool = True,
 ) -> list[str]:
     r"""Send async requests and get the response as ``text``.
 
@@ -447,6 +465,9 @@ def retrieve_text(
     disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
+    raise_status : bool, optional
+        Raise an exception if the response status is not 200. If
+        ``False`` return ``None``. Defaults to ``True``.
 
     Returns
     -------
@@ -479,6 +500,7 @@ def retrieve_text(
         expire_after,
         ssl,
         disable,
+        raise_status,
     )
 
 
@@ -492,6 +514,7 @@ def retrieve_json(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
+    raise_status: bool = True,
 ) -> list[dict[str, Any]] | list[list[dict[str, Any]]]:
     r"""Send async requests and get the response as ``json``.
 
@@ -518,6 +541,9 @@ def retrieve_json(
     disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
+    raise_status : bool, optional
+        Raise an exception if the response status is not 200. If
+        ``False`` return ``None``. Defaults to ``True``.
 
     Returns
     -------
@@ -551,6 +577,7 @@ def retrieve_json(
         expire_after,
         ssl,
         disable,
+        raise_status,
     )
 
 
@@ -564,6 +591,7 @@ def retrieve_binary(
     expire_after: float = -1,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
+    raise_status: bool = True,
 ) -> list[bytes]:
     r"""Send async requests and get the response as ``bytes``.
 
@@ -590,6 +618,9 @@ def retrieve_binary(
     disable : bool, optional
         If ``True`` temporarily disable caching requests and get new responses
         from the server, defaults to False.
+    raise_status : bool, optional
+        Raise an exception if the response status is not 200. If
+        ``False`` return ``None``. Defaults to ``True``.
 
     Returns
     -------
@@ -607,4 +638,5 @@ def retrieve_binary(
         expire_after,
         ssl,
         disable,
+        raise_status,
     )
