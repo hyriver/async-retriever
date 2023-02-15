@@ -2,6 +2,17 @@
 History
 =======
 
+0.3.13 (unreleased)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+- Add a new option to all functions called ``raise_status``. If ``False``
+  no exception will be raised and instead ``None`` is returned for those
+  requests that led to exceptions. This will allow for returning all responses
+  that were successful and ignoring the ones that failed. This option defaults
+  to ``True`` for retaining backward compatibility.
+
 0.3.12 (2023-02-10)
 -------------------
 
