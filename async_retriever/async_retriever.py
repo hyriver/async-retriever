@@ -21,7 +21,9 @@ if TYPE_CHECKING:
 
     from aiohttp.typedefs import StrOrURL
 
-    RESPONSE = Union["list[str]", "list[bytes]", "list[dict[str, Any]]", "list[list[dict[str, Any]]]"]
+    RESPONSE = Union[
+        "list[str]", "list[bytes]", "list[dict[str, Any]]", "list[list[dict[str, Any]]]"
+    ]
 
 __all__ = [
     "delete_url_cache",
