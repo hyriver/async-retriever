@@ -47,13 +47,6 @@ test = [
   "pytest-cov",
   "pytest-xdist[psutil]",
 ]
-typeguard = [
-  "coverage[toml]",
-  "pygments",
-  "pytest-cov",
-  "pytest-xdist[psutil]",
-  "typeguard",
-]
 [project.urls]
 CI = "https://github.com/hyriver/async-retriever/actions"
 Changelog = "https://docs.hyriver.io/changelogs/async-retriever.html"
