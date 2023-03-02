@@ -6,7 +6,7 @@ import importlib.util
 import inspect
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Literal, Sequence
 
 import ujson as json
 from aiohttp import ClientResponseError
@@ -37,7 +37,7 @@ async def retriever(
     url: StrOrURL,
     s_kwds: dict[str, dict[str, Any]],
     session: Callable[[StrOrURL], _RequestContextManager],
-    read_type: str,
+    read_type: Literal["text", "json", "binary"],
     r_kwds: dict[str, None],
     raise_status: bool,
 ) -> tuple[int, str | Awaitable[str | bytes | dict[str, Any]]] | None:
@@ -54,7 +54,7 @@ async def retriever(
     session : ClientSession
         A ClientSession for sending the request
     read_type : str
-        Return response as text, bytes, or json.
+        Return response as ``text``, ``bytes``, or ``json``.
     r_kwds : dict
         Keywords to pass to the response read function.
         It is ``{"content_type": None}`` if ``read`` is ``json``
@@ -115,11 +115,14 @@ def get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
 
 
 async def delete_url(
-    url: StrOrURL, method: str, cache_name: Path, **kwargs: dict[str, Any]
+    url: StrOrURL,
+    method: Literal["get", "GET", "post", "POST"],
+    cache_name: Path,
+    **kwargs: dict[str, Any],
 ) -> None:
     """Delete cached response associated with ``url``."""
     cache = SQLiteBackend(cache_name=str(cache_name))
-    await cache.delete_url(url, method, **kwargs)
+    await cache.delete_url(url, method.upper(), **kwargs)
 
 
 class BaseRetriever:
@@ -129,9 +132,9 @@ class BaseRetriever:
         self,
         urls: Sequence[StrOrURL],
         file_paths: list[str | Path] | None = None,
-        read_method: str | None = None,
+        read_method: Literal["text", "json", "binary"] | None = None,
         request_kwds: Sequence[dict[str, Any]] | None = None,
-        request_method: str = "GET",
+        request_method: Literal["get", "GET", "post", "POST"] = "GET",
         cache_name: Path | str | None = None,
     ) -> None:
         """Validate inputs to retrieve function."""
