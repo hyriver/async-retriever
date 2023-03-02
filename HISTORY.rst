@@ -12,6 +12,7 @@ New Features
   requests that led to exceptions. This will allow for returning all responses
   that were successful and ignoring the ones that failed. This option defaults
   to ``True`` for retaining backward compatibility.
+- Set the cache expiration time to one week from never expire.
 
 0.3.12 (2023-02-10)
 -------------------
