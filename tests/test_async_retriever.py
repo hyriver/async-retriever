@@ -19,20 +19,20 @@ async def check_url(url, method="GET", **kwargs):
 
 
 def test_disable_cache():
-    url = "https://nationalmap.gov/epqs/pqs.php"
-    payload = {"params": {"x": -101, "y": 38, "units": "Meters", "output": "json"}}
+    url = "https://epqs.nationalmap.gov/v1/json"
+    payload = {"params": {"x": -101, "y": 38, "units": "Meters"}}
     resp = ar.retrieve([url], "json", [payload], disable=True)
-    elev = resp[0]["USGS_Elevation_Point_Query_Service"]["Elevation_Query"]["Elevation"]
-    assert abs(elev - 880.38) < SMALL and not asyncio.run(check_url(url, params=payload["params"]))
+    elev = float(resp[0]["value"])
+    assert abs(elev - 880.377) < SMALL and not asyncio.run(check_url(url, params=payload["params"]))
 
 
 def test_delete_url():
-    url = "https://nationalmap.gov/epqs/pqs.php"
-    payload = {"params": {"x": -100, "y": 38, "units": "Meters", "output": "json"}}
+    url = "https://epqs.nationalmap.gov/v1/json"
+    payload = {"params": {"x": -100, "y": 38, "units": "Meters"}}
     resp = ar.retrieve([url], "json", [payload])
-    elev = resp[0]["USGS_Elevation_Point_Query_Service"]["Elevation_Query"]["Elevation"]
+    elev = float(resp[0]["value"])
     ar.delete_url_cache(url, params=payload["params"])
-    assert abs(elev - 761.67) < SMALL and not asyncio.run(check_url(url, params=payload["params"]))
+    assert abs(elev - 761.661) < SMALL and not asyncio.run(check_url(url, params=payload["params"]))
 
 
 def test_binary():
