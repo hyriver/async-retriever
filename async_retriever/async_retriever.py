@@ -25,6 +25,7 @@ if TYPE_CHECKING:
         "list[str]", "list[bytes]", "list[dict[str, Any]]", "list[list[dict[str, Any]]]"
     ]
 
+EXPIRE_AFTER = 60 * 60 * 24 * 7  # 1 week
 __all__ = [
     "delete_url_cache",
     "stream_write",
@@ -37,7 +38,7 @@ __all__ = [
 
 def delete_url_cache(
     url: StrOrURL,
-    request_method: str = "GET",
+    request_method: Literal["get", "GET", "post", "POST"] = "GET",
     cache_name: Path | str | None = None,
     **kwargs: dict[str, Any],
 ) -> None:
@@ -57,9 +58,8 @@ def delete_url_cache(
     """
     loop, new_loop = utils.get_event_loop()
 
-    request_method = request_method.upper()
     valid_methods = ["GET", "POST"]
-    if request_method not in valid_methods:
+    if request_method.upper() not in valid_methods:
         raise InputValueError("method", valid_methods)
 
     loop.run_until_complete(
@@ -71,7 +71,7 @@ def delete_url_cache(
 
 async def stream_session(
     url_kwds: tuple[tuple[Path, StrOrURL, dict[str, Any]], ...],
-    request_method: str,
+    request_method: Literal["get", "GET", "post", "POST"],
     ssl: SSLContext | bool | None = None,
     chunk_size: int | None = None,
 ) -> None:
@@ -83,7 +83,7 @@ async def stream_session(
         A list of file paths and URLs or file paths, URLs, and their payloads
         to be saved as a file.
     request_method : str
-        The request type; GET or POST.
+        The request type; ``GET`` or ``POST``.
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to ``None``. Set to
         ``False`` to disable SSL certification verification.
@@ -107,7 +107,7 @@ def stream_write(
     urls: Sequence[StrOrURL],
     file_paths: list[str | Path],
     request_kwds: Sequence[dict[str, Any]] | None = None,
-    request_method: str = "GET",
+    request_method: Literal["get", "GET", "post", "POST"] = "GET",
     max_workers: int = 8,
     ssl: SSLContext | bool | None = None,
     chunk_size: int | None = None,
@@ -168,12 +168,12 @@ def stream_write(
 
 async def async_session_with_cache(
     url_kwds: tuple[tuple[int, StrOrURL, dict[str, Any]], ...],
-    read: str,
+    read: Literal["text", "json", "binary"],
     r_kwds: dict[str, Any],
-    request_method: str,
+    request_method: Literal["get", "GET", "post", "POST"],
     cache_name: Path,
-    timeout: float = 5.0,
-    expire_after: int = -1,
+    timeout: int = 5,
+    expire_after: int = EXPIRE_AFTER,
     ssl: SSLContext | bool | None = None,
     raise_status: bool = True,
 ) -> RESPONSE:
@@ -189,14 +189,14 @@ async def async_session_with_cache(
         Keywords to pass to the response read function. ``{"content_type": None}`` if read
         is ``json`` else it's empty.
     request_method : str
-        The request type; GET or POST.
+        The request type; ``GET`` or ``POST``.
     cache_name : str
         Path to a file for caching the session, defaults to
         ``./cache/aiohttp_cache.sqlite``.
-    timeout : float, optional
-        Timeout for the request, defaults to 5.0.
+    timeout : int, optional
+        Requests timeout in seconds, defaults to 5.
     expire_after : int, optional
-        Expiration time for the cache in seconds, defaults to -1 (never expire).
+        Expiration time for the cache in seconds, defaults to 2592000 (one week).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to ``False`` to disable
         SSL certification verification.
@@ -232,9 +232,9 @@ async def async_session_with_cache(
 
 async def async_session_without_cache(
     url_kwds: tuple[tuple[int, StrOrURL, dict[str, Any]], ...],
-    read: str,
+    read: Literal["text", "json", "binary"],
     r_kwds: dict[str, Any],
-    request_method: str,
+    request_method: Literal["get", "GET", "post", "POST"],
     ssl: SSLContext | bool | None = None,
     raise_status: bool = True,
 ) -> RESPONSE:
@@ -250,7 +250,7 @@ async def async_session_without_cache(
         Keywords to pass to the response read function. ``{"content_type": None}`` if read
         is ``json`` else it's empty.
     request_method : str
-        The request type; GET or POST.
+        The request type; ``GET`` or ``POST``.
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to ``False`` to disable
         SSL certification verification.
@@ -279,11 +279,11 @@ def retrieve(
     urls: Sequence[StrOrURL],
     read_method: Literal["text"],
     request_kwds: Sequence[dict[str, Any]] | None = ...,
-    request_method: str = ...,
+    request_method: Literal["get", "GET", "post", "POST"] = ...,
     max_workers: int = ...,
     cache_name: Path | str | None = ...,
-    timeout: float = ...,
-    expire_after: float = ...,
+    timeout: int = ...,
+    expire_after: int = ...,
     ssl: SSLContext | bool | None = ...,
     disable: bool = ...,
     raise_status: bool = ...,
@@ -296,11 +296,11 @@ def retrieve(
     urls: Sequence[StrOrURL],
     read_method: Literal["json"],
     request_kwds: Sequence[dict[str, Any]] | None = ...,
-    request_method: str = ...,
+    request_method: Literal["get", "GET", "post", "POST"] = ...,
     max_workers: int = ...,
     cache_name: Path | str | None = ...,
-    timeout: float = ...,
-    expire_after: float = ...,
+    timeout: int = ...,
+    expire_after: int = ...,
     ssl: SSLContext | bool | None = ...,
     disable: bool = ...,
     raise_status: bool = ...,
@@ -313,11 +313,11 @@ def retrieve(
     urls: Sequence[StrOrURL],
     read_method: Literal["binary"],
     request_kwds: Sequence[dict[str, Any]] | None = ...,
-    request_method: str = ...,
+    request_method: Literal["get", "GET", "post", "POST"] = ...,
     max_workers: int = ...,
     cache_name: Path | str | None = ...,
-    timeout: float = ...,
-    expire_after: float = ...,
+    timeout: int = ...,
+    expire_after: int = ...,
     ssl: SSLContext | bool | None = ...,
     disable: bool = ...,
     raise_status: bool = ...,
@@ -327,13 +327,13 @@ def retrieve(
 
 def retrieve(
     urls: Sequence[StrOrURL],
-    read_method: str,
+    read_method: Literal["text", "json", "binary"],
     request_kwds: Sequence[dict[str, Any]] | None = None,
-    request_method: str = "GET",
+    request_method: Literal["get", "GET", "post", "POST"] = "GET",
     max_workers: int = 8,
     cache_name: Path | str | None = None,
-    timeout: float = 5.0,
-    expire_after: float = -1,
+    timeout: int = 5,
+    expire_after: int = EXPIRE_AFTER,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
     raise_status: bool = True,
@@ -355,10 +355,10 @@ def retrieve(
         Maximum number of async processes, defaults to 8.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
-    timeout : float, optional
-        Timeout for the request, defaults to 5.0.
+    timeout : int, optional
+        Requests timeout in seconds, defaults to 5.
     expire_after : int, optional
-        Expiration time for response caching in seconds, defaults to -1 (never expire).
+        Expiration time for response caching in seconds, defaults to 2592000 (one week).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL certification verification.
@@ -433,11 +433,11 @@ def retrieve(
 def retrieve_text(
     urls: Sequence[StrOrURL],
     request_kwds: Sequence[dict[str, Any]] | None = None,
-    request_method: str = "GET",
+    request_method: Literal["get", "GET", "post", "POST"] = "GET",
     max_workers: int = 8,
     cache_name: Path | str | None = None,
-    timeout: float = 5.0,
-    expire_after: float = -1,
+    timeout: int = 5,
+    expire_after: int = EXPIRE_AFTER,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
     raise_status: bool = True,
@@ -457,10 +457,10 @@ def retrieve_text(
         Maximum number of async processes, defaults to 8.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
-    timeout : float, optional
-        Timeout for the request in seconds, defaults to 5.0.
+    timeout : int, optional
+        Requests timeout in seconds in seconds, defaults to 5.
     expire_after : int, optional
-        Expiration time for response caching in seconds, defaults to -1 (never expire).
+        Expiration time for response caching in seconds, defaults to 2592000 (one week).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL certification verification.
@@ -509,11 +509,11 @@ def retrieve_text(
 def retrieve_json(
     urls: Sequence[StrOrURL],
     request_kwds: Sequence[dict[str, Any]] | None = None,
-    request_method: str = "GET",
+    request_method: Literal["get", "GET", "post", "POST"] = "GET",
     max_workers: int = 8,
     cache_name: Path | str | None = None,
-    timeout: float = 5.0,
-    expire_after: float = -1,
+    timeout: int = 5,
+    expire_after: int = EXPIRE_AFTER,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
     raise_status: bool = True,
@@ -533,10 +533,10 @@ def retrieve_json(
         Maximum number of async processes, defaults to 8.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
-    timeout : float, optional
-        Timeout for the request, defaults to 5.0.
+    timeout : int, optional
+        Requests timeout in seconds, defaults to 5.
     expire_after : int, optional
-        Expiration time for response caching in seconds, defaults to -1 (never expire).
+        Expiration time for response caching in seconds, defaults to 2592000 (one week).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL certification verification.
@@ -586,11 +586,11 @@ def retrieve_json(
 def retrieve_binary(
     urls: Sequence[StrOrURL],
     request_kwds: Sequence[dict[str, Any]] | None = None,
-    request_method: str = "GET",
+    request_method: Literal["get", "GET", "post", "POST"] = "GET",
     max_workers: int = 8,
     cache_name: Path | str | None = None,
-    timeout: float = 5.0,
-    expire_after: float = -1,
+    timeout: int = 5,
+    expire_after: int = EXPIRE_AFTER,
     ssl: SSLContext | bool | None = None,
     disable: bool = False,
     raise_status: bool = True,
@@ -610,10 +610,10 @@ def retrieve_binary(
         Maximum number of async processes, defaults to 8.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
-    timeout : float, optional
-        Timeout for the request, defaults to 5.0.
+    timeout : int, optional
+        Requests timeout in seconds, defaults to 5.
     expire_after : int, optional
-        Expiration time for response caching in seconds, defaults to -1 (never expire).
+        Expiration time for response caching in seconds, defaults to 2592000 (one week).
     ssl : bool or SSLContext, optional
         SSLContext to use for the connection, defaults to None. Set to False to disable
         SSL certification verification.
