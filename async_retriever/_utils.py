@@ -5,6 +5,7 @@ import asyncio
 import importlib.util
 import inspect
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Literal, Sequence
 
@@ -28,6 +29,10 @@ if TYPE_CHECKING:
 def create_cachefile(db_name: str | Path | None = None) -> Path:
     """Create a cache folder in the current working directory."""
     fname = Path("cache", "aiohttp_cache.sqlite") if db_name is None else Path(db_name)
+    # Delete cache files created before v0.4 (2023-03-01) since from then on
+    # the expiration date of caches are set to 1 week.
+    if fname.exists() and datetime.fromtimestamp(fname.stat().st_ctime) < datetime(2023, 3, 1):
+        fname.unlink()
     fname.parent.mkdir(parents=True, exist_ok=True)
     return fname
 
