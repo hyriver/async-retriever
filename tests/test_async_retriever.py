@@ -23,7 +23,9 @@ def test_disable_cache():
     payload = {"params": {"x": -101, "y": 38, "units": "Meters"}}
     resp = ar.retrieve([url], "json", [payload], disable=True)
     elev = float(resp[0]["value"])
-    assert abs(elev - 880.377) < SMALL and not asyncio.run(check_url(url, params=payload["params"]))
+    assert abs(elev - 268.3389) < SMALL and not asyncio.run(
+        check_url(url, params=payload["params"])
+    )
 
 
 def test_delete_url():
@@ -32,7 +34,7 @@ def test_delete_url():
     resp = ar.retrieve([url], "json", [payload])
     elev = float(resp[0]["value"])
     ar.delete_url_cache(url, params=payload["params"])
-    assert abs(elev - 761.661) < SMALL and not asyncio.run(check_url(url, params=payload["params"]))
+    assert abs(elev - 232.154) < SMALL and not asyncio.run(check_url(url, params=payload["params"]))
 
 
 def test_binary():
