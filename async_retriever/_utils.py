@@ -79,6 +79,7 @@ async def retriever(
         except (ClientResponseError, ValueError) as ex:
             if raise_status:
                 raise ServiceError(await response.text(), str(response.url)) from ex
+            return uid, None
 
 
 async def stream_session(
