@@ -45,7 +45,7 @@ async def retriever(
     read_type: Literal["text", "json", "binary"],
     r_kwds: dict[str, None],
     raise_status: bool,
-) -> tuple[int, str | Awaitable[str | bytes | dict[str, Any]]] | None:
+) -> tuple[int, str | Awaitable[str | bytes | dict[str, Any]] | None]:
     """Create an async request and return the response as binary.
 
     Parameters
