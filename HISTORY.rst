@@ -2,6 +2,16 @@
 History
 =======
 
+0.14.1 (unreleased)
+-------------------
+
+Bug Fixes
+~~~~~~~~~
+- When ``raise_status`` is ``False``, responses for failed requests used to
+  return as ``None`` but their requests ID was not returned, so sorting
+  would have failed. Now request IDs are returned for all requests regardless
+  of whether they were successful or not.
+
 0.14.0 (2023-03-05)
 -------------------
 
