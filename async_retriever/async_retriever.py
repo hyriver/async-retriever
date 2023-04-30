@@ -209,9 +209,11 @@ async def async_session_with_cache(
     asyncio.gather
         An async gather function
     """
+    if expire_after == EXPIRE_AFTER:
+        expire_after = int(os.getenv("HYRIVER_CACHE_EXPIRE", EXPIRE_AFTER))
     cache = SQLiteBackend(
-        cache_name=os.getenv("HYRIVER_CACHE_NAME", str(cache_name)),
-        expire_after=int(os.getenv("HYRIVER_CACHE_EXPIRE", expire_after)),
+        cache_name=str(cache_name),
+        expire_after=expire_after,
         allowed_methods=("GET", "POST"),
         timeout=timeout,
         fast_save=True,
@@ -397,7 +399,9 @@ def retrieve(
         cache_name=cache_name,
     )
 
-    disable = os.getenv("HYRIVER_CACHE_DISABLE", f"{disable}").lower() == "true"
+    if not disable:
+        disable = os.getenv("HYRIVER_CACHE_DISABLE", "false").lower() == "true"
+
     if disable:
         session = tlz.partial(
             async_session_without_cache,

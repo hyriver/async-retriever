@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import importlib.util
 import inspect
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -28,7 +29,10 @@ if TYPE_CHECKING:
 
 def create_cachefile(db_name: str | Path | None = None) -> Path:
     """Create a cache folder in the current working directory."""
-    fname = Path("cache", "aiohttp_cache.sqlite") if db_name is None else Path(db_name)
+    if db_name is not None:
+        fname = Path(db_name)
+    else:
+        fname = Path(os.getenv("HYRIVER_CACHE_NAME", Path("cache", "aiohttp_cache.sqlite")))
     # Delete cache files created before v0.4 (2023-03-01) since from then on
     # the expiration date of caches are set to 1 week.
     if fname.exists() and datetime.fromtimestamp(fname.stat().st_ctime) < datetime(2023, 3, 1):
