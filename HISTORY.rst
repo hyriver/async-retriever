@@ -2,8 +2,14 @@
 History
 =======
 
-0.14.1 (unreleased)
+0.15.0 (unreleased)
 -------------------
+From release 0.15 onward, all minor versions of HyRiver packages
+will be pinned. This ensures that previous minor versions of HyRiver
+packages cannot be installed with later minor releases. For example,
+if you have ``py3dep==0.14.x`` installed, you cannot install
+``pydaymet==0.15.x``. This is to ensure that the API is
+consistent across all minor versions.
 
 Bug Fixes
 ~~~~~~~~~
@@ -11,6 +17,11 @@ Bug Fixes
   return as ``None`` but their requests ID was not returned, so sorting
   would have failed. Now request IDs are returned for all requests regardless
   of whether they were successful or not.
+- Give precedence to non-default arguments for caching related arguments
+  instead of directly getting them from env variables. This is to avoid
+  the case where the user sets the env variables but then passes different
+  arguments to the function. In this case, the function should use the
+  passed arguments instead of the env variables.
 
 0.14.0 (2023-03-05)
 -------------------
