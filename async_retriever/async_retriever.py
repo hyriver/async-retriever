@@ -118,7 +118,7 @@ def stream_write(
     ----------
     urls : list of str
         List of URLs.
-    file_paths : list of str or Path
+    file_paths : list of str or pathlib.Path
         List of file paths to write the response to.
     request_kwds : list of dict, optional
         List of requests keywords corresponding to input URLs (1 on 1 mapping),
