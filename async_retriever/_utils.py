@@ -11,9 +11,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Literal, Sequence
 
 import ujson as json
-from aiohttp import ClientResponseError
+from aiohttp import ClientResponseError, ClientSession
 from aiohttp_client_cache import SQLiteBackend
-from aiohttp_client_cache.session import CachedSession
 
 from async_retriever.exceptions import (
     DependencyError,
@@ -192,7 +191,7 @@ class BaseRetriever:
             if len(urls) != len(file_paths):
                 msg = "``urls`` and ``file_paths`` must have the same size."
                 raise ValueError(msg)
-            url_id = file_paths  # type: ignore
+            url_id = file_paths
 
         if request_kwds is None:
             return zip(url_id, urls, len(urls) * [{"headers": None}])
@@ -201,7 +200,7 @@ class BaseRetriever:
             msg = "``urls`` and ``request_kwds`` must have the same size."
             raise ValueError(msg)
 
-        session_kwds = inspect.signature(CachedSession._request).parameters.keys()  # type: ignore
+        session_kwds = inspect.signature(ClientSession._request).parameters.keys()  # type: ignore
         not_found = [p for kwds in request_kwds for p in kwds if p not in session_kwds]
         if not_found:
             invalids = ", ".join(not_found)
