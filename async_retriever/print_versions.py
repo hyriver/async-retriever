@@ -3,6 +3,7 @@
 The original script is from
 `xarray <https://github.com/pydata/xarray/blob/master/xarray/util/print_versions.py>`__
 """
+# pyright: reportMissingImports=false
 from __future__ import annotations
 
 import importlib
@@ -25,12 +26,12 @@ def netcdf_and_hdf5_versions() -> list[tuple[str, str | None]]:
     libnetcdf_version = None
 
     if importlib.util.find_spec("netCDF4"):
-        import netCDF4  # type: ignore
+        import netCDF4
 
         libhdf5_version = netCDF4.__hdf5libversion__
         libnetcdf_version = netCDF4.__netcdf4libversion__
     elif importlib.util.find_spec("h5py"):
-        import h5py  # type: ignore
+        import h5py
 
         libhdf5_version = h5py.version.hdf5_version
 
@@ -60,7 +61,7 @@ def get_sys_info() -> list[tuple[str, str | None]]:
         env["LANGUAGE"] = "C"
         env["LANG"] = "C"
         env["LC_ALL"] = "C"
-        out = subprocess.check_output(cmd, stderr=subprocess.STDOUT, env=env)
+        out = subprocess.check_output(cmd, stderr=subprocess.STDOUT, env=env)  # noqa: S603
         return out
 
     commit = None
@@ -103,63 +104,60 @@ def show_versions(file: TextIO = sys.stdout) -> None:
     deps = [
         #  async_retriever
         "async-retriever",
-        "aiodns",
         "aiohttp",
         "aiohttp-client-cache",
         "aiosqlite",
-        "brotli",
         "cytoolz",
         "ujson",
         #  pygeoogc
         "pygeoogc",
         "defusedxml",
+        "joblib",
+        "multidict",
         "owslib",
-        "yaml",
         "pyproj",
         "requests",
         "requests-cache",
         "shapely",
+        "url-normalize",
         "urllib3",
+        "yarl",
         #  pygeoutils
         "pygeoutils",
-        "dask",
         "geopandas",
-        "netCDF4",
+        "netcdf4",
         "numpy",
         "rasterio",
-        "xarray",
         "rioxarray",
+        "scipy",
+        "shapely",
+        "ujson",
+        "xarray",
         #  py3dep
         "py3dep",
         "click",
-        "scipy",
-        "richdem",
+        "pyflwdir",
         #  pynhd
         "pynhd",
         "networkx",
-        "pandas",
         "pyarrow",
         #  pygeohydro
         "pygeohydro",
         "folium",
-        "lxml",
+        "h5netcdf",
         "matplotlib",
+        "pandas",
         #  pydaymet
         "pydaymet",
         #  hydrosignatures
         "hydrosignatures",
         #  pynldas2
         "pynldas2",
-        "h5netcdf",
-        #  misc
+        #  optional
         "numba",
         "bottleneck",
-        "pygeos",
-        "tables",
-        #  test
-        "pytest",
-        "pytest-cov",
-        "xdist",
+        "py7zr",
+        "pyogrio",
     ]
     pad = len(max(deps, key=len)) + 1
 
