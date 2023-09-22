@@ -2,6 +2,14 @@
 History
 =======
 
+0.15.2 (2023-09-22)
+-------------------
+
+Bug Fixes
+~~~~~~~~~
+- Fix an issue with getting all valid keywords that ``aiohttp`` accepts
+  by using ``aiohttp.ClientSession()._request`` directly.
+
 0.15.0 (2023-05-07)
 -------------------
 From release 0.15 onward, all minor versions of HyRiver packages
