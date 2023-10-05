@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import asyncio
 import importlib.util
-import inspect
 import os
 import sys
 from datetime import datetime
+from inspect import signature
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Literal, Sequence
 
@@ -22,7 +22,7 @@ from async_retriever.exceptions import (
 )
 
 if TYPE_CHECKING:
-    from aiohttp.client import _RequestContextManager  # type: ignore
+    from aiohttp.client import _RequestContextManager  # pyright: ignore[reportPrivateUsage]
     from aiohttp.typedefs import StrOrURL
 
 
@@ -117,7 +117,7 @@ def get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
     if "IPython" in sys.modules:
         if importlib.util.find_spec("nest_asyncio") is None:
             raise DependencyError
-        import nest_asyncio  # type: ignore
+        import nest_asyncio
 
         nest_asyncio.apply(loop)
     return loop, new_loop
@@ -189,21 +189,19 @@ class BaseRetriever:
             url_id = range(len(urls))
         else:
             if len(urls) != len(file_paths):
-                msg = "``urls`` and ``file_paths`` must have the same size."
-                raise ValueError(msg)
+                raise InputTypeError("urls/file_paths", "sequences of the same size")
             url_id = file_paths
 
         if request_kwds is None:
             return zip(url_id, urls, len(urls) * [{"headers": None}])
 
         if len(urls) != len(request_kwds):
-            msg = "``urls`` and ``request_kwds`` must have the same size."
-            raise ValueError(msg)
+            raise InputTypeError("urls/request_kwds", "sequences of the same size")
 
-        session_kwds = inspect.signature(ClientSession._request).parameters.keys()  # type: ignore
-        not_found = [p for kwds in request_kwds for p in kwds if p not in session_kwds]
+        valid_kwds = signature(ClientSession._request)  # pyright: ignore[reportPrivateUsage]
+        not_found = [p for kwds in request_kwds for p in kwds if p not in valid_kwds.parameters]
         if not_found:
-            invalids = ", ".join(not_found)
-            raise InputValueError(f"request_kwds ({invalids})", list(session_kwds))
+            invalids = f"request_kwds ({', '.join(not_found)})"
+            raise InputValueError(invalids, list(valid_kwds.parameters))
 
         return zip(url_id, urls, request_kwds)

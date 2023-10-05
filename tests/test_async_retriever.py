@@ -89,16 +89,18 @@ def test_json():
 
 def test_text_post():
     base = "https://waterservices.usgs.gov/nwis/site/?"
+    station_id = "01646500"
     urls = [
-        "&".join([base, "format=rdb", f"sites={','.join(['01646500'] * 20)}", "siteStatus=all"])
+        "&".join([base, "format=rdb", f"sites={','.join([station_id] * 20)}", "siteStatus=all"])
     ]
 
     r = ar.retrieve(urls, "text", request_method="POST")
-    r_t = ar.retrieve_text(urls, request_method="POST")
     r_id = r[0].split("\n")[-2].split("\t")[1]
+
+    r_t = ar.retrieve_text(urls, request_method="POST")
     rt_id = r_t[0].split("\n")[-2].split("\t")[1]
 
-    assert r_id == rt_id == "01646500"
+    assert r_id == rt_id == station_id
 
 
 def test_stream():

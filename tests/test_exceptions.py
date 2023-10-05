@@ -1,4 +1,4 @@
-"""Tests for exceptions and requests"""
+"""Tests for exceptions and requests."""
 import sys
 
 import pytest
@@ -7,7 +7,7 @@ from aiohttp import InvalidURL
 import async_retriever as ar
 from async_retriever import InputTypeError, InputValueError, ServiceError
 
-has_typeguard = True if sys.modules.get("typeguard") else False
+has_typeguard = bool(sys.modules.get("typeguard"))
 
 
 @pytest.fixture
@@ -56,7 +56,7 @@ def test_invalid_link():
 
 def test_invalid_length(url_kwds):
     urls, kwds = url_kwds
-    with pytest.raises(ValueError) as ex:
+    with pytest.raises(InputTypeError) as ex:
         _ = ar.retrieve(urls * 2, "text", request_kwds=kwds)
     assert "the same size" in str(ex.value)
 
@@ -102,7 +102,7 @@ def test_wrong_path_type():
 
 
 def test_wrong_path_number():
-    with pytest.raises(ValueError) as ex:
+    with pytest.raises(InputTypeError) as ex:
         url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
         _ = ar.stream_write([url], ["temp"] * 2)
     assert "same size" in str(ex.value)
