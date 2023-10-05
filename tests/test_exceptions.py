@@ -7,8 +7,6 @@ from aiohttp import InvalidURL
 import async_retriever as ar
 from async_retriever import InputTypeError, InputValueError, ServiceError
 
-has_typeguard = bool(sys.modules.get("typeguard"))
-
 
 @pytest.fixture
 def url_kwds():
@@ -93,7 +91,6 @@ def test_service_error():
     assert "illegal bbox" in str(ex.value)
 
 
-@pytest.mark.skipif(has_typeguard, reason="Broken if Typeguard is enabled")
 def test_wrong_path_type():
     with pytest.raises(InputTypeError) as ex:
         url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
