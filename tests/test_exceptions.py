@@ -1,5 +1,4 @@
 """Tests for exceptions and requests."""
-import sys
 
 import pytest
 from aiohttp import InvalidURL
