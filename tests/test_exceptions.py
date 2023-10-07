@@ -7,7 +7,7 @@ import async_retriever as ar
 from async_retriever import InputTypeError, InputValueError, ServiceError
 
 
-@pytest.fixture
+@pytest.fixture()
 def url_kwds():
     stations = ["01646500", "08072300", "11073495"]
     url = "https://waterservices.usgs.gov/nwis/site"
@@ -91,14 +91,15 @@ def test_service_error():
 
 
 def test_wrong_path_type():
+    urls = ["https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"]
     with pytest.raises(InputTypeError) as ex:
-        url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
-        _ = ar.stream_write([url], "temp")
+        _ = ar.stream_write(urls, "temp")
     assert "list of paths" in str(ex.value)
 
 
 def test_wrong_path_number():
+    urls = ["https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"]
+    file_paths = ["temp"] * 2
     with pytest.raises(InputTypeError) as ex:
-        url = "https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"
-        _ = ar.stream_write([url], ["temp"] * 2)
+        _ = ar.stream_write(urls, file_paths)
     assert "same size" in str(ex.value)
