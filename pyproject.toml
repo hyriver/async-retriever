@@ -192,6 +192,10 @@ known-first-party = [
   "pynldas2",
 ]
 
+[tool.codespell]
+skip = "__pycache__,_build,.mypy_cache,.git,./htmlcov,.nox,**/us_abbrs.py,cache"
+ignore-words-list = "gage,gages,paramss"
+
 [tool.pytest.ini_options]
 addopts = "--ignore=noxfile.py -n=auto -v --cov=async_retriever --cov-report xml --durations=5"
 doctest_optionflags = 'NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL NUMBER'
@@ -226,10 +230,6 @@ source = ['async_retriever']
 
 [tool.fixit]
 formatter = "ufmt"
-
-[tool.codespell]
-skip = "__pycache__,_build,.mypy_cache,.git,./htmlcov,.nox,**/us_abbrs.py,cache"
-ignore-words-list = "gage,gages,paramss"
 
 [tool.pycln]
 all = true
