@@ -22,9 +22,11 @@ if TYPE_CHECKING:
     from aiohttp.typedefs import StrOrURL
 
     RESPONSE = Union[
-        "list[str]", "list[bytes]", "list[dict[str, Any]]", "list[list[dict[str, Any]]]"
+        "list[str]",
+        "list[bytes]",
+        "list[dict[str, Any]]",
+        "list[list[dict[str, Any]]]",
     ]
-
 EXPIRE_AFTER = 60 * 60 * 24 * 7  # 1 week
 __all__ = [
     "delete_url_cache",
@@ -148,6 +150,7 @@ def stream_write(
         file_paths=file_paths,
         request_kwds=request_kwds,
         request_method=request_method,
+        ssl=ssl,
     )
 
     loop, new_loop = utils.get_event_loop()
@@ -155,7 +158,7 @@ def stream_write(
     session = tlz.partial(
         stream_session,
         request_method=inp.request_method,
-        ssl=ssl,
+        ssl=inp.ssl,
         chunk_size=chunk_size,
     )
 
@@ -229,7 +232,7 @@ async def async_session_with_cache(
             utils.retriever(uid, url, kwds, request_func, read, r_kwds, raise_status)
             for uid, url, kwds in url_kwds
         )
-        return await asyncio.gather(*tasks)
+        return await asyncio.gather(*tasks)  # pyright: ignore[reportGeneralTypeIssues]
 
 
 async def async_session_without_cache(
@@ -273,7 +276,7 @@ async def async_session_without_cache(
             utils.retriever(uid, url, kwds, request_func, read, r_kwds, raise_status)
             for uid, url, kwds in url_kwds
         )
-        return await asyncio.gather(*tasks)
+        return await asyncio.gather(*tasks)  # pyright: ignore[reportGeneralTypeIssues]
 
 
 @overload
@@ -397,6 +400,7 @@ def retrieve(
         request_kwds=request_kwds,
         request_method=request_method,
         cache_name=cache_name,
+        ssl=ssl,
     )
 
     if not disable:
@@ -408,7 +412,7 @@ def retrieve(
             read=inp.read_method,
             r_kwds=inp.r_kwds,
             request_method=inp.request_method,
-            ssl=ssl,
+            ssl=inp.ssl,
             raise_status=raise_status,
         )
     else:
@@ -420,7 +424,7 @@ def retrieve(
             cache_name=inp.cache_name,
             timeout=timeout,
             expire_after=expire_after,
-            ssl=ssl,
+            ssl=inp.ssl,
             raise_status=raise_status,
         )
 

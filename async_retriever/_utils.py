@@ -8,6 +8,7 @@ import sys
 from datetime import datetime
 from inspect import signature
 from pathlib import Path
+from ssl import PROTOCOL_TLS_CLIENT, SSLContext
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Literal, Sequence
 
 import ujson as json
@@ -145,8 +146,15 @@ class BaseRetriever:
         request_kwds: Sequence[dict[str, Any]] | None = None,
         request_method: Literal["get", "GET", "post", "POST"] = "GET",
         cache_name: Path | str | None = None,
+        ssl: SSLContext | bool | None = None,
     ) -> None:
         """Validate inputs to retrieve function."""
+        ssl_cert = os.getenv("HYRIVER_SSL_CERT")
+        if ssl_cert is not None:
+            self.ssl = SSLContext(PROTOCOL_TLS_CLIENT)
+            self.ssl.load_cert_chain(ssl_cert)
+        else:
+            self.ssl = ssl
         self.request_method = request_method.upper()
         valid_methods = ["GET", "POST"]
         if self.request_method not in valid_methods:
