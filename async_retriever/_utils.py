@@ -152,7 +152,7 @@ class BaseRetriever:
         ssl_cert = os.getenv("HYRIVER_SSL_CERT")
         if ssl_cert is not None:
             self.ssl = SSLContext(PROTOCOL_TLS_CLIENT)
-            self.ssl.load_cert_chain(ssl_cert)
+            self.ssl.load_verify_locations(ssl_cert)
         else:
             self.ssl = ssl
         self.request_method = request_method.upper()
