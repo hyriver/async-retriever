@@ -150,7 +150,7 @@ class BaseRetriever:
     ) -> None:
         """Validate inputs to retrieve function."""
         ssl_cert = os.getenv("HYRIVER_SSL_CERT")
-        if ssl_cert is not None:
+        if ssl_cert:
             self.ssl = SSLContext(PROTOCOL_TLS_CLIENT)
             self.ssl.load_verify_locations(ssl_cert)
         else:
