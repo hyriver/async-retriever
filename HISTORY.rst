@@ -2,6 +2,21 @@
 History
 =======
 
+0.16.0 (2024-01-03)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+- Add a new environmental variable called ``"HYRIVER_SSL_CERT"``
+  for setting the path to a SSL certificate file other than the
+  default one. You can do this like so:
+
+.. code-block:: python
+
+    import os
+
+    os.environ["HYRIVER_SSL_CERT"] = "path/to/file.pem"
+
 0.15.2 (2023-09-22)
 -------------------
 
