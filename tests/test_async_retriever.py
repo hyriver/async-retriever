@@ -48,10 +48,10 @@ def test_binary():
                 {
                     "params": {
                         "var": "NDVI",
-                        "north": f"{north}",
-                        "west": f"{west}",
-                        "east": f"{east}",
-                        "south": f"{south}",
+                        "north": str(north),
+                        "west": str(west),
+                        "east": str(east),
+                        "south": str(south),
                         "disableProjSubset": "on",
                         "horizStride": "1",
                         "time_start": s.strftime("%Y-%m-%dT%H:%M:%SZ"),
