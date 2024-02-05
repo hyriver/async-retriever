@@ -22,6 +22,7 @@ class ServiceError(Exception):
         super().__init__(self.message)
 
     def __str__(self) -> str:
+        """Return the error message."""
         return self.message
 
 
@@ -35,6 +36,7 @@ class DependencyError(ImportError):
         super().__init__(self.message)
 
     def __str__(self) -> str:
+        """Return the error message."""
         return self.message
 
 
@@ -65,6 +67,7 @@ class InputValueError(Exception):
         super().__init__(self.message)
 
     def __str__(self) -> str:
+        """Return the error message."""
         return self.message
 
 
@@ -93,4 +96,5 @@ class InputTypeError(Exception):
         super().__init__(self.message)
 
     def __str__(self) -> str:
+        """Return the error message."""
         return self.message
