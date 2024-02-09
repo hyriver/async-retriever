@@ -9,8 +9,8 @@ requires = [
 name = "async-retriever"
 description = "High-level API for asynchronous requests with persistent caching."
 readme = "README.rst"
-license = {text = "MIT"}
-authors = [{name = "Taher Chegini", email = "cheginit@gmail.com"}]
+license = { text = "MIT" }
+authors = [{ name = "Taher Chegini", email = "cheginit@gmail.com" }]
 requires-python = ">=3.8"
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -63,17 +63,14 @@ zip-safe = false
 async_retriever = ["py.typed"]
 
 [tool.setuptools.packages]
-find = {namespaces = false}
+find = { namespaces = false }
 
 [tool.setuptools_scm]
 fallback_version = "999"
 
-[tool.black]
-line-length = 100
-
 [tool.ruff]
 target-version = "py38"
-select = [
+lint.select = [
     # flake8-bugbear
     "B",
     # flake8-comprehensions
@@ -133,34 +130,32 @@ select = [
     "RUF",
 ]
 
-exclude = [
-    "__pycache__",
-    ".nox",
-]
+exclude = ["__pycache__", ".nox"]
 
-ignore = [
-    "D103",
-    "D105",
+lint.ignore = [
+    # docstring in class __init__
+    "D107",
+    # long too long, let the formatter handle it
     "E501",
-    "PLR2004",
+    # too many arguments
     "PLR0913",
     # conflict with ruff-formatter
     "ISC001",
 ]
 line-length = 100
 
-[tool.ruff.flake8-bugbear]
-extend-immutable-calls = [
-    "chr",
-    "typer.Argument",
-    "typer.Option",
-]
+[tool.ruff.format]
+docstring-code-format = true
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["chr", "typer.Argument", "typer.Option"]
+
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*.py" = [
+    # Disable all docstring checks in tests
     "D100",
     "D101",
     "D102",
@@ -169,29 +164,27 @@ convention = "numpy"
     "D105",
     "D106",
     "D107",
+    # magic values
+    "PLR2004",
     # use of "assert"
     "S101",
-    # use of "exec"
-    "S102",
     # possible hardcoded password
     "S106",
-    # use of "eval"
-    "PGH001",
     # Mutable class attributes
     "RUF012",
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = [
-  "async_retriever",
-  "pygeoogc",
-  "pygeoutils",
-  "pynhd",
-  "py3dep",
-  "hydrosignatures",
-  "pygeohydro",
-  "pydaymet",
-  "pynldas2",
+    "async_retriever",
+    "pygeoogc",
+    "pygeoutils",
+    "pynhd",
+    "py3dep",
+    "hydrosignatures",
+    "pygeohydro",
+    "pydaymet",
+    "pynldas2",
 ]
 
 [tool.pycln]
@@ -208,41 +201,27 @@ ignore-words-list = "gage,gages,paramss"
 addopts = "--ignore=noxfile.py -n=auto -v --cov=async_retriever --cov-report xml --durations=5"
 doctest_optionflags = 'NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL NUMBER'
 filterwarnings = [
-  "ignore:.*distutils.*",
-  "ignore:.*--rsyncdir command line argument.*",
-  "ignore:.*numpy.ndarray size changed.*",
-  "ignore:.*'cgi' is deprecated.*",
-  "ignore:.*Calling float on a single element.*",
-  "ignore:.*Shapely GEOS version.*",
+    "ignore:.*distutils.*",
+    "ignore:.*--rsyncdir command line argument.*",
+    "ignore:.*numpy.ndarray size changed.*",
+    "ignore:.*'cgi' is deprecated.*",
+    "ignore:.*Calling float on a single element.*",
+    "ignore:.*Shapely GEOS version.*",
 ]
-testpaths = [
-  "tests",
-  "async_retriever"
-]
+testpaths = ["tests", "async_retriever"]
 
 [tool.coverage.report]
-exclude_lines = [
-  'raise ServiceUnavailableError',
-  "if TYPE_CHECKING:"
-]
+exclude_lines = ['raise ServiceUnavailableError', "if TYPE_CHECKING:"]
 ignore_errors = true
 
 [tool.coverage.run]
 branch = true
-omit = [
-  "**/__init__.py",
-  "**/print_versions.py"
-]
+omit = ["**/__init__.py", "**/print_versions.py"]
 parallel = true
 source = ['async_retriever']
 
 [tool.pyright]
-exclude = [
-  ".nox/",
-  "**/__pycache__",
-  "**/__init__.py",
-  "tests/"
-]
+exclude = [".nox/", "**/__pycache__", "**/__init__.py", "tests/"]
 include = ["async_retriever"]
 reportMissingTypeStubs = false
 reportUnknownArgumentType = false
