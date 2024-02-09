@@ -95,7 +95,7 @@ async def stream_session(
 ) -> None:
     """Stream the response to a file."""
     async with session(url, **s_kwds) as response:
-        if response.status != 200:
+        if response.status != 200:  # noqa: PLR2004
             raise ServiceError(await response.text(), str(response.url))
         with filepath.open("wb") as fd:
             if chunk_size is None:

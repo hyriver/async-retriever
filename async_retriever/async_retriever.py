@@ -232,7 +232,7 @@ async def async_session_with_cache(
             utils.retriever(uid, url, kwds, request_func, read, r_kwds, raise_status)
             for uid, url, kwds in url_kwds
         )
-        return await asyncio.gather(*tasks)  # pyright: ignore[reportGeneralTypeIssues]
+        return await asyncio.gather(*tasks)  # pyright: ignore[reportReturnType]
 
 
 async def async_session_without_cache(
@@ -276,7 +276,7 @@ async def async_session_without_cache(
             utils.retriever(uid, url, kwds, request_func, read, r_kwds, raise_status)
             for uid, url, kwds in url_kwds
         )
-        return await asyncio.gather(*tasks)  # pyright: ignore[reportGeneralTypeIssues]
+        return await asyncio.gather(*tasks)  # pyright: ignore[reportReturnType]
 
 
 @overload
@@ -391,7 +391,7 @@ def retrieve(
     ...     ]
     ... )
     >>> resp = ar.retrieve(urls, "text", request_kwds=kwds)
-    >>> resp[0].split('\n')[-2].split('\t')[1]
+    >>> resp[0].split("\n")[-2].split("\t")[1]
     '01646500'
     """
     inp = BaseRetriever(
@@ -496,7 +496,7 @@ def retrieve_text(
     ...     ]
     ... )
     >>> resp = ar.retrieve_text(urls, kwds)
-    >>> resp[0].split('\n')[-2].split('\t')[1]
+    >>> resp[0].split("\n")[-2].split("\t")[1]
     '01646500'
     """
     return retrieve(
