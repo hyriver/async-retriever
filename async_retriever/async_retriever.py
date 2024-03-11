@@ -1,4 +1,5 @@
 """Core async functions."""
+
 from __future__ import annotations
 
 import asyncio
@@ -292,8 +293,7 @@ def retrieve(
     ssl: SSLContext | bool | None = ...,
     disable: bool = ...,
     raise_status: bool = ...,
-) -> list[str]:
-    ...
+) -> list[str]: ...
 
 
 @overload
@@ -309,8 +309,7 @@ def retrieve(
     ssl: SSLContext | bool | None = ...,
     disable: bool = ...,
     raise_status: bool = ...,
-) -> list[dict[str, Any]] | list[list[dict[str, Any]]]:
-    ...
+) -> list[dict[str, Any]] | list[list[dict[str, Any]]]: ...
 
 
 @overload
@@ -326,8 +325,7 @@ def retrieve(
     ssl: SSLContext | bool | None = ...,
     disable: bool = ...,
     raise_status: bool = ...,
-) -> list[bytes]:
-    ...
+) -> list[bytes]: ...
 
 
 def retrieve(

@@ -1,4 +1,7 @@
 """Top-level package."""
+
+from __future__ import annotations
+
 import asyncio
 import sys
 from importlib.metadata import PackageNotFoundError, version

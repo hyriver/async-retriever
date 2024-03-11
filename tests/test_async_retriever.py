@@ -1,4 +1,7 @@
 """Tests for the package."""
+
+from __future__ import annotations
+
 import asyncio
 import io
 import sys
