@@ -2,6 +2,16 @@
 History
 =======
 
+0.16.1 (2024-XX-XX)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+- When a request fails with encoding error, it gets retried with the
+  encoding set to ``latine1``. This is to handle cases where the server
+  sends a response with an encoding that is not supported by the client.
+  (:issue_hydro:`120`)
+
 0.16.0 (2024-01-03)
 -------------------
 
