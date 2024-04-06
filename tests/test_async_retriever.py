@@ -21,6 +21,12 @@ async def check_url(url, method="GET", **kwargs):
     return await cache.has_url(url, method, **kwargs)
 
 
+def test_encoding():
+    url = "https://java.epa.gov/StreamCAT/metrics/variable_info.csv"
+    resp = ar.retrieve_text([url])
+    assert resp[0][:3] == "AOI"
+
+
 def test_disable_cache():
     url = "https://epqs.nationalmap.gov/v1/json"
     payload = {"params": {"x": -101, "y": 38, "units": "Meters"}}
