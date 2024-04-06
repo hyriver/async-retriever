@@ -81,6 +81,8 @@ async def retriever(
     async with session(url, **s_kwds) as response:
         try:
             return uid, await getattr(response, read_type)(**r_kwds)
+        except UnicodeDecodeError:
+            return uid, await response.text(encoding="latin1")
         except (ClientResponseError, ValueError) as ex:
             if raise_status:
                 raise ServiceError(await response.text(), str(response.url)) from ex
