@@ -14,6 +14,7 @@ from async_retriever.async_retriever import (
     retrieve_text,
     stream_write,
 )
+from async_retriever import exceptions
 from async_retriever.exceptions import (
     DependencyError,
     InputTypeError,
@@ -42,4 +43,6 @@ __all__ = [
     "ServiceError",
     "DependencyError",
     "show_versions",
+    "exceptions",
+    "__version__",
 ]
