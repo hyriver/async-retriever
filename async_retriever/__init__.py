@@ -6,6 +6,7 @@ import asyncio
 import sys
 from importlib.metadata import PackageNotFoundError, version
 
+from async_retriever import exceptions
 from async_retriever.async_retriever import (
     delete_url_cache,
     retrieve,
@@ -14,7 +15,6 @@ from async_retriever.async_retriever import (
     retrieve_text,
     stream_write,
 )
-from async_retriever import exceptions
 from async_retriever.exceptions import (
     DependencyError,
     InputTypeError,
