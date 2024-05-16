@@ -10,7 +10,9 @@ name = "async-retriever"
 description = "High-level API for asynchronous requests with persistent caching."
 readme = "README.rst"
 license = { text = "MIT" }
-authors = [{ name = "Taher Chegini", email = "cheginit@gmail.com" }]
+authors = [
+  { name = "Taher Chegini", email = "cheginit@gmail.com" },
+]
 requires-python = ">=3.8"
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -38,29 +40,33 @@ dependencies = [
   "cytoolz",
   "ujson",
 ]
-[project.optional-dependencies]
-notebook = [
+optional-dependencies.notebook = [
   "nest-asyncio",
 ]
-test = [
+optional-dependencies.test = [
   "pytest-cov",
   "pytest-sugar",
   "pytest-xdist[psutil]",
 ]
-[project.urls]
-CI = "https://github.com/hyriver/async-retriever/actions"
-Changelog = "https://docs.hyriver.io/changelogs/async-retriever.html"
-Homepage = "https://docs.hyriver.io/readme/async-retriever.html"
-Issues = "https://github.com/hyriver/async-retriever/issues"
+urls.Changelog = "https://docs.hyriver.io/changelogs/async-retriever.html"
+urls.CI = "https://github.com/hyriver/async-retriever/actions"
+urls.Homepage = "https://docs.hyriver.io/readme/async-retriever.html"
+urls.Issues = "https://github.com/hyriver/async-retriever/issues"
 
 [tool.setuptools]
 include-package-data = true
-license-files = ["LICENSE"]
-platforms = ["any"]
+license-files = [
+  "LICENSE",
+]
+platforms = [
+  "any",
+]
 zip-safe = false
 
 [tool.setuptools.package-data]
-async_retriever = ["py.typed"]
+async_retriever = [
+  "py.typed",
+]
 
 [tool.setuptools.packages]
 find = { namespaces = false }
@@ -70,6 +76,14 @@ fallback_version = "999"
 
 [tool.ruff]
 target-version = "py38"
+line-length = 100
+
+exclude = [
+  ".nox",
+  "__pycache__",
+]
+
+format.docstring-code-format = true
 lint.select = [
   # flake8-bugbear
   "B",
@@ -83,24 +97,43 @@ lint.select = [
   "F",
   # isort
   "I",
+  # flake8-gettext
+  "INT",
   # flake8-implicit-str-concat
   "ISC",
   # pep8-naming
   "N",
   # pygrep-hooks
   "PGH",
+  # misc lints
+  "PIE",
+  # pylint
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
   # flake8-pytest-style
   "PT",
   # flake8-use-pathlib
   "PTH",
+  # flake8-pyi
+  "PYI",
   # flake8-quotes
   "Q",
+  # Ruff-specific rules
+  "RUF",
   # bandit
   "S",
   # flake8-simplify
   "SIM",
+  # flake8-debugger
+  "T10",
   # flake8-print
   "T20",
+  # type-checking imports
+  "TCH",
+  # tidy imports
+  "TID",
   # tryceratops
   "TRY",
   # pyupgrade
@@ -109,56 +142,9 @@ lint.select = [
   "W",
   # flake8-2020
   "YTT",
-  # flake8-debugger
-  "T10",
-  # flake8-gettext
-  "INT",
-  # pylint
-  "PLC",
-  "PLE",
-  "PLR",
-  "PLW",
-  # misc lints
-  "PIE",
-  # flake8-pyi
-  "PYI",
-  # tidy imports
-  "TID",
-  # type-checking imports
-  "TCH",
-  # Ruff-specific rules
-  "RUF",
 ]
 
-exclude = ["__pycache__", ".nox"]
-
-lint.ignore = [
-  # docstring in class __init__
-  "D107",
-  # long too long, let the formatter handle it
-  "E501",
-  # too many arguments
-  "PLR0913",
-  # conflict with ruff-formatter
-  "ISC001",
-]
-lint.extend-safe-fixes = [
-  # absolute imports
-  "TID252",
-]
-line-length = 100
-
-[tool.ruff.format]
-docstring-code-format = true
-
-[tool.ruff.lint.flake8-bugbear]
-extend-immutable-calls = ["chr", "typer.Argument", "typer.Option"]
-
-[tool.ruff.lint.pydocstyle]
-convention = "numpy"
-
-[tool.ruff.lint.per-file-ignores]
-"tests/*.py" = [
+lint.per-file-ignores."tests/*.py" = [
   # Disable all docstring checks in tests
   "D100",
   "D101",
@@ -170,17 +156,23 @@ convention = "numpy"
   "D107",
   # magic values
   "PLR2004",
+  # Mutable class attributes
+  "RUF012",
   # use of "assert"
   "S101",
   # possible hardcoded password
   "S106",
-  # Mutable class attributes
-  "RUF012",
 ]
-
-[tool.ruff.lint.isort]
-required-imports = ["from __future__ import annotations"]
-known-first-party = [
+lint.extend-safe-fixes = [
+  # absolute imports
+  "TID252",
+]
+lint.flake8-bugbear.extend-immutable-calls = [
+  "chr",
+  "typer.Argument",
+  "typer.Option",
+]
+lint.isort.known-first-party = [
   "async_retriever",
   "pygeoogc",
   "pygeoutils",
@@ -191,6 +183,20 @@ known-first-party = [
   "pydaymet",
   "pygridmet",
   "pynldas2",
+]
+lint.isort.required-imports = [
+  "from __future__ import annotations",
+]
+lint.pydocstyle.convention = "numpy"
+lint.ignore = [
+  # docstring in class __init__
+  "D107",
+  # long too long, let the formatter handle it
+  "E501",
+  # conflict with ruff-formatter
+  "ISC001",
+  # too many arguments
+  "PLR0913",
 ]
 
 [tool.codespell]
@@ -208,21 +214,39 @@ filterwarnings = [
   "ignore:.*Calling float on a single element.*",
   "ignore:.*Shapely GEOS version.*",
 ]
-testpaths = ["tests", "async_retriever"]
+testpaths = [
+  "tests",
+  "async_retriever",
+]
 
 [tool.coverage.report]
-exclude_lines = ['raise ServiceUnavailableError', "if TYPE_CHECKING:"]
+exclude_lines = [
+  'raise ServiceUnavailableError',
+  "if TYPE_CHECKING:",
+]
 ignore_errors = true
 
 [tool.coverage.run]
 branch = true
-omit = ["**/__init__.py", "**/print_versions.py"]
+omit = [
+  "**/__init__.py",
+  "**/print_versions.py",
+]
 parallel = true
-source = ['async_retriever']
+source = [
+  'async_retriever',
+]
 
 [tool.pyright]
-exclude = [".nox/", "**/__pycache__", "**/__init__.py", "tests/"]
-include = ["async_retriever"]
+exclude = [
+  ".nox/",
+  "**/__pycache__",
+  "**/__init__.py",
+  "tests/",
+]
+include = [
+  "async_retriever",
+]
 reportMissingTypeStubs = false
 reportUnknownArgumentType = false
 reportUnknownLambdaType = false
