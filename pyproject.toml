@@ -59,7 +59,7 @@ source = "vcs"
 
 [tool.hatch.build.targets.wheel]
 packages = [
-  "src/async_retrieve",
+  "src/async_retriever",
 ]
 
 [tool.ruff]
@@ -205,7 +205,6 @@ filterwarnings = [
 ]
 testpaths = [
   "tests",
-  "src/async_retriever",
 ]
 
 [tool.coverage.report]
