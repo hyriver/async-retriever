@@ -12,7 +12,7 @@ from aiohttp import ClientSession, TCPConnector
 from aiohttp_client_cache import SQLiteBackend
 from aiohttp_client_cache.session import CachedSession
 
-import async_retriever._utils as utils
+from async_retriever import _utils as utils
 from async_retriever._utils import BaseRetriever
 from async_retriever.exceptions import InputValueError
 
