@@ -9,7 +9,7 @@ import async_retriever as ar
 from async_retriever import InputTypeError, InputValueError, ServiceError
 
 
-@pytest.fixture()
+@pytest.fixture
 def url_kwds():
     stations = ["01646500", "08072300", "11073495"]
     url = "https://waterservices.usgs.gov/nwis/site"
