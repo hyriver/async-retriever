@@ -15,12 +15,6 @@ from async_retriever.async_retriever import (
     retrieve_text,
     stream_write,
 )
-from async_retriever.exceptions import (
-    DependencyError,
-    InputTypeError,
-    InputValueError,
-    ServiceError,
-)
 from async_retriever.print_versions import show_versions
 
 try:
@@ -38,10 +32,6 @@ __all__ = [
     "retrieve_json",
     "retrieve_binary",
     "delete_url_cache",
-    "InputTypeError",
-    "InputValueError",
-    "ServiceError",
-    "DependencyError",
     "show_versions",
     "exceptions",
     "__version__",

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import importlib.util
 import os
 import sys
 from datetime import datetime
@@ -17,7 +16,6 @@ from aiohttp import ClientResponseError, ClientSession
 from aiohttp_client_cache import SQLiteBackend
 
 from async_retriever.exceptions import (
-    DependencyError,
     InputTypeError,
     InputValueError,
     ServiceError,
@@ -121,8 +119,6 @@ def get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
         new_loop = True
     asyncio.set_event_loop(loop)
     if "IPython" in sys.modules:
-        if importlib.util.find_spec("nest_asyncio") is None:
-            raise DependencyError
         import nest_asyncio
 
         nest_asyncio.apply(loop)
