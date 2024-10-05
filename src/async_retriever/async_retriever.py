@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import os
-from typing import TYPE_CHECKING, Any, Literal, Sequence, Union, overload
+from typing import TYPE_CHECKING, Any, Literal, Union, overload
 
 import cytoolz.curried as tlz
 import ujson as json
@@ -17,6 +17,7 @@ from async_retriever._utils import BaseRetriever
 from async_retriever.exceptions import InputValueError
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from pathlib import Path
     from ssl import SSLContext
 

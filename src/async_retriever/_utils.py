@@ -10,7 +10,7 @@ from datetime import datetime
 from inspect import signature
 from pathlib import Path
 from ssl import PROTOCOL_TLS_CLIENT, SSLContext
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Literal, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Literal
 
 import ujson as json
 from aiohttp import ClientResponseError, ClientSession
@@ -24,6 +24,8 @@ from async_retriever.exceptions import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable, Iterable, Sequence
+
     from aiohttp.client import _RequestContextManager  # pyright: ignore[reportPrivateUsage]
     from aiohttp.typedefs import StrOrURL
 
