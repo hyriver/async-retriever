@@ -6,7 +6,7 @@ import pytest
 from aiohttp import InvalidURL
 
 import async_retriever as ar
-from async_retriever import InputTypeError, InputValueError, ServiceError
+from async_retriever.exceptions import InputTypeError, InputValueError, ServiceError
 
 
 @pytest.fixture
