@@ -2,6 +2,26 @@
 History
 =======
 
+0.18.0 (2024-10-05)
+-------------------
+
+Bug Fixes
+~~~~~~~~~
+- Pin the minimum version of ``aiohttp-client-cache`` to 0.12.3 to an
+  issue with the latest version of ``aiohttp``. (:issue_async:`48`)
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+- Drop support for Python 3.8 since its end-of-life date is October 2024.
+- Remove all exceptions from the main module and raise them from the
+  ``exceptions`` module. This is to declutter the main module and make
+  it easier to maintain.
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Make ``nest_asyncio`` a required dependency since most users will need
+  it to run the package in Jupyter notebooks.
+
 0.17.1 (2024-09-14)
 -------------------
 
