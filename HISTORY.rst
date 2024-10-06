@@ -7,7 +7,7 @@ History
 
 Bug Fixes
 ~~~~~~~~~
-- Pin the minimum version of ``aiohttp-client-cache`` to 0.12.3 to an
+- Bump the minimum version of ``aiohttp-client-cache>=0.12.3`` to fix an
   issue with the latest version of ``aiohttp``. (:issue_async:`48`)
 
 Breaking Changes
