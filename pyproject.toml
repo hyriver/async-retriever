@@ -27,6 +27,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Internet :: WWW/HTTP",
   "Typing :: Typed",
 ]
@@ -34,17 +35,14 @@ dynamic = [
   "version",
 ]
 dependencies = [
-  "aiohttp[speedups]>=3.8.3",
+  "aiodns",
+  "aiohttp>=3.8.3",
   "aiohttp-client-cache>=0.12.3",
   "aiosqlite",
+  "brotli",
   "cytoolz",
   "nest-asyncio",
   "ujson",
-]
-optional-dependencies.test = [
-  "pytest-cov",
-  "pytest-sugar",
-  "pytest-xdist[psutil]",
 ]
 urls.Changelog = "https://docs.hyriver.io/changelogs/async-retriever.html"
 urls.CI = "https://github.com/hyriver/async-retriever/actions"
@@ -193,7 +191,6 @@ ignore-words-list = "gage,gages,paramss"
 addopts = [
   "--import-mode=importlib",
   "--doctest-modules",
-  "-n=auto",
   "-v",
   "--cov",
   "--junitxml=junit.xml",
@@ -260,3 +257,125 @@ formatter = "ufmt"
 [tool.refurb]
 python_version = "3.9"
 quiet = true
+
+[tool.pixi.project]
+channels = [ "conda-forge" ]
+platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
+
+[tool.pixi.dependencies]
+# system deps
+libnetcdf = "*"
+hdf5 = "*"
+gdal = "*"
+
+[tool.pixi.pypi-dependencies]
+async_retriever = { path = ".", editable = true }
+
+[tool.pixi.feature.test.dependencies]
+coverage = "*"
+pytest-cov = "*"
+pytest-sugar = "*"
+
+[tool.pixi.feature.dev.dependencies]
+# core deps
+aiodns = "*"
+aiohttp-client-cache = ">=0.12.3"
+brotli = "*"
+cytoolz = "*"
+nest-asyncio = "*"
+ujson = "*"
+defusedxml = "*"
+joblib = "*"
+multidict = "*"
+owslib = ">=0.27.2"
+pyproj = ">=3.0.1"
+requests = "*"
+requests-cache = ">=0.9.6"
+shapely = ">=2"
+typing_extensions = "*"
+url-normalize = ">=1.4"
+urllib3 = "*"
+yarl = "*"
+geopandas-base = ">=1"
+netcdf4 = "*"
+numpy = ">=2"
+rasterio = ">=1.2"
+rioxarray = ">=0.11"
+scipy = "*"
+xarray = ">=2023.01"
+pandas = ">=1"
+numba = ">=0.57"
+click = ">=0.7"
+networkx = "*"
+pyarrow = "*"
+folium = "*"
+h5netcdf = "*"
+matplotlib-base = ">=3.5"
+# optional deps
+py7zr = "*"
+numbagg = "*"
+planetary-computer = "*"
+pystac-client = "*"
+flox = "*"
+# Other deps required by example notebooks
+mapclassify = "*"
+contextily = "*"
+hvplot = "*"
+osmnx = "*"
+tqdm = "*"
+pytables = "*"
+ffmpeg = "*"
+xarray-spatial = "*"
+dask-expr = "*"
+datashader = "*"
+# dev deps
+ipywidgets = "*"
+ipykernel = "*"
+
+[tool.pixi.feature.dev.pypi-dependencies]
+hydrosignatures = { git = "https://github.com/hyriver/hydrosignatures" }
+pygeoogc = { git = "https://github.com/hyriver/pygeoogc" }
+pygeoutils = { git = "https://github.com/hyriver/pygeoutils" }
+pynhd = { git = "https://github.com/hyriver/pynhd" }
+py3dep = { git = "https://github.com/hyriver/py3dep" }
+pydaymet = { git = "https://github.com/hyriver/pydaymet" }
+pygridmet = { git = "https://github.com/hyriver/pygridmet" }
+pynldas2 = { git = "https://github.com/hyriver/pynldas2" }
+pygeohydro = { git = "https://github.com/hyriver/pygeohydro" }
+
+[tool.pixi.feature.lint.dependencies]
+pre-commit = "*"
+codespell = "*"
+
+[tool.pixi.feature.typecheck.dependencies]
+pyright = "*"
+
+[tool.pixi.feature.py39.dependencies]
+python = "~=3.9.0"
+tomli = "*"
+
+[tool.pixi.feature.py312.dependencies]
+python = "~=3.12.0"
+
+[tool.pixi.feature.py313.dependencies]
+python = "~=3.13.0"
+
+[tool.pixi.environments]
+dev = { features = [ "dev", "test", "py312" ] }
+test39 = { features = [ "test", "py39" ] }
+test312 = { features = [ "test", "py312" ] }
+typecheck = { features = [ "typecheck", "py313" ] }
+lint = { features = [ "lint", "py313" ], no-default-feature = true }
+
+[tool.pixi.feature.test.tasks]
+test = "pytest"
+report = { cmd = [ "coverage", "report" ], depends-on = [ "test" ] }
+html = { cmd = [ "coverage", "html" ], depends-on = [ "report" ] }
+
+[tool.pixi.feature.lint.tasks]
+lint = "pre-commit run --all-files"
+pcupdate = "pre-commit autoupdate"
+spell = "codespell -w"
+
+[tool.pixi.feature.typecheck.tasks]
+typecheck = "pyright"
