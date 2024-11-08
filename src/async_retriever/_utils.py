@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import os
-import sys
 from datetime import datetime
 from inspect import signature
 from pathlib import Path
@@ -109,6 +108,19 @@ async def stream_session(
                     fd.write(chunk)
 
 
+def _is_jupyter_kernel():
+    """Check if the code is running in a Jupyter kernel (not IPython terminal)."""
+    try:
+        from IPython import get_ipython
+
+        ipython = get_ipython()
+        if ipython is None:
+            return False
+    except (ImportError, NameError):
+        return False
+    return "Terminal" not in ipython.__class__.__name__
+
+
 def get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
     """Create an event loop."""
     try:
@@ -118,7 +130,7 @@ def get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
         loop = asyncio.new_event_loop()
         new_loop = True
     asyncio.set_event_loop(loop)
-    if "IPython" in sys.modules:
+    if _is_jupyter_kernel():
         import nest_asyncio
 
         nest_asyncio.apply(loop)
