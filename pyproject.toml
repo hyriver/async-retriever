@@ -251,13 +251,6 @@ reportUntypedFunctionDecorator = false
 reportAttributeAccessIssue = false
 typeCheckingMode = "strict"
 
-[tool.fixit]
-formatter = "ufmt"
-
-[tool.refurb]
-python_version = "3.9"
-quiet = true
-
 [tool.pixi.project]
 channels = [ "conda-forge" ]
 platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
