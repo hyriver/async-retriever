@@ -32,11 +32,11 @@ if TYPE_CHECKING:
 EXPIRE_AFTER = 60 * 60 * 24 * 7  # 1 week
 __all__ = [
     "delete_url_cache",
-    "stream_write",
     "retrieve",
-    "retrieve_text",
-    "retrieve_json",
     "retrieve_binary",
+    "retrieve_json",
+    "retrieve_text",
+    "stream_write",
 ]
 
 

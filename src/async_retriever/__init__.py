@@ -26,13 +26,13 @@ if sys.platform == "win32":  # pragma: no cover
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 __all__ = [
-    "retrieve",
-    "stream_write",
-    "retrieve_text",
-    "retrieve_json",
-    "retrieve_binary",
-    "delete_url_cache",
-    "show_versions",
-    "exceptions",
     "__version__",
+    "delete_url_cache",
+    "exceptions",
+    "retrieve",
+    "retrieve_binary",
+    "retrieve_json",
+    "retrieve_text",
+    "show_versions",
+    "stream_write",
 ]
