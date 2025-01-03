@@ -44,6 +44,11 @@ dependencies = [
   "nest-asyncio",
   "ujson",
 ]
+optional-dependencies.test = [
+  "pytest-cov",
+  "pytest-sugar",
+  "pytest-xdist[psutil]",
+]
 urls.Changelog = "https://docs.hyriver.io/changelogs/async-retriever.html"
 urls.CI = "https://github.com/hyriver/async-retriever/actions"
 urls.Homepage = "https://docs.hyriver.io/readme/async-retriever.html"
@@ -62,11 +67,10 @@ target-version = "py39"
 line-length = 100
 
 exclude = [
-  ".nox",
   "__pycache__",
+  "benchmarks",
 ]
 
-format.docstring-code-format = true
 lint.select = [
   # flake8-bugbear
   "B",
@@ -88,6 +92,10 @@ lint.select = [
   "ISC",
   # pep8-naming
   "N",
+  # compatibility with numpy 2.0
+  "NPY201",
+  # Perflint
+  "PERF",
   # pygrep-hooks
   "PGH",
   # misc lints
@@ -116,7 +124,7 @@ lint.select = [
   # flake8-print
   "T20",
   # type-checking imports
-  "TCH",
+  "TC",
   # tidy imports
   "TID",
   # tryceratops
@@ -130,18 +138,26 @@ lint.select = [
 ]
 
 lint.ignore = [
-  # docstring in class __init__
-  "D107",
-  # long too long, let the formatter handle it
+  "D103",
+  "D105",
   "E501",
   # conflict with ruff-formatter
   "ISC001",
-  # too many arguments
+  # specific type error ignored
+  "PGH003",
   "PLR0913",
+  "PLR2004",
+  # url schema
+  "S310",
+  "S603",
+  # shell command
+  "S605",
+  "S607",
+  # custom exception
+  "TRY003",
 ]
 
 lint.per-file-ignores."tests/*.py" = [
-  # Disable all docstring checks in tests
   "D100",
   "D101",
   "D102",
@@ -150,14 +166,10 @@ lint.per-file-ignores."tests/*.py" = [
   "D105",
   "D106",
   "D107",
-  # magic values
-  "PLR2004",
-  # Mutable class attributes
-  "RUF012",
+  # specific type error ignored
+  "PGH003",
   # use of "assert"
   "S101",
-  # possible hardcoded password
-  "S106",
 ]
 lint.extend-safe-fixes = [
   # absolute imports
@@ -175,9 +187,8 @@ lint.isort.known-first-party = [
   "pygridmet",
   "pynldas2",
 ]
-lint.isort.required-imports = [
-  "from __future__ import annotations",
-]
+lint.isort.required-imports = [ "from __future__ import annotations" ]
+
 lint.pydocstyle.convention = "numpy"
 
 [tool.codespell]
@@ -246,126 +257,5 @@ reportUnknownVariableType = false
 reportUnnecessaryIsInstance = false
 reportUntypedFunctionDecorator = false
 reportAttributeAccessIssue = false
+reportInvalidTypeForm = false
 typeCheckingMode = "strict"
-
-[tool.pixi.project]
-channels = [ "conda-forge" ]
-platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
-
-[tool.pixi.dependencies]
-# system deps
-libnetcdf = "*"
-hdf5 = "*"
-gdal = "*"
-
-[tool.pixi.pypi-dependencies]
-async_retriever = { path = ".", editable = true }
-
-[tool.pixi.feature.test.dependencies]
-coverage = "*"
-pytest-cov = "*"
-pytest-sugar = "*"
-
-[tool.pixi.feature.dev.dependencies]
-# core deps
-aiodns = "*"
-aiohttp-client-cache = ">=0.12.3"
-brotli = "*"
-cytoolz = "*"
-nest-asyncio = "*"
-ujson = "*"
-defusedxml = "*"
-joblib = "*"
-multidict = "*"
-owslib = ">=0.27.2"
-pyproj = ">=3.0.1"
-requests = "*"
-requests-cache = ">=0.9.6"
-shapely = ">=2"
-typing_extensions = "*"
-url-normalize = ">=1.4"
-urllib3 = "*"
-yarl = "*"
-geopandas-base = ">=1"
-netcdf4 = "*"
-numpy = ">=2"
-rasterio = ">=1.2"
-rioxarray = ">=0.11"
-scipy = "*"
-xarray = ">=2023.01"
-pandas = ">=1"
-numba = ">=0.57"
-click = ">=0.7"
-networkx = "*"
-pyarrow = "*"
-folium = "*"
-h5netcdf = "*"
-matplotlib-base = ">=3.5"
-# optional deps
-py7zr = "*"
-numbagg = "*"
-planetary-computer = "*"
-pystac-client = "*"
-flox = "*"
-# Other deps required by example notebooks
-mapclassify = "*"
-contextily = "*"
-hvplot = "*"
-osmnx = "*"
-tqdm = "*"
-pytables = "*"
-ffmpeg = "*"
-xarray-spatial = "*"
-dask-expr = "*"
-datashader = "*"
-# dev deps
-ipywidgets = "*"
-ipykernel = "*"
-
-[tool.pixi.feature.dev.pypi-dependencies]
-hydrosignatures = { git = "https://github.com/hyriver/hydrosignatures" }
-pygeoogc = { git = "https://github.com/hyriver/pygeoogc" }
-pygeoutils = { git = "https://github.com/hyriver/pygeoutils" }
-pynhd = { git = "https://github.com/hyriver/pynhd" }
-py3dep = { git = "https://github.com/hyriver/py3dep" }
-pydaymet = { git = "https://github.com/hyriver/pydaymet" }
-pygridmet = { git = "https://github.com/hyriver/pygridmet" }
-pynldas2 = { git = "https://github.com/hyriver/pynldas2" }
-pygeohydro = { git = "https://github.com/hyriver/pygeohydro" }
-
-[tool.pixi.feature.lint.dependencies]
-pre-commit = "*"
-codespell = "*"
-
-[tool.pixi.feature.typecheck.dependencies]
-pyright = "*"
-
-[tool.pixi.feature.py39.dependencies]
-python = "~=3.9.0"
-tomli = "*"
-
-[tool.pixi.feature.py312.dependencies]
-python = "~=3.12.0"
-
-[tool.pixi.feature.py313.dependencies]
-python = "~=3.13.0"
-
-[tool.pixi.environments]
-dev = { features = [ "dev", "test", "py312" ] }
-test39 = { features = [ "test", "py39" ] }
-test312 = { features = [ "test", "py312" ] }
-typecheck = { features = [ "typecheck", "py313" ] }
-lint = { features = [ "lint", "py313" ], no-default-feature = true }
-
-[tool.pixi.feature.test.tasks]
-test = "pytest"
-report = { cmd = [ "coverage", "report" ], depends-on = [ "test" ] }
-html = { cmd = [ "coverage", "html" ], depends-on = [ "report" ] }
-
-[tool.pixi.feature.lint.tasks]
-lint = "pre-commit run --all-files"
-pcupdate = "pre-commit autoupdate"
-spell = "codespell -w"
-
-[tool.pixi.feature.typecheck.tasks]
-typecheck = "pyright"
