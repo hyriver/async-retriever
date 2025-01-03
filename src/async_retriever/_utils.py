@@ -97,7 +97,7 @@ async def stream_session(
 ) -> None:
     """Stream the response to a file."""
     async with session(url, **s_kwds) as response:
-        if response.status != 200:  # noqa: PLR2004
+        if response.status != 200:
             raise ServiceError(await response.text(), str(response.url))
         with filepath.open("wb") as fd:
             if chunk_size is None:
@@ -111,7 +111,7 @@ async def stream_session(
 def _is_jupyter_kernel():
     """Check if the code is running in a Jupyter kernel (not IPython terminal)."""
     try:
-        from IPython import get_ipython
+        from IPython import get_ipython  # type: ignore[reportMissingImports]
 
         ipython = get_ipython()
         if ipython is None:
@@ -159,7 +159,7 @@ class BaseRetriever:
         request_kwds: Sequence[dict[str, Any]] | None = None,
         request_method: Literal["get", "GET", "post", "POST"] = "GET",
         cache_name: Path | str | None = None,
-        ssl: SSLContext | bool | None = None,
+        ssl: SSLContext | bool = True,
     ) -> None:
         """Validate inputs to retrieve function."""
         ssl_cert = os.getenv("HYRIVER_SSL_CERT")

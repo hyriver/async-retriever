@@ -76,7 +76,7 @@ def delete_url_cache(
 async def stream_session(
     url_kwds: tuple[tuple[Path, StrOrURL, dict[str, Any]], ...],
     request_method: Literal["get", "GET", "post", "POST"],
-    ssl: SSLContext | bool | None = None,
+    ssl: SSLContext | bool = True,
     chunk_size: int | None = None,
 ) -> None:
     """Create an async session for sending requests.
@@ -113,7 +113,7 @@ def stream_write(
     request_kwds: Sequence[dict[str, Any]] | None = None,
     request_method: Literal["get", "GET", "post", "POST"] = "GET",
     max_workers: int = 8,
-    ssl: SSLContext | bool | None = None,
+    ssl: SSLContext | bool = True,
     chunk_size: int | None = None,
 ) -> None:
     r"""Send async requests.
@@ -179,7 +179,7 @@ async def async_session_with_cache(
     cache_name: Path,
     timeout: int = 5,
     expire_after: int = EXPIRE_AFTER,
-    ssl: SSLContext | bool | None = None,
+    ssl: SSLContext | bool = True,
     raise_status: bool = True,
 ) -> RESPONSE:
     """Create an async session for sending requests.
@@ -242,7 +242,7 @@ async def async_session_without_cache(
     read: Literal["text", "json", "binary"],
     r_kwds: dict[str, Any],
     request_method: Literal["get", "GET", "post", "POST"],
-    ssl: SSLContext | bool | None = None,
+    ssl: SSLContext | bool = True,
     raise_status: bool = True,
 ) -> RESPONSE:
     """Create an async session for sending requests.
@@ -291,7 +291,7 @@ def retrieve(
     cache_name: Path | str | None = ...,
     timeout: int = ...,
     expire_after: int = ...,
-    ssl: SSLContext | bool | None = ...,
+    ssl: SSLContext | bool = ...,
     disable: bool = ...,
     raise_status: bool = ...,
 ) -> list[str]: ...
@@ -307,7 +307,7 @@ def retrieve(
     cache_name: Path | str | None = ...,
     timeout: int = ...,
     expire_after: int = ...,
-    ssl: SSLContext | bool | None = ...,
+    ssl: SSLContext | bool = ...,
     disable: bool = ...,
     raise_status: bool = ...,
 ) -> list[dict[str, Any]] | list[list[dict[str, Any]]]: ...
@@ -323,7 +323,7 @@ def retrieve(
     cache_name: Path | str | None = ...,
     timeout: int = ...,
     expire_after: int = ...,
-    ssl: SSLContext | bool | None = ...,
+    ssl: SSLContext | bool = ...,
     disable: bool = ...,
     raise_status: bool = ...,
 ) -> list[bytes]: ...
@@ -338,7 +338,7 @@ def retrieve(
     cache_name: Path | str | None = None,
     timeout: int = 5,
     expire_after: int = EXPIRE_AFTER,
-    ssl: SSLContext | bool | None = None,
+    ssl: SSLContext | bool = True,
     disable: bool = False,
     raise_status: bool = True,
 ) -> RESPONSE:
@@ -445,7 +445,7 @@ def retrieve_text(
     cache_name: Path | str | None = None,
     timeout: int = 5,
     expire_after: int = EXPIRE_AFTER,
-    ssl: SSLContext | bool | None = None,
+    ssl: SSLContext | bool = True,
     disable: bool = False,
     raise_status: bool = True,
 ) -> list[str]:
@@ -521,7 +521,7 @@ def retrieve_json(
     cache_name: Path | str | None = None,
     timeout: int = 5,
     expire_after: int = EXPIRE_AFTER,
-    ssl: SSLContext | bool | None = None,
+    ssl: SSLContext | bool = True,
     disable: bool = False,
     raise_status: bool = True,
 ) -> list[dict[str, Any]] | list[list[dict[str, Any]]]:
@@ -598,7 +598,7 @@ def retrieve_binary(
     cache_name: Path | str | None = None,
     timeout: int = 5,
     expire_after: int = EXPIRE_AFTER,
-    ssl: SSLContext | bool | None = None,
+    ssl: SSLContext | bool = True,
     disable: bool = False,
     raise_status: bool = True,
 ) -> list[bytes]:
