@@ -22,9 +22,9 @@ async def check_url(url, method="GET", **kwargs):
 
 
 def test_encoding():
-    url = "https://java.epa.gov/StreamCAT/metrics/variable_info.csv"
+    url = "https://api.epa.gov/StreamCat/streams/variable_info"
     resp = ar.retrieve_text([url])
-    assert resp[0][:3] == "AOI"
+    assert resp[0][:3] == "IND"
 
 
 def test_disable_cache():
@@ -82,7 +82,7 @@ def test_binary():
 
 
 def test_json():
-    urls = ["https://labs.waterdata.usgs.gov/api/nldi/linked-data/comid/position"]
+    urls = ["https://api.water.usgs.gov/nldi/linked-data/comid/position"]
     kwds = [
         {
             "params": {

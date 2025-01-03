@@ -69,7 +69,7 @@ def test_invalid_kwds(url_kwds):
 
 
 def test_service_error():
-    urls = ["https://labs.waterdata.usgs.gov/geoserver/wmadata/ows"]
+    urls = ["https://api.water.usgs.gov/geoserver/wmadata/ows"]
     kwds = [
         {
             "params": {
