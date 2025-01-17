@@ -12,6 +12,9 @@ Internal Changes
   ``limit_per_host`` to limit the number of connections per host which
   prevents the server from being overwhelmed with too many connections.
   The default value is set to 5.
+- Add ``aiofiles`` as a new dependency for writing responses to a file
+  in the ``stream_write`` function. This should speed up the writing process
+  and make it more efficient.
 
 Bug Fixes
 ~~~~~~~~~
@@ -21,9 +24,8 @@ Bug Fixes
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 - Move ``stream_write`` function to its own module called ``streaming``.
-  This is to make it standalone so that it the module file can be copied
-  to other projects without having to copy the entire library. This module
-  only depends on ``aiohttp``.
+  This is to separate the streaming functionality from the main module
+  and make it easier to maintain.
 - Simplify the ``stream_write`` function to only accept a list of URLs
   and a directory path to save the files. It no longer accepts passing
   keyword arguments and assumes that the user has added the necessary
