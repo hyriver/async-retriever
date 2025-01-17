@@ -13,9 +13,9 @@ from async_retriever.async_retriever import (
     retrieve_binary,
     retrieve_json,
     retrieve_text,
-    stream_write,
 )
 from async_retriever.print_versions import show_versions
+from async_retriever.streaming import stream_write
 
 try:
     __version__ = version("async_retriever")
