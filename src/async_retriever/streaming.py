@@ -3,45 +3,23 @@
 from __future__ import annotations
 
 import asyncio
-import sys
+from collections.abc import Sequence
 from pathlib import Path
-from aiohttp import ClientSession, TCPConnector
-from aiohttp.client_exceptions import ClientResponseError
+from ssl import SSLContext
 from typing import TYPE_CHECKING, Literal
 
-if TYPE_CHECKING:
-    from collections.abc import Sequence, Iterable
-    from ssl import SSLContext
+import aiofiles
+from aiohttp import ClientSession, ClientTimeout, TCPConnector
 
+from async_retriever._utils import get_event_loop
+from async_retriever.exceptions import DownloadError
+
+if TYPE_CHECKING:
     from aiohttp.typedefs import StrOrURL
 
-__all__ = ["stream_write", "DownloadError"]
+__all__ = ["stream_write"]
 CHUNK_SIZE = 1024 * 1024  # Default chunk size of 1 MB
-
-if sys.platform == "win32":  # pragma: no cover
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
-
-class DownloadError(Exception):
-    """Exception raised when the requested data is not available on the server.
-
-    Parameters
-    ----------
-    err : str
-        Service error message.
-    """
-
-    def __init__(self, err: str, url: str | None = None) -> None:
-        self.message = "Service returned the following error message:\n"
-        if url is None:
-            self.message += err
-        else:
-            self.message += f"URL: {url}\nERROR: {err}\n"
-        super().__init__(self.message)
-
-    def __str__(self) -> str:
-        """Return the error message."""
-        return self.message
+TIMEOUT = 10 * 60  # Timeout for requests in seconds
 
 
 async def _stream_file(
@@ -53,18 +31,20 @@ async def _stream_file(
 ) -> None:
     """Stream the response to a file."""
     async with session.request(request_method, url) as response:
-        try:
-            response.raise_for_status()
-        except (ClientResponseError, ValueError) as ex:
-            raise DownloadError(await response.text(), str(response.url)) from ex
-            
-        with filepath.open("wb") as file:
+        if response.status != 200:
+            filepath.unlink(missing_ok=True)
+            raise DownloadError(await response.text(), str(response.url))
+        remote_size = int(response.headers.get("Content-Length", -1))
+        if filepath.exists() and filepath.stat().st_size == remote_size:
+            return
+
+        async with aiofiles.open(filepath, "wb") as file:
             async for chunk in response.content.iter_chunked(chunk_size):
-                file.write(chunk)
+                await file.write(chunk)
 
 
 async def _stream_session(
-    url_file_mappings: Iterable[tuple[str, Path]],
+    url_file_mappings: zip[tuple[StrOrURL, Path]],
     request_method: Literal["get", "post"],
     ssl: bool | SSLContext,
     chunk_size: int,
@@ -81,7 +61,12 @@ async def _stream_session(
         raise TypeError("`ssl` must be a boolean or SSLContext object.")
 
     async with ClientSession(
-        connector=TCPConnector(verify_ssl=verify_ssl, ssl_context=ssl_context, limit_per_host=limit_per_host)
+        connector=TCPConnector(
+            verify_ssl=verify_ssl,
+            ssl_context=ssl_context,
+            limit_per_host=limit_per_host,
+        ),
+        timeout=ClientTimeout(TIMEOUT),
     ) as session:
         tasks = [
             _stream_file(session, request_method, url, filepath, chunk_size)
@@ -123,6 +108,8 @@ def stream_write(
     >>> with tempfile.NamedTemporaryFile(dir=".") as temp:
     ...     stream_write([url], [temp.name])
     """
+    if not isinstance(urls, Sequence) or not isinstance(file_paths, Sequence):
+        raise TypeError("`urls` and `file_paths` must be sequences of URLs and file paths.")
     if len(urls) != len(file_paths):
         raise TypeError("`urls` and `file_paths` must be sequences of same length.")
 
@@ -131,7 +118,7 @@ def stream_write(
     for parent_dir in parent_dirs:
         parent_dir.mkdir(parents=True, exist_ok=True)
 
-    loop, is_new_loop = _get_event_loop()
+    loop, is_new_loop = get_event_loop()
 
     try:
         loop.run_until_complete(
@@ -146,12 +133,3 @@ def stream_write(
     finally:
         if is_new_loop:
             loop.close()
-
-def _get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
-    """Get or create an event loop."""
-    try:
-        return asyncio.get_running_loop(), False
-    except RuntimeError:
-        new_loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(new_loop)
-        return new_loop, True

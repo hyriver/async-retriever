@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import os
 from datetime import datetime
 from inspect import signature
+from itertools import repeat
 from pathlib import Path
 from ssl import PROTOCOL_TLS_CLIENT, SSLContext
 from typing import TYPE_CHECKING, Any, Callable, Literal
@@ -21,7 +23,7 @@ from async_retriever.exceptions import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Iterable, Sequence
+    from collections.abc import Sequence
 
     from aiohttp.client import _RequestContextManager  # pyright: ignore[reportPrivateUsage]
     from aiohttp.typedefs import StrOrURL
@@ -46,10 +48,16 @@ async def retriever(
     url: StrOrURL,
     s_kwds: dict[str, dict[str, Any]],
     session: Callable[[StrOrURL], _RequestContextManager],
-    read_type: Literal["text", "json", "binary"],
+    read_type: Literal["text", "read", "json"],
     r_kwds: dict[str, None],
     raise_status: bool,
-) -> tuple[int, str | Awaitable[str | bytes | dict[str, Any]] | None]:
+) -> (
+    tuple[int, str]
+    | tuple[int, bytes]
+    | tuple[int, dict[str, Any]]
+    | tuple[int, list[dict[str, Any]]]
+    | tuple[int, None]
+):
     """Create an async request and return the response as binary.
 
     Parameters
@@ -63,7 +71,7 @@ async def retriever(
     session : ClientSession
         A ClientSession for sending the request
     read_type : str
-        Return response as ``text``, ``bytes``, or ``json``.
+        Return response as ``text``, ``read``, or ``json``.
     r_kwds : dict
         Keywords to pass to the response read function.
         It is ``{"content_type": None}`` if ``read`` is ``json``
@@ -74,8 +82,8 @@ async def retriever(
 
     Returns
     -------
-    bytes
-        The retrieved response as binary.
+    tuple
+        A tuple of the URL ID and the response content
     """
     async with session(url, **s_kwds) as response:
         try:
@@ -88,58 +96,18 @@ async def retriever(
             return uid, None
 
 
-async def stream_session(
-    url: StrOrURL,
-    s_kwds: dict[str, dict[str, Any] | None],
-    session: Callable[[StrOrURL], _RequestContextManager],
-    filepath: Path,
-    chunk_size: int | None = None,
-) -> None:
-    """Stream the response to a file."""
-    async with session(url, **s_kwds) as response:
-        if response.status != 200:
-            raise ServiceError(await response.text(), str(response.url))
-        with filepath.open("wb") as fd:
-            if chunk_size is None:
-                async for chunk, _ in response.content.iter_chunks():
-                    fd.write(chunk)
-            else:
-                async for chunk in response.content.iter_chunked(chunk_size):
-                    fd.write(chunk)
-
-
-def _is_jupyter_kernel():
-    """Check if the code is running in a Jupyter kernel (not IPython terminal)."""
-    try:
-        from IPython import get_ipython  # type: ignore[reportMissingImports]
-
-        ipython = get_ipython()
-        if ipython is None:
-            return False
-    except (ImportError, NameError):
-        return False
-    return "Terminal" not in ipython.__class__.__name__
-
-
 def get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
     """Create an event loop."""
-    try:
-        loop = asyncio.get_running_loop()
-        new_loop = False
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-        new_loop = True
-    asyncio.set_event_loop(loop)
-    if _is_jupyter_kernel():
-        import nest_asyncio
-
-        nest_asyncio.apply(loop)
-    return loop, new_loop
+    with contextlib.suppress(RuntimeError):
+        return asyncio.get_running_loop(), False
+    new_loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(new_loop)
+    return new_loop, True
 
 
 async def delete_url(
     url: StrOrURL,
-    method: Literal["get", "GET", "post", "POST"],
+    method: Literal["get", "post"],
     cache_name: Path,
     **kwargs: dict[str, Any],
 ) -> None:
@@ -154,10 +122,9 @@ class BaseRetriever:
     def __init__(
         self,
         urls: Sequence[StrOrURL],
-        file_paths: list[str | Path] | None = None,
-        read_method: Literal["text", "json", "binary"] | None = None,
+        read_method: Literal["text", "json", "binary"],
         request_kwds: Sequence[dict[str, Any]] | None = None,
-        request_method: Literal["get", "GET", "post", "POST"] = "GET",
+        request_method: Literal["get", "post"] = "get",
         cache_name: Path | str | None = None,
         ssl: SSLContext | bool = True,
     ) -> None:
@@ -168,31 +135,20 @@ class BaseRetriever:
             self.ssl.load_verify_locations(ssl_cert)
         else:
             self.ssl = ssl
-        self.request_method = request_method.upper()
-        valid_methods = ["GET", "POST"]
-        if self.request_method not in valid_methods:
+
+        valid_methods = ["get", "post"]
+        if request_method.lower() not in valid_methods:
             raise InputValueError("method", valid_methods)
+        self.request_method: Literal["get", "post"] = request_method
+        valid_reads = ["binary", "json", "text"]
+        if read_method not in valid_reads:
+            raise InputValueError("read", valid_reads)
+        self.read_method: Literal["read", "text", "json"] = (
+            "read" if read_method == "binary" else read_method
+        )
+        self.r_kwds = {"content_type": None, "loads": json.loads} if read_method == "json" else {}
 
-        self.file_paths = None
-        if file_paths is not None:
-            if not isinstance(file_paths, (list, tuple)):
-                raise InputTypeError("file_paths", "list of paths")
-            self.file_paths = [Path(f) for f in file_paths]
-            for f in self.file_paths:
-                f.parent.mkdir(parents=True, exist_ok=True)
-
-        self.read_method = None
-        self.r_kwds = None
-        if read_method is not None:
-            valid_reads = ["binary", "json", "text"]
-            if read_method not in valid_reads:
-                raise InputValueError("read", valid_reads)
-            self.read_method = "read" if read_method == "binary" else read_method
-            self.r_kwds = (
-                {"content_type": None, "loads": json.loads} if read_method == "json" else {}
-            )
-
-        self.url_kwds = self.generate_requests(urls, request_kwds, self.file_paths)
+        self.url_kwds = self.generate_requests(urls, request_kwds)
 
         self.cache_name = create_cachefile(cache_name)
 
@@ -200,21 +156,15 @@ class BaseRetriever:
     def generate_requests(
         urls: Sequence[StrOrURL],
         request_kwds: Sequence[dict[str, Any]] | None,
-        file_paths: list[Path] | None,
-    ) -> Iterable[tuple[int | Path, StrOrURL, dict[str, Any]]]:
+    ) -> zip[tuple[int, StrOrURL, dict[str, Any]]]:
         """Generate urls and keywords."""
         if not isinstance(urls, (list, tuple)):
             raise InputTypeError("``urls``", "list of str", "[url1, ...]")
 
-        if file_paths is None:
-            url_id = range(len(urls))
-        else:
-            if len(urls) != len(file_paths):
-                raise InputTypeError("urls/file_paths", "sequences of the same size")
-            url_id = file_paths
+        url_id = range(len(urls))
 
         if request_kwds is None:
-            return zip(url_id, urls, len(urls) * [{"headers": None}])
+            return zip(url_id, urls, repeat({"headers": None}))
 
         if len(urls) != len(request_kwds):
             raise InputTypeError("urls/request_kwds", "sequences of the same size")
