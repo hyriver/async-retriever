@@ -8,6 +8,28 @@ if TYPE_CHECKING:
     from collections.abc import Generator, Sequence
 
 
+class DownloadError(Exception):
+    """Exception raised when the requested data is not available on the server.
+
+    Parameters
+    ----------
+    err : str
+        Service error message.
+    """
+
+    def __init__(self, err: str, url: str | None = None) -> None:
+        self.message = "Service returned the following error message:\n"
+        if url is None:
+            self.message += err
+        else:
+            self.message += f"URL: {url}\nERROR: {err}\n"
+        super().__init__(self.message)
+
+    def __str__(self) -> str:
+        """Return the error message."""
+        return self.message
+
+
 class ServiceError(Exception):
     """Exception raised when the requested data is not available on the server.
 
