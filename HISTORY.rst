@@ -2,6 +2,34 @@
 History
 =======
 
+0.19.0 (2025-01-17)
+-------------------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Replace ``max_connection`` argument in all ``retrieve*`` functions
+  with ``limit_per_host``. This uses the ``aiohttp`` argument
+  ``limit_per_host`` to limit the number of connections per host which
+  prevents the server from being overwhelmed with too many connections.
+  The default value is set to 5.
+
+Bug Fixes
+~~~~~~~~~
+- Fix an issue with running the library inside IPython terminal.
+  (:issue_async:`50`)
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+- Move ``stream_write`` function to its own module called ``streaming``.
+  This is to make it standalone so that it the module file can be copied
+  to other projects without having to copy the entire library. This module
+  only depends on ``aiohttp``.
+- Simplify the ``stream_write`` function to only accept a list of URLs
+  and a directory path to save the files. It no longer accepts passing
+  keyword arguments and assumes that the user has added the necessary
+  arguments to the URLs itself and is encoded correctly. Additionally,
+  the chunk size by default is set to 1 MB.
+
 0.18.0 (2024-10-05)
 -------------------
 
