@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import os
 from datetime import datetime
 from inspect import signature
@@ -96,13 +95,33 @@ async def retriever(
             return uid, None
 
 
+def is_jupyter_kernel():
+    """Check if the code is running in a Jupyter kernel (not IPython terminal)."""
+    try:
+        from IPython import get_ipython
+
+        ipython = get_ipython()
+    except (ImportError, NameError):
+        return False
+    if ipython is None:
+        return False
+    return "Terminal" not in ipython.__class__.__name__
+
+
 def get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
     """Create an event loop."""
-    with contextlib.suppress(RuntimeError):
-        return asyncio.get_running_loop(), False
-    new_loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(new_loop)
-    return new_loop, True
+    try:
+        loop = asyncio.get_running_loop()
+        new_loop = False
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        new_loop = True
+    asyncio.set_event_loop(loop)
+    if is_jupyter_kernel():
+        import nest_asyncio
+
+        nest_asyncio.apply(loop)
+    return loop, new_loop
 
 
 async def delete_url(
