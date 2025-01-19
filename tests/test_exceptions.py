@@ -9,7 +9,6 @@ from aiohttp import InvalidURL
 
 import async_retriever as ar
 from async_retriever.exceptions import InputTypeError, InputValueError, ServiceError
-from async_retriever.streaming import DownloadError
 
 
 @pytest.fixture
@@ -87,21 +86,21 @@ def test_service_error():
         _ = ar.retrieve([url], "json")
     assert "illegal bbox" in str(ex.value)
 
-    with pytest.raises(DownloadError) as ex:
+    with pytest.raises(ServiceError) as ex:
         _ = ar.stream_write([url], ["temp"])
     assert "illegal bbox" in str(ex.value)
 
 
 def test_wrong_path_type():
     urls = ["https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"]
-    with pytest.raises(TypeError) as ex:
+    with pytest.raises(InputTypeError) as ex:
         _ = ar.stream_write(urls, "temp")
-    assert "sequences" in str(ex.value)
+    assert "list" in str(ex.value)
 
 
 def test_wrong_path_number():
     urls = ["https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"]
     file_paths = ["temp"] * 2
-    with pytest.raises(TypeError) as ex:
+    with pytest.raises(InputTypeError) as ex:
         _ = ar.stream_write(urls, file_paths)
-    assert "same length" in str(ex.value)
+    assert "same size" in str(ex.value)
