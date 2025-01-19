@@ -58,17 +58,13 @@ def delete_url_cache(
     kwargs : dict, optional
         Keywords to pass to the ``cache.delete_url()``.
     """
-    loop, new_loop = utils.get_event_loop()
-
     valid_methods = ["get", "post"]
     if request_method.lower() not in valid_methods:
         raise InputValueError("method", valid_methods)
 
-    loop.run_until_complete(
+    utils.run_in_event_loop(
         utils.delete_url(url, request_method, utils.create_cachefile(cache_name), **kwargs)
     )
-    if new_loop:
-        loop.close()
 
 
 async def _session_with_cache(
@@ -275,9 +271,8 @@ def retrieve(
     if not disable:
         disable = os.getenv("HYRIVER_CACHE_DISABLE", "false").lower() == "true"
 
-    loop, new_loop = utils.get_event_loop()
     if disable:
-        results = loop.run_until_complete(
+        results = utils.run_in_event_loop(
             _session_without_cache(
                 inp.url_kwds,
                 inp.read_method,
@@ -289,7 +284,7 @@ def retrieve(
             )
         )
     else:
-        results = loop.run_until_complete(
+        results = utils.run_in_event_loop(
             _session_with_cache(
                 inp.url_kwds,
                 inp.read_method,
@@ -303,8 +298,6 @@ def retrieve(
                 limit_per_host,
             )
         )
-    if new_loop:
-        loop.close()
     return [r for _, r in sorted(results)]
 
 

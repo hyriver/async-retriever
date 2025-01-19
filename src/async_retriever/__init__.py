@@ -15,7 +15,7 @@ from async_retriever.async_retriever import (
     retrieve_text,
 )
 from async_retriever.print_versions import show_versions
-from async_retriever.streaming import stream_write
+from async_retriever.streaming import generate_filename, stream_write
 
 try:
     __version__ = version("async_retriever")
@@ -29,6 +29,7 @@ __all__ = [
     "__version__",
     "delete_url_cache",
     "exceptions",
+    "generate_filename",
     "retrieve",
     "retrieve_binary",
     "retrieve_json",

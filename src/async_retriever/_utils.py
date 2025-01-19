@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import asyncio
+import atexit
 import os
 from datetime import datetime
 from inspect import signature
 from itertools import repeat
 from pathlib import Path
 from ssl import PROTOCOL_TLS_CLIENT, SSLContext
-from typing import TYPE_CHECKING, Any, Callable, Literal
+from threading import Thread
+from typing import TYPE_CHECKING, Any, Callable, Literal, TypeVar
 
 import ujson as json
 from aiohttp import ClientResponseError, ClientSession
@@ -22,10 +24,47 @@ from async_retriever.exceptions import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Coroutine, Sequence
 
     from aiohttp.client import _RequestContextManager  # pyright: ignore[reportPrivateUsage]
     from aiohttp.typedefs import StrOrURL
+
+    T = TypeVar("T")
+
+
+class AsyncLoopThread(Thread):
+    """A thread running an asyncio event loop."""
+
+    def __init__(self):
+        super().__init__(daemon=True)
+        self.loop = asyncio.new_event_loop()
+
+    def run(self):
+        asyncio.set_event_loop(self.loop)
+        try:
+            self.loop.run_forever()
+        finally:
+            # Ensure all asynchronous generators are closed
+            self.loop.run_until_complete(self.loop.shutdown_asyncgens())
+            self.loop.close()
+
+    def stop(self):
+        self.loop.call_soon_threadsafe(self.loop.stop)
+        self.join()
+
+
+# Initialize a single global event loop thread
+_loop_handler = AsyncLoopThread()
+_loop_handler.start()
+# Ensure proper cleanup at application exit
+atexit.register(
+    lambda: _loop_handler.stop() if _loop_handler and _loop_handler.is_alive() else None
+)
+
+
+def run_in_event_loop(coro: Coroutine[Any, Any, T]) -> T:
+    """Run a coroutine in the dedicated asyncio event loop."""
+    return asyncio.run_coroutine_threadsafe(coro, _loop_handler.loop).result()
 
 
 def create_cachefile(db_name: str | Path | None = None) -> Path:
@@ -93,35 +132,6 @@ async def retriever(
             if raise_status:
                 raise ServiceError(await response.text(), str(response.url)) from ex
             return uid, None
-
-
-def is_jupyter_kernel():
-    """Check if the code is running in a Jupyter kernel (not IPython terminal)."""
-    try:
-        from IPython import get_ipython
-
-        ipython = get_ipython()
-    except (ImportError, NameError):
-        return False
-    if ipython is None:
-        return False
-    return "Terminal" not in ipython.__class__.__name__
-
-
-def get_event_loop() -> tuple[asyncio.AbstractEventLoop, bool]:
-    """Create an event loop."""
-    try:
-        loop = asyncio.get_running_loop()
-        new_loop = False
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-        new_loop = True
-    asyncio.set_event_loop(loop)
-    if is_jupyter_kernel():
-        import nest_asyncio
-
-        nest_asyncio.apply(loop)
-    return loop, new_loop
 
 
 async def delete_url(
