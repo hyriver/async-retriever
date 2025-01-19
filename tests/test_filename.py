@@ -1,9 +1,11 @@
-import pytest
-from multidict import MultiDict
-from yarl import URL
+from __future__ import annotations
+
 import hashlib
 import json
 
+import pytest
+from multidict import MultiDict
+from yarl import URL
 
 from async_retriever import generate_filename
 from async_retriever.exceptions import InputTypeError
@@ -42,7 +44,10 @@ def test_generate_filename_with_prefix_and_suffix():
     prefix = "test_prefix_"
     suffix = "json"
     expected_hash = hashlib.sha256(url.encode("utf-8")).hexdigest()
-    assert generate_filename(url, prefix=prefix, file_extension=suffix) == f"{prefix}{expected_hash}.json"
+    assert (
+        generate_filename(url, prefix=prefix, file_extension=suffix)
+        == f"{prefix}{expected_hash}.json"
+    )
 
 
 def test_generate_filename_strip_suffix_dot():
@@ -107,4 +112,7 @@ def test_generate_filename_with_edge_case_inputs():
     data_str = json.dumps(data, sort_keys=True, separators=(",", ":"))
     hash_input = f"{url_obj.human_repr()}{url_obj.query}{data_str}"
     expected_hash = hashlib.sha256(hash_input.encode("utf-8")).hexdigest()
-    assert generate_filename(url, params=params, data=data, prefix=prefix, file_extension=suffix) == f"{expected_hash}"
+    assert (
+        generate_filename(url, params=params, data=data, prefix=prefix, file_extension=suffix)
+        == f"{expected_hash}"
+    )
