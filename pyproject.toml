@@ -42,8 +42,9 @@ dependencies = [
   "aiosqlite",
   "brotli",
   "cytoolz",
-  "nest-asyncio",
+  "multidict",
   "ujson",
+  "yarl",
 ]
 optional-dependencies.test = [
   "pytest-cov",
@@ -227,6 +228,9 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 ignore_errors = true
+omit = [
+  "**/__init__.py",
+]
 
 [tool.coverage.paths]
 source = [ "src", "*/site-packages" ]
@@ -236,9 +240,6 @@ branch = true
 parallel = true
 source_pkgs = [
   "async_retriever",
-]
-omit = [
-  "**/__init__.py",
 ]
 
 [tool.pyright]
