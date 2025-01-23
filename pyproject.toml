@@ -43,7 +43,7 @@ dependencies = [
   "brotli",
   "cytoolz",
   "multidict",
-  "ujson",
+  "orjson>=3.10,<4",
   "yarl",
 ]
 optional-dependencies.test = [
