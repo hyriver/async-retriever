@@ -6,7 +6,7 @@ import asyncio
 import os
 from typing import TYPE_CHECKING, Any, Literal, Union
 
-import ujson as json
+import orjson as json
 from aiohttp import ClientSession, TCPConnector
 from aiohttp_client_cache import SQLiteBackend
 from aiohttp_client_cache.session import CachedSession

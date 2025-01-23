@@ -10,10 +10,10 @@ from inspect import signature
 from itertools import repeat
 from pathlib import Path
 from ssl import PROTOCOL_TLS_CLIENT, SSLContext
-from threading import Thread
+from threading import Event, Thread
 from typing import TYPE_CHECKING, Any, Callable, Literal, TypeVar
 
-import ujson as json
+import orjson as json
 from aiohttp import ClientResponseError, ClientSession
 from aiohttp_client_cache import SQLiteBackend
 
@@ -33,33 +33,35 @@ if TYPE_CHECKING:
 
 
 class AsyncLoopThread(Thread):
-    """A thread running an asyncio event loop."""
+    """A dedicated thread for running asyncio event loop of ``aiohttp``."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(daemon=True)
         self.loop = asyncio.new_event_loop()
+        self._running = Event()
 
-    def run(self):
+    def run(self) -> None:
+        """Run the event loop in this thread."""
         asyncio.set_event_loop(self.loop)
+        self._running.set()
         try:
             self.loop.run_forever()
         finally:
-            # Ensure all asynchronous generators are closed
             self.loop.run_until_complete(self.loop.shutdown_asyncgens())
             self.loop.close()
+            self._running.clear()
 
-    def stop(self):
-        self.loop.call_soon_threadsafe(self.loop.stop)
-        self.join()
+    def stop(self) -> None:
+        """Stop the event loop thread."""
+        if self._running.is_set():
+            self.loop.call_soon_threadsafe(self.loop.stop)
+            self._running.wait()
 
 
-# Initialize a single global event loop thread
+# Initialize the global event loop thread
 _loop_handler = AsyncLoopThread()
 _loop_handler.start()
-# Ensure proper cleanup at application exit
-atexit.register(
-    lambda: _loop_handler.stop() if _loop_handler and _loop_handler.is_alive() else None
-)
+atexit.register(lambda: _loop_handler.stop())
 
 
 def run_in_event_loop(coro: Coroutine[Any, Any, T]) -> T:
