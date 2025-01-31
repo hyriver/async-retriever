@@ -128,7 +128,7 @@ async def _session_with_cache(
         fast_save=True,
     )
     async with CachedSession(
-        json_serialize=json.dumps,
+        json_serialize=lambda r: json.dumps(r).decode(),
         cache=cache,
         connector=TCPConnector(ssl=ssl, limit_per_host=limit_per_host),
         trust_env=True,
@@ -183,7 +183,7 @@ async def _session_without_cache(
         An async gather function
     """
     async with ClientSession(
-        json_serialize=json.dumps,
+        json_serialize=lambda r: json.dumps(r).decode(),
         trust_env=True,
         connector=TCPConnector(ssl=ssl, limit_per_host=limit_per_host),
     ) as session:
