@@ -49,6 +49,7 @@ dependencies = [
 optional-dependencies.test = [
   "pytest-cov",
   "pytest-sugar",
+  "shapely",
 ]
 urls.Changelog = "https://docs.hyriver.io/changelogs/async-retriever.html"
 urls.CI = "https://github.com/hyriver/async-retriever/actions"
