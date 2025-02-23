@@ -15,11 +15,15 @@ Internal Changes
   ``nest_asyncio``. This is done by creating and initializing a
   single global event loop thread dedicated to only running the
   asynchronous parts of this package.
-- Use ``threading.Event`` in ``AsyncLoopThread`` for a more robust
+- Use ``threading.Event`` in ``_AsyncLoopThread`` for a more robust
   way to signal the event loop thread to stop running. This should
   prevent the event loop thread from hanging when the main thread
   exits before the event loop thread is done running. Overall, this
   improves thread safety and robustness of the package.
+- More robust handling of starting and stopping threads by lazy generation of a
+  dedicated thread for the library and making ``_AsyncLoopThread`` a singleton. This can
+  avoid issues that might arise from using TinyRetriever with other libraries that
+  also use threads such as ``shapely``.
 
 0.19.1 (2025-01-17)
 -------------------
