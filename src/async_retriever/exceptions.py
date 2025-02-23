@@ -17,12 +17,8 @@ class DownloadError(Exception):
         Service error message.
     """
 
-    def __init__(self, err: str, url: str | None = None) -> None:
-        self.message = "Service returned the following error message:\n"
-        if url is None:
-            self.message += err
-        else:
-            self.message += f"URL: {url}\nERROR: {err}\n"
+    def __init__(self, err: str, url: str) -> None:
+        self.message = f"Service returned the following error message:\nURL: {url}\nERROR: {err}\n"
         super().__init__(self.message)
 
     def __str__(self) -> str:
