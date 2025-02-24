@@ -426,7 +426,7 @@ def retrieve_json(
     Examples
     --------
     >>> import async_retriever as ar
-    >>> urls = ["https://labs.waterdata.usgs.gov/api/nldi/linked-data/comid/position"]
+    >>> urls = ["https://api.water.usgs.gov/api/nldi/linked-data/comid/position"]
     >>> kwds = [
     ...     {
     ...         "params": {

@@ -10,7 +10,7 @@ from inspect import signature
 from itertools import repeat
 from pathlib import Path
 from ssl import PROTOCOL_TLS_CLIENT, SSLContext
-from threading import Event, Thread
+from threading import Event, Thread, Lock
 from typing import TYPE_CHECKING, Any, Callable, Literal, TypeVar
 
 import orjson as json
@@ -32,13 +32,39 @@ if TYPE_CHECKING:
     T = TypeVar("T")
 
 
-class AsyncLoopThread(Thread):
-    """A dedicated thread for running asyncio event loop of ``aiohttp``."""
+class _AsyncLoopThread(Thread):
+    _instance: _AsyncLoopThread | None = None
+    _lock = Lock()
+    _cleanup_registered = False
 
     def __init__(self) -> None:
         super().__init__(daemon=True)
         self.loop = asyncio.new_event_loop()
         self._running = Event()
+
+    @classmethod
+    def _cleanup(cls) -> None:
+        """Safe cleanup method for atexit."""
+        with cls._lock:
+            instance = cls._instance
+            if instance is not None:
+                instance.stop()
+                cls._instance = None
+
+    @classmethod
+    def get_instance(cls) -> _AsyncLoopThread:
+        """Get or create the singleton instance of AsyncLoopThread."""
+        if cls._instance is None or not cls._instance.is_alive():
+            with cls._lock:
+                # Check again in case another thread created instance
+                if cls._instance is None or not cls._instance.is_alive():
+                    instance = cls()
+                    instance.start()
+                    if not cls._cleanup_registered:
+                        atexit.register(cls._cleanup)
+                        cls._cleanup_registered = True
+                    cls._instance = instance
+        return cls._instance
 
     def run(self) -> None:
         """Run the event loop in this thread."""
@@ -55,18 +81,19 @@ class AsyncLoopThread(Thread):
         """Stop the event loop thread."""
         if self._running.is_set():
             self.loop.call_soon_threadsafe(self.loop.stop)
-            self._running.wait()
+            self._running.wait()  # Wait for event to be cleared
+            self.join()  # Wait for thread to finish
 
 
-# Initialize the global event loop thread
-_loop_handler = AsyncLoopThread()
-_loop_handler.start()
-atexit.register(lambda: _loop_handler.stop())
+def _get_loop_handler() -> _AsyncLoopThread:
+    """Get the global event loop thread handler, creating it if needed."""
+    return _AsyncLoopThread.get_instance()
 
 
 def run_in_event_loop(coro: Coroutine[Any, Any, T]) -> T:
     """Run a coroutine in the dedicated asyncio event loop."""
-    return asyncio.run_coroutine_threadsafe(coro, _loop_handler.loop).result()
+    handler = _get_loop_handler()
+    return asyncio.run_coroutine_threadsafe(coro, handler.loop).result()
 
 
 def create_cachefile(db_name: str | Path | None = None) -> Path:
