@@ -10,7 +10,7 @@ from inspect import signature
 from itertools import repeat
 from pathlib import Path
 from ssl import PROTOCOL_TLS_CLIENT, SSLContext
-from threading import Event, Thread, Lock
+from threading import Event, Lock, Thread
 from typing import TYPE_CHECKING, Any, Callable, Literal, TypeVar
 
 import orjson as json
