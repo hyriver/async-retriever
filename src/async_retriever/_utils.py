@@ -31,6 +31,9 @@ if TYPE_CHECKING:
 
     T = TypeVar("T")
 
+MAX_HOSTS = 4  # Maximum connections to a single host (rate-limited service)
+TIMEOUT = 2 * 60  # Timeout for requests in seconds
+
 
 class _AsyncLoopThread(Thread):
     _instance: _AsyncLoopThread | None = None
