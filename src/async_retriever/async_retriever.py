@@ -12,7 +12,7 @@ from aiohttp_client_cache import SQLiteBackend
 from aiohttp_client_cache.session import CachedSession
 
 from async_retriever import _utils as utils
-from async_retriever._utils import BaseRetriever
+from async_retriever._utils import MAX_HOSTS, TIMEOUT, BaseRetriever
 from async_retriever.exceptions import InputValueError
 
 if TYPE_CHECKING:
@@ -73,58 +73,24 @@ async def _session_with_cache(
     r_kwds: dict[str, Any],
     request_method: Literal["get", "post"],
     cache_name: Path,
-    timeout: int = 5,
-    expire_after: int = EXPIRE_AFTER,
-    ssl: SSLContext | bool = True,
-    raise_status: bool = True,
-    limit_per_host: int = 5,
+    expire_after: int,
+    ssl: SSLContext | bool,
+    raise_status: bool,
+    limit_per_host: int,
+    timeout: int,
 ) -> (
     list[tuple[int, str | None]]
     | list[tuple[int, bytes | None]]
     | list[tuple[int, dict[str, Any] | None]]
     | list[tuple[int, list[dict[str, Any]] | None]]
 ):
-    """Create an async session for sending requests.
-
-    Parameters
-    ----------
-    url_kwds : list of tuples of urls and payloads
-        A list of URLs or URLs with their payloads to be retrieved.
-    read : str
-        The method for returning the request; ``read`` (bytes), ``json``, and ``text``.
-    r_kwds : dict
-        Keywords to pass to the response read function. ``{"content_type": None}`` if read
-        is ``json`` else it's empty.
-    request_method : str
-        The request type; ``GET`` or ``POST``.
-    cache_name : str
-        Path to a file for caching the session, defaults to
-        ``./cache/aiohttp_cache.sqlite``.
-    timeout : int, optional
-        Requests timeout in seconds, defaults to 5.
-    expire_after : int, optional
-        Expiration time for the cache in seconds, defaults to 2592000 (one week).
-    ssl : bool or SSLContext, optional
-        SSLContext to use for the connection, defaults to None. Set to ``False`` to disable
-        SSL certification verification.
-    raise_status : bool, optional
-        Raise an exception if the response status is not 200. If
-        ``False`` return ``None``. Defaults to ``True``.
-    limit_per_host : int, optional
-        Maximum number of simultaneous connections per host, defaults to 5.
-
-    Returns
-    -------
-    asyncio.gather
-        An async gather function
-    """
+    """Create an async session for sending requests."""
     if expire_after == EXPIRE_AFTER:
         expire_after = int(os.getenv("HYRIVER_CACHE_EXPIRE", EXPIRE_AFTER))
     cache = SQLiteBackend(
         cache_name=str(cache_name),
         expire_after=expire_after,
         allowed_methods=("GET", "POST"),
-        timeout=timeout,
         fast_save=True,
     )
     async with CachedSession(
@@ -135,7 +101,9 @@ async def _session_with_cache(
     ) as session:
         request_func = getattr(session, request_method.lower())
         tasks = [
-            utils.retriever(uid, url, kwds, request_func, read, r_kwds, raise_status)
+            utils.retriever(
+                uid, url, {"timeout": timeout, **kwds}, request_func, read, r_kwds, raise_status
+            )
             for uid, url, kwds in url_kwds
         ]
         return await asyncio.gather(*tasks)  # pyright: ignore[reportReturnType]
@@ -146,42 +114,17 @@ async def _session_without_cache(
     read: Literal["read", "text", "json"],
     r_kwds: dict[str, Any],
     request_method: Literal["get", "post"],
-    ssl: SSLContext | bool = True,
-    raise_status: bool = True,
-    limit_per_host: int = 5,
+    ssl: SSLContext | bool,
+    raise_status: bool,
+    limit_per_host: int,
+    timeout: int,
 ) -> (
     list[tuple[int, str | None]]
     | list[tuple[int, bytes | None]]
     | list[tuple[int, dict[str, Any] | None]]
     | list[tuple[int, list[dict[str, Any]] | None]]
 ):
-    """Create an async session for sending requests.
-
-    Parameters
-    ----------
-    url_kwds : list of tuples of urls and payloads
-        A list of URLs or URLs with their payloads to be retrieved.
-    read : str
-        The method for returning the request; ``read`` (bytes), ``json``, and ``text``.
-    r_kwds : dict
-        Keywords to pass to the response read function. ``{"content_type": None}`` if read
-        is ``json`` else it's empty.
-    request_method : str
-        The request type; ``GET`` or ``POST``.
-    ssl : bool or SSLContext, optional
-        SSLContext to use for the connection, defaults to None. Set to ``False`` to disable
-        SSL certification verification.
-    raise_status : bool, optional
-        Raise an exception if the response status is not 200. If
-        ``False`` return ``None``. Defaults to ``True``.
-    limit_per_host : int, optional
-        Maximum number of simultaneous connections per host, defaults to 5.
-
-    Returns
-    -------
-    asyncio.gather
-        An async gather function
-    """
+    """Create an async session for sending requests."""
     async with ClientSession(
         json_serialize=lambda r: json.dumps(r).decode(),
         trust_env=True,
@@ -189,7 +132,9 @@ async def _session_without_cache(
     ) as session:
         request_func = getattr(session, request_method.lower())
         tasks = [
-            utils.retriever(uid, url, kwds, request_func, read, r_kwds, raise_status)
+            utils.retriever(
+                uid, url, {"timeout": timeout, **kwds}, request_func, read, r_kwds, raise_status
+            )
             for uid, url, kwds in url_kwds
         ]
         return await asyncio.gather(*tasks)  # pyright: ignore[reportReturnType]
@@ -200,9 +145,9 @@ def retrieve(
     read_method: Literal["text", "json", "binary"],
     request_kwds: Sequence[dict[str, Any]] | None = None,
     request_method: Literal["get", "post"] = "get",
-    limit_per_host: int = 5,
+    limit_per_host: int = MAX_HOSTS,
     cache_name: Path | str | None = None,
-    timeout: int = 5,
+    timeout: int = TIMEOUT,
     expire_after: int = EXPIRE_AFTER,
     ssl: SSLContext | bool = True,
     disable: bool = False,
@@ -222,11 +167,11 @@ def retrieve(
     request_method : str, optional
         Request type; ``GET`` (``get``) or ``POST`` (``post``). Defaults to ``GET``.
     limit_per_host : int, optional
-        Maximum number of simultaneous connections per host, defaults to 5.
+        Maximum number of simultaneous connections per host, defaults to 4.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
     timeout : int, optional
-        Requests timeout in seconds, defaults to 5.
+        Requests timeout in seconds, defaults to 120.
     expire_after : int, optional
         Expiration time for response caching in seconds, defaults to 2592000 (one week).
     ssl : bool or SSLContext, optional
@@ -281,6 +226,7 @@ def retrieve(
                 ssl,
                 raise_status,
                 limit_per_host,
+                timeout,
             )
         )
     else:
@@ -291,11 +237,11 @@ def retrieve(
                 inp.r_kwds,
                 inp.request_method,
                 inp.cache_name,
-                timeout,
                 expire_after,
                 ssl,
                 raise_status,
                 limit_per_host,
+                timeout,
             )
         )
     return [r for _, r in sorted(results)]
@@ -305,9 +251,9 @@ def retrieve_text(
     urls: Sequence[StrOrURL],
     request_kwds: Sequence[dict[str, Any]] | None = None,
     request_method: Literal["get", "post"] = "get",
-    limit_per_host: int = 5,
+    limit_per_host: int = MAX_HOSTS,
     cache_name: Path | str | None = None,
-    timeout: int = 5,
+    timeout: int = TIMEOUT,
     expire_after: int = EXPIRE_AFTER,
     ssl: SSLContext | bool = True,
     disable: bool = False,
@@ -325,11 +271,11 @@ def retrieve_text(
     request_method : str, optional
         Request type; ``GET`` (``get``) or ``POST`` (``post``). Defaults to ``GET``.
     limit_per_host : int, optional
-        Maximum number of simultaneous connections per host, defaults to 5.
+        Maximum number of simultaneous connections per host, defaults to 4.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
     timeout : int, optional
-        Requests timeout in seconds in seconds, defaults to 5.
+        Requests timeout in seconds, defaults to 120.
     expire_after : int, optional
         Expiration time for response caching in seconds, defaults to 2592000 (one week).
     ssl : bool or SSLContext, optional
@@ -381,9 +327,9 @@ def retrieve_json(
     urls: Sequence[StrOrURL],
     request_kwds: Sequence[dict[str, Any]] | None = None,
     request_method: Literal["get", "post"] = "get",
-    limit_per_host: int = 5,
+    limit_per_host: int = MAX_HOSTS,
     cache_name: Path | str | None = None,
-    timeout: int = 5,
+    timeout: int = TIMEOUT,
     expire_after: int = EXPIRE_AFTER,
     ssl: SSLContext | bool = True,
     disable: bool = False,
@@ -401,11 +347,11 @@ def retrieve_json(
     request_method : str, optional
         Request type; ``GET`` (``get``) or ``POST`` (``post``). Defaults to ``GET``.
     limit_per_host : int, optional
-        Maximum number of simultaneous connections per host, defaults to 5.
+        Maximum number of simultaneous connections per host, defaults to 4.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
     timeout : int, optional
-        Requests timeout in seconds, defaults to 5.
+        Requests timeout in seconds, defaults to 120.
     expire_after : int, optional
         Expiration time for response caching in seconds, defaults to 2592000 (one week).
     ssl : bool or SSLContext, optional
@@ -458,9 +404,9 @@ def retrieve_binary(
     urls: Sequence[StrOrURL],
     request_kwds: Sequence[dict[str, Any]] | None = None,
     request_method: Literal["get", "post"] = "get",
-    limit_per_host: int = 5,
+    limit_per_host: int = MAX_HOSTS,
     cache_name: Path | str | None = None,
-    timeout: int = 5,
+    timeout: int = TIMEOUT,
     expire_after: int = EXPIRE_AFTER,
     ssl: SSLContext | bool = True,
     disable: bool = False,
@@ -478,11 +424,11 @@ def retrieve_binary(
     request_method : str, optional
         Request type; ``GET`` (``get``) or ``POST`` (``post``). Defaults to ``GET``.
     limit_per_host : int, optional
-        Maximum number of simultaneous connections per host, defaults to 5.
+        Maximum number of simultaneous connections per host, defaults to 4.
     cache_name : str, optional
         Path to a file for caching the session, defaults to ``./cache/aiohttp_cache.sqlite``.
     timeout : int, optional
-        Requests timeout in seconds, defaults to 5.
+        Requests timeout in seconds, defaults to 120.
     expire_after : int, optional
         Expiration time for response caching in seconds, defaults to 2592000 (one week).
     ssl : bool or SSLContext, optional
