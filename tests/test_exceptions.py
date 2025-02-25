@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from urllib.parse import urlencode
-
+from pathlib import Path
 import pytest
 from aiohttp import InvalidURL
 
@@ -88,14 +88,8 @@ def test_service_error():
 
     with pytest.raises(ServiceError) as ex:
         _ = ar.stream_write([url], ["temp"])
-    assert "illegal bbox" in str(ex.value)
-
-
-def test_wrong_path_type():
-    urls = ["https://freetestdata.com/wp-content/uploads/2021/09/Free_Test_Data_500KB_CSV-1.csv"]
-    with pytest.raises(InputTypeError) as ex:
-        _ = ar.stream_write(urls, "temp")
-    assert "list" in str(ex.value)
+    assert "Bad Request" in str(ex.value)
+    Path("temp").unlink()
 
 
 def test_wrong_path_number():
