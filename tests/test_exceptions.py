@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from urllib.parse import urlencode
 from pathlib import Path
+from urllib.parse import urlencode
+
 import pytest
 from aiohttp import InvalidURL
 
@@ -89,7 +90,8 @@ def test_service_error():
     with pytest.raises(ServiceError) as ex:
         _ = ar.stream_write([url], ["temp"])
     assert "Bad Request" in str(ex.value)
-    Path("temp").unlink()
+    if Path("temp").exists():
+        Path("temp").unlink()
 
 
 def test_wrong_path_number():
